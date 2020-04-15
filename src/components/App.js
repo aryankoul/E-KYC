@@ -6,7 +6,6 @@ import './App.css'
 
 class App extends Component {
   componentWillMount() {
-    console.log(kyc.abi)
     this.loadBlockchainData()
   }
 
@@ -14,8 +13,10 @@ class App extends Component {
     const web3 = new Web3(providerUrl)
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0x633c357e0BC605Bb403155c55b77d85F6588Bb03")
+    const KycContract = new web3.eth.Contract(kyc.abi,"0x5C47ee98dbBEf9CbDC11392D1EdE62d768a298E5")
     this.setState({ KycContract })
+    const val = await this.state.KycContract.methods.getUserSignature("aryanz").call()
+    this.setState({ val })
   }
 
   constructor(props) {
@@ -37,14 +38,15 @@ class App extends Component {
 
   async handleSubmit(event) {
     const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, this.state.userPhoneHash, this.state.verifierKey]
-    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).call()
+    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195 })
     
-    event.preventdefault()
+    event.preventDefault()
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form>
+        { this.state.val }
         <input
           name="userId"
           type="text"
@@ -65,7 +67,7 @@ class App extends Component {
           type="text"
           placeholder = "verifier key"
           onChange={this.handleChange} />
-          <input type="submit" value="Submit" />
+          <input type="button" value="Submit" onClick={this.handleSubmit} />
         
       </form>
     );
