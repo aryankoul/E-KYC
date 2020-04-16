@@ -4,6 +4,8 @@ import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
 
+var forge = require('node-forge');
+
 class App extends Component {
   componentWillMount() {
     this.loadBlockchainData()
@@ -13,9 +15,9 @@ class App extends Component {
     const web3 = new Web3(providerUrl)
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0x5C47ee98dbBEf9CbDC11392D1EdE62d768a298E5")
+    const KycContract = new web3.eth.Contract(kyc.abi,"0xe4da1069cA5A029fC8082aa0Cb8d00153ae19715")
     this.setState({ KycContract })
-    const val = await this.state.KycContract.methods.getUserSignature("aryanz").call()
+    const val = await this.state.KycContract.methods.getUserSignature("fdsnf").call()
     this.setState({ val })
   }
 
@@ -36,9 +38,19 @@ class App extends Component {
     })
   }
 
+  calculateHash(phoneNumber){
+    var md = forge.md.sha256.create();
+    md.update(phoneNumber);
+    return md.digest().toHex();
+  }
+
+      
+
   async handleSubmit(event) {
-    const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, this.state.userPhoneHash, this.state.verifierKey]
-    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195 })
+    var phoneNumberHash = this.calculateHash(this.state.phoneNumber)
+    console.log(phoneNumberHash)
+    const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, phoneNumberHash, this.state.verifierKey]
+    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: this.state.account, gas: 672195 })
     
     event.preventDefault()
   }
@@ -58,9 +70,9 @@ class App extends Component {
           placeholder = "signature"
           onChange={this.handleChange} />
         <input
-          name="userPhoneHash"
+          name="phoneNumber"
           type="text"
-          placeholder = "phone hash"
+          placeholder = "Phone number"
           onChange={this.handleChange} />
           <input
           name="verifierKey"

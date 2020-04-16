@@ -16,12 +16,14 @@ contract Kyc {
 
     struct Verifier{
         bool present;
+        bool verified;
         string bank;
         string publicKey;
     }
 
+    address[] unverified;
     //To store verifier data with key : publickey
-    mapping(string => Verifier) Verifiers;
+    mapping(address => Verifier) Verifiers;
 
     //From User's unique ID -> Verifier
     mapping(string => string) linkedVerifiers;
@@ -29,30 +31,44 @@ contract Kyc {
     //For User Data
     mapping(string => User) Users;
 
-    function getVerfierForUser(string memory _id) public view returns (string memory){
+    function getUnverifiedVerifiers() public view returns (address[] memory) {
+        require(msg.sender == owner, "Unauthorized");
+        return unverified;
+    }
+
+     function getVerifier(address verifierAddress) public view returns(string memory){
+        return Verifiers[verifierAddress].bank;
+    }
+
+
+    function getVerifierForUser(string memory _id) public view returns (string memory){
         require(Users[_id].present == true, "User does not exist");
         return (linkedVerifiers[_id]);
     }
 
-    function addVerifier(string memory _bankName, string memory _publicKey) public {
+    function addVerifier(string memory bankName, address verifierAddress, string memory publicKey) public {
         require(msg.sender == owner,"Unauthorized");
-        require(Verifiers[_publicKey].present == false, "Verifier already exists");
-        Verifiers[_publicKey] = Verifier(true, _bankName, _publicKey);
+        require(Verifiers[verifierAddress].present == false, "Verifier already exists");
+        unverified.push(verifierAddress);
+        Verifiers[verifierAddress] = Verifier(true, false, bankName, publicKey);
     }
 
+    function getPublicKey(address verifierAddress) public view returns(string memory){
+        return Verifiers[verifierAddress].publicKey;
+    }
 
     function addUser(string memory _id,
                     string memory _signature,
                     string memory _mobileHash,
-                    string memory _verifierKey) public {
+                    address verifierAddress) public {
         require(
             Users[_id].present == false,
             "User already exist"
          );
 
         Users[_id] = User(true, _signature, _mobileHash);
-        require(Verifiers[_verifierKey].present == true, "Unauthorized verifier");
-        linkedVerifiers[_id] = _verifierKey;
+        require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
+        linkedVerifiers[_id] = getPublicKey(verifierAddress);
     }
 
     function getUserSignature(string memory _id) public view returns (string memory) {
