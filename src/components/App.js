@@ -3,6 +3,7 @@ import Web3 from 'web3'
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
+// import { generateKeyPair } from './new.js'
 
 class App extends Component {
   componentWillMount() {
@@ -13,9 +14,11 @@ class App extends Component {
     const web3 = new Web3(providerUrl)
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0x5C47ee98dbBEf9CbDC11392D1EdE62d768a298E5")
+    const KycContract = new web3.eth.Contract(kyc.abi,"0x1D663730ED7B10176665a18fdfeE730ed47A1346")
     this.setState({ KycContract })
-    const val = await this.state.KycContract.methods.getUserSignature("aryanz").call()
+    const val = await this.state.KycContract.methods.getUserSignature("sushanttttt").call()
+    console.log(val);
+    
     this.setState({ val })
   }
 
@@ -36,10 +39,23 @@ class App extends Component {
     })
   }
 
-  async handleSubmit(event) {
-    const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, this.state.userPhoneHash, this.state.verifierKey]
-    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195 })
+  handleSubmit(event) {
+    const [userId, signature, number] = [this.state.userId, this.state.userSignature, this.state.userPhoneNumber]
+
+    const forge = require('node-forge');
+    const md = forge.md.sha256.create();
+    md.update(number);
+    let hash = md.digest().toHex();
+    console.log(hash);
+
+    const mycontract = this.state.KycContract;
     
+    forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
+      // keypair.privateKey, keypair.publicKey
+      console.log(keypair.publicKey.n.toString());
+      mycontract.methods.addUser(userId, signature,hash, keypair.publicKey.n.toString()).send({ from: "0xCcFB443f211F592B5cEa2233Be6d2256AF87c825", gas: 672195 })
+    });
+
     event.preventDefault()
   }
 
@@ -58,14 +74,9 @@ class App extends Component {
           placeholder = "signature"
           onChange={this.handleChange} />
         <input
-          name="userPhoneHash"
+          name="userPhoneNumber"
           type="text"
-          placeholder = "phone hash"
-          onChange={this.handleChange} />
-          <input
-          name="verifierKey"
-          type="text"
-          placeholder = "verifier key"
+          placeholder = "phone number"
           onChange={this.handleChange} />
           <input type="button" value="Submit" onClick={this.handleSubmit} />
         
