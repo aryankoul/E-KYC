@@ -40,6 +40,19 @@ contract Kyc {
         return Verifiers[verifierAddress].bank;
     }
 
+    function verifyVerifier(address verifierAddress) public returns(uint){
+        require(msg.sender == owner, "Unauthorized");
+        Verifiers[verifierAddress].verified = true;
+        for(uint i = 0; i<unverified.length;i++){
+            if(unverified[i] == verifierAddress) {
+                unverified[i] = unverified[unverified.length - 1];
+                delete unverified[unverified.length - 1];
+                unverified.length--;
+                return 1;
+            }
+        }
+        return 0;
+    }
 
     function getVerifierForUser(string memory _id) public view returns (string memory){
         require(Users[_id].present == true, "User does not exist");
