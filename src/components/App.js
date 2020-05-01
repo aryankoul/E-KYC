@@ -3,6 +3,7 @@ import Web3 from 'web3'
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
+import NewUser from './NewUser.js'
 
 var forge = require('node-forge');
 
@@ -15,17 +16,21 @@ class App extends Component {
     const web3 = new Web3(providerUrl)
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0xe4da1069cA5A029fC8082aa0Cb8d00153ae19715")
+    const KycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address)
     this.setState({ KycContract })
-    const val = await this.state.KycContract.methods.getUserSignature("fdsnf").call()
-    this.setState({ val })
+    this.setState({loaded:true})
+    // const val = await this.state.KycContract.methods.getUserSignature("fdsnf").call()
+    // this.setState({ val })
   }
 
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      loaded : false
+    }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    
   } 
 
   handleChange(event) {
@@ -57,31 +62,38 @@ class App extends Component {
 
   render() {
     return (
-      <form>
-        { this.state.val }
-        <input
-          name="userId"
-          type="text"
-          placeholder = "user id"
-          onChange={this.handleChange} />
-        <input
-          name="userSignature"
-          type="text"
-          placeholder = "signature"
-          onChange={this.handleChange} />
-        <input
-          name="phoneNumber"
-          type="text"
-          placeholder = "Phone number"
-          onChange={this.handleChange} />
+
+      <div className='app'>
+        <form>
+          { this.state.val }
           <input
-          name="verifierKey"
-          type="text"
-          placeholder = "verifier key"
-          onChange={this.handleChange} />
-          <input type="button" value="Submit" onClick={this.handleSubmit} />
+            name="userId"
+            type="text"
+            placeholder = "user id"
+            onChange={this.handleChange} />
+          <input
+            name="userSignature"
+            type="text"
+            placeholder = "signature"
+            onChange={this.handleChange} />
+          <input
+            name="phoneNumber"
+            type="text"
+            placeholder = "Phone number"
+            onChange={this.handleChange} />
+            <input
+            name="verifierKey"
+            type="text"
+            placeholder = "verifier key"
+            onChange={this.handleChange} />
+            <input type="button" value="Submit" onClick={this.handleSubmit} />
+        </form>
         
-      </form>
+        {this.state.loaded === true ?
+        <NewUser kycContract={this.state.KycContract}/>
+        :<div></div>
+        }
+      </div>
     );
   }
 }
