@@ -22,6 +22,8 @@ contract Kyc {
     }
 
     address[] unverified;
+    address[] verified;
+
     //To store verifier data with key : publickey
     mapping(address => Verifier) Verifiers;
 
@@ -35,6 +37,17 @@ contract Kyc {
         require(msg.sender == owner, "Unauthorized");
         return unverified;
     }
+    
+    function pushVerifiers(address bankAddress, string memory bankName, string memory key) public returns (address[] memory){
+        require(msg.sender == owner, "Unauthorized");
+        Verifiers[bankAddress] = Verifier(true, true, bankName, key);
+        verified.push(bankAddress);
+    }
+
+    function getVerifiedVerifiers() public view returns (address[] memory){
+        require(msg.sender == owner, "Unauthorized");
+        return verified;
+    }
 
      function getVerifier(address verifierAddress) public view returns(string memory){
         return Verifiers[verifierAddress].bank;
@@ -45,6 +58,9 @@ contract Kyc {
         Verifiers[verifierAddress].verified = true;
         for(uint i = 0; i<unverified.length;i++){
             if(unverified[i] == verifierAddress) {
+
+                verified.push(verifierAddress);
+                
                 unverified[i] = unverified[unverified.length - 1];
                 delete unverified[unverified.length - 1];
                 unverified.length--;
