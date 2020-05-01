@@ -3,29 +3,34 @@ import Web3 from 'web3'
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
+import Admin from './Admin'
 
 var forge = require('node-forge');
 
 class App extends Component {
-  componentWillMount() {
+  componentDidMount() {
     this.loadBlockchainData()
   }
 
   async loadBlockchainData() {
     const web3 = new Web3(providerUrl)
+    window.ethereum.enable()
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0xe4da1069cA5A029fC8082aa0Cb8d00153ae19715")
+    const KycContract = new web3.eth.Contract(kyc.abi, kyc.networks[5777].address)
+    //console.log(KycContract)
     this.setState({ KycContract })
-    const val = await this.state.KycContract.methods.getUserSignature("fdsnf").call()
-    this.setState({ val })
+    //const val = await KycContract.methods.getUserSignature("aryan").call()
+    //this.setState({ val })
+    this.setState({loading: false})
   }
 
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {loading: true}
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+   // this.loadBlockchainData()
   } 
 
   handleChange(event) {
@@ -50,38 +55,39 @@ class App extends Component {
     var phoneNumberHash = this.calculateHash(this.state.phoneNumber)
     console.log(phoneNumberHash)
     const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, phoneNumberHash, this.state.verifierKey]
-    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: this.state.account, gas: 672195 })
+    //await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: this.state.account, gas: 672195 })
     
     event.preventDefault()
   }
 
   render() {
     return (
-      <form>
-        { this.state.val }
-        <input
-          name="userId"
-          type="text"
-          placeholder = "user id"
-          onChange={this.handleChange} />
-        <input
-          name="userSignature"
-          type="text"
-          placeholder = "signature"
-          onChange={this.handleChange} />
-        <input
-          name="phoneNumber"
-          type="text"
-          placeholder = "Phone number"
-          onChange={this.handleChange} />
+      (this.state.loading == false)?(<div>
+        <form>
           <input
-          name="verifierKey"
-          type="text"
-          placeholder = "verifier key"
-          onChange={this.handleChange} />
-          <input type="button" value="Submit" onClick={this.handleSubmit} />
-        
-      </form>
+            name="userId"
+            type="text"
+            placeholder = "user id"
+            onChange={this.handleChange} />
+          <input
+            name="userSignature"
+            type="text"
+            placeholder = "signature"
+            onChange={this.handleChange} />
+          <input
+            name="phoneNumber"
+            type="text"
+            placeholder = "Phone number"
+            onChange={this.handleChange} />
+            <input
+            name="verifierKey"
+            type="text"
+            placeholder = "verifier key"
+            onChange={this.handleChange} />
+            <input type="button" value="Submit" onClick={this.handleSubmit} />
+            <Admin KycContract = {this.state.KycContract} Account = {this.state.account}></Admin>
+        </form>
+      </div>):<div></div>
     );
   }
 }
