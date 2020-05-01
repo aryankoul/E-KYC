@@ -3,85 +3,54 @@ import Web3 from 'web3'
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
-
-var forge = require('node-forge');
+import VerifierOnBoard from './VerifierOnBoard.js'
+import AddUser from './AddUser.js'
 
 class App extends Component {
-  componentWillMount() {
-    this.loadBlockchainData()
-  }
-
-  async loadBlockchainData() {
-    const web3 = new Web3(providerUrl)
-    const accounts = await web3.eth.getAccounts()
-    this.setState({ account: accounts[0] })
-    const KycContract = new web3.eth.Contract(kyc.abi,"0xe4da1069cA5A029fC8082aa0Cb8d00153ae19715")
-    this.setState({ KycContract })
-    const val = await this.state.KycContract.methods.getUserSignature("fdsnf").call()
-    this.setState({ val })
-  }
 
   constructor(props) {
     super(props)
-    this.state = {}
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.state = {
+      loaded : false
+    }
   } 
 
-  handleChange(event) {
-    const target = event.target
-    const value = target.value
-    const name = target.name
+  componentDidMount() {
+    this.loadBlockchainData();
+  }
 
-    this.setState({
-      [name]: value
+  loadBlockchainData() {
+    const web3 = new Web3(providerUrl)
+    window.ethereum.enable().catch((error)=>{
+      console.log(error);
+    });
+    const web32 = new Web3(window.ethereum)
+    return web32.eth.getAccounts().then((acc)=>{
+      console.log(acc);
+      this.setState({ account: acc })
+      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address)
+      this.setState({ kycContract })
+      this.setState({loaded:true})
     })
   }
 
-  calculateHash(phoneNumber){
-    var md = forge.md.sha256.create();
-    md.update(phoneNumber);
-    return md.digest().toHex();
-  }
-
-      
-
-  async handleSubmit(event) {
-    var phoneNumberHash = this.calculateHash(this.state.phoneNumber)
-    console.log(phoneNumberHash)
-    const [userId, signature, hash, vKey] = [this.state.userId, this.state.userSignature, phoneNumberHash, this.state.verifierKey]
-    await this.state.KycContract.methods.addUser(userId, signature, hash, vKey).send({ from: this.state.account, gas: 672195 })
-    
-    event.preventDefault()
-  }
 
   render() {
+    
     return (
-      <form>
-        { this.state.val }
-        <input
-          name="userId"
-          type="text"
-          placeholder = "user id"
-          onChange={this.handleChange} />
-        <input
-          name="userSignature"
-          type="text"
-          placeholder = "signature"
-          onChange={this.handleChange} />
-        <input
-          name="phoneNumber"
-          type="text"
-          placeholder = "Phone number"
-          onChange={this.handleChange} />
-          <input
-          name="verifierKey"
-          type="text"
-          placeholder = "verifier key"
-          onChange={this.handleChange} />
-          <input type="button" value="Submit" onClick={this.handleSubmit} />
+      <div className='app'>
+        {
+          this.state.loaded ? 
+          (
+          <div className="views">
+            <VerifierOnBoard kycContract={this.state.kycContract} account={this.state.account} />
+            <AddUser kycContract = {this.state.kycContract} account = {this.state.account} />
+          </div>
+          ) : (<div></div>)
+          
+        }
         
-      </form>
+      </div>
     );
   }
 }
