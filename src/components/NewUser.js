@@ -17,12 +17,14 @@ class NewUser extends Component{
 
   handleSubmit(event) {
     console.log(this.state.verifierAddress);
-    
+    event.preventDefault()
   }
 
   handleChange(event,address){
     if (this.state.verifierAddress === address)
-      this.setState.verifierAddress = ''
+    this.setState({
+      verifierAddress : ''
+    })
     else
       this.setState({
         verifierAddress : address
@@ -55,13 +57,13 @@ class NewUser extends Component{
                   type="radio" 
                   name="bankName"
                   value = {verifier.address}
-                  onChange={this.handleChange(verifier.address)}/>
+                  onChange={(event)=>{this.handleChange(event,verifier.address)}}/>
                   <label for = {verifier.address}>{verifier.bankName}</label>
                 </div>
               )
             })
           }
-          <input type="button" value="Submit" onClick={this.handleSubmit} />
+          <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
         </form>
         ) : (<div></div>)
       }

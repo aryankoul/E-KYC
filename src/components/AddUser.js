@@ -32,10 +32,12 @@ class AddUser extends Component {
   }
 
   signUserData(address, rawData){ 
-      var foo = localStorage.getItem('foo');
-      foo=JSON.parse(foo);
+      // var foo = localStorage.getItem('foo');
+      // foo=JSON.parse(foo);
       // const pkeyPem = localStorage.getItem('privateKey');
-      var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
+      // var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
+      var priKey = localStorage.getItem('privateKey');
+      var privateKey = forge.pki.privateKeyFromPem(priKey);
       console.log(privateKey)
       var md = forge.md.sha1.create();
       md.update(rawData, 'utf8');
@@ -45,10 +47,9 @@ class AddUser extends Component {
   } 
   
   makeUserId(rawData){
-    const hash = this.calculateHash(rawData).toHex();
     var date = new Date();
     var timestamp =  date.getTime();
-    var userId = hash+timestamp;
+    const userId = this.calculateHash(rawData+timestamp).toHex();
     return userId;
   }
 
@@ -90,7 +91,6 @@ class AddUser extends Component {
   render() {
     return (
       <form>
-        { this.state.val }
         <input
           name="userData"
           type="text"

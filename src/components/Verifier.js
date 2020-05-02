@@ -6,7 +6,7 @@ class Admin extends Component {
   }
 
   generateOtp() {
-    letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    var letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     let otp = ''
     const len = letters.length
     for(let i = 0; i < 10; i++) {
