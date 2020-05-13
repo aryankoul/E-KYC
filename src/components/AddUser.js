@@ -1,19 +1,79 @@
 import React, { Component } from 'react'
+import 'url-search-params-polyfill';
 
+const axios = require('axios');
 var forge = require('node-forge');
+const url = "http://localhost:8000/";
+
 
 class AddUser extends Component {
-  componentDidMount() {
-  }
 
   constructor(props) {
     console.log(props.account)
     console.log(props.kycContract)
     super(props)
-    this.state = {}
+    this.state = {
+      requests : [],
+      name : "",
+      phoneNumber: "",
+      id:"",
+      loaded : false
+    }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.textInput = React.createRef();
   } 
+
+  componentDidMount() {
+    this.loadRequests();
+  }
+
+  loadRequests(){
+    const currentAddress = this.props.account[0]
+    fetch(url+"getPendingRequest?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
+      return res.json()
+    }).then(res=>{
+      // console.log(res.requests);
+      return res.requests;
+    }).then(requests => {
+      this.setState({
+        requests : requests,
+        loaded : true
+      },x=>{console.log(this.state)})
+    })
+
+  }
+
+  removeUser(){
+    // var formBody = new FormData();
+    // formBody.set("_id",this.state.id)
+    console.log(this.state.id);
+
+    const requestOptions = {
+      method: 'POST',
+      body: new URLSearchParams({
+        _id: this.state.id
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+     }
+    };
+    fetch(url+"request/delete",requestOptions)
+    .then(res=>{return res.json()}).then(
+      data => {
+        console.log(data);
+        this.setState({
+          requests : [],
+          name : "",
+          phoneNumber: "",
+          id:"",
+          loaded : false
+        })
+        this.loadRequests();
+      }
+    )
+  }
+
 
   handleChange(event) {
     const target = event.target
@@ -54,11 +114,11 @@ class AddUser extends Component {
   }
 
   init(){
-    var rsa = forge.pki.rsa;
 
-// generate an RSA key pair synchronously
-// *NOT RECOMMENDED*: Can be significantly slower than async and may block
-// JavaScript execution. Will use native Node.js 10.12.0+ API if possible.
+    var rsa = forge.pki.rsa;
+    // generate an RSA key pair synchronously
+    // *NOT RECOMMENDED*: Can be significantly slower than async and may block
+    // JavaScript execution. Will use native Node.js 10.12.0+ API if possible.
     var keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
     var foo = JSON.stringify({
       publicKeyPem: forge.pki.publicKeyToPem(keypair.publicKey),
@@ -67,7 +127,25 @@ class AddUser extends Component {
     localStorage.setItem('foo',foo)
   }
 
-  async handleSubmit(event) {
+  handleDownload(event,fileName){
+    event.preventDefault();
+    console.log(fileName);
+    // fetch(url+'download/'+fileName);
+    window.open(url+'download/'+fileName, '_blank');
+  }
+
+  handleVerify(event,name,phoneNumber,id){
+    event.preventDefault();
+    this.setState({
+      name:name,
+      phoneNumber:phoneNumber,
+      id:id
+    })
+  }
+
+  handleSubmit(event) {
+
+    event.preventDefault();
     // this.init()
     var phoneNumberHash = this.calculateHash(this.state.phoneNumber).toHex();
     console.log(phoneNumberHash)
@@ -77,33 +155,74 @@ class AddUser extends Component {
     console.log(userId)
     console.log(hash)
     
-
-    
     const signature = this.signUserData(this.props.account,rawData);
     console.log(signature)
     console.log(this.props.account[0])
-    var key =await this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
-    console.log(key)
-    await this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 672195 })
-    event.preventDefault()
+    console.log(this.textInput.current)
+    this.textInput.current.value = ""
+    // this.removeUser();
+
+    this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
+    .then((key)=>{
+      console.log(key)
+      this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
+    }).then(x=>{
+      console.log(x);
+      this.removeUser();
+    });
   }
 
   render() {
     return (
-      <form>
-        <input
-          name="userData"
-          type="text"
-          placeholder = "data"
-          onChange={this.handleChange} />
-        <input
-          name="phoneNumber"
-          type="text"
-          placeholder = "Phone number"
-          onChange={this.handleChange} />
-          <input type="button" value="Submit" onClick={this.handleSubmit} />
-        
-      </form>
+      <div>
+        <div className='requests'>
+          {
+            this.state.loaded === true ? (
+              <div>
+                {
+                  this.state.requests.length > 0 ? (
+                    <div>
+                      {
+                        this.state.requests.map((request,key)=>{
+                          return(
+                            [<div className="request" key={request._id}>
+                              <h3>{request.name}</h3>
+                              <h4>{request.phoneNumber}</h4>
+                              <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
+                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request._id)}}/>
+                            </div>,
+                            <br/>]
+                          )
+                        })
+                      }
+                    </div>) : (<h1>No pending requets</h1>)
+                }
+               </div>
+            ) : (<div>Not loaded</div>)
+          }
+        </div>
+          <form>
+            <input
+              name="name"
+              type="text"
+              placeholder = "name"
+              value = {this.state.name}
+              />
+            <input
+              name="phoneNumber"
+              type="text"
+              placeholder = "Phone number"
+              value = {this.state.phoneNumber}
+              />
+              <input
+              name="userData"
+              type="text"
+              placeholder = "data"
+              ref= {this.textInput}
+              onChange={this.handleChange} />
+            <input type="button" value="Submit" onClick={this.handleSubmit} />
+          </form>
+        </div>
     );
   }
 }

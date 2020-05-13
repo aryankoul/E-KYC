@@ -35,7 +35,9 @@ class App extends Component {
       this.setState({ kycContract })
 
       if(acc.length === 0) this.setState({ type: 4 }) 
-      else this.state.kycContract.methods.identifyAddress(this.state.accounts[0]).call({}, (err, type) => this.setState({ type: type.toNumber() }) )
+      else this.state.kycContract.methods.identifyAddress(this.state.accounts[0]).call({}, (err, type) => {
+        console.log(type);
+        this.setState({ type: type.toNumber() })} )
       
       this.setState({ loaded:true })
     })
@@ -46,13 +48,17 @@ class App extends Component {
       case 1:
         return (<div><div>Admin</div><br/><Admin kycContract = {this.state.kycContract} account = {this.state.accounts}></Admin></div>)
       case 2:
-        return (<div>Verified verifier</div>)
+        return (<div>Verified verifier<div>Add user(Verifier)</div><br/><AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+        <br/><br/></div>)
       case 3:
         return (<p>Please wait while admin verifies your request</p>)
       default:
-        return (<div><div>Add user(Verifier)</div><br/><AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        <br/><br/>
-        <div>New user</div><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} /> </div>)
+        return (<div>
+        <div>New user</div><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} /> 
+        <br/>
+        <div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div> </div>
+        )
+        
     }
   }
 

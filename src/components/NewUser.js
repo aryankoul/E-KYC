@@ -33,6 +33,7 @@ class NewUser extends Component{
 
   getVerfiers(){
     this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
+      if (verifiedVerifiers !== null){
       verifiedVerifiers.map((verifiedVerifier, key) => {
         this.props.kycContract.methods.getVerifier(verifiedVerifier).call({}, (err,verifierDetails) => {
           const verifier = {bankName: verifierDetails, address: verifiedVerifier}
@@ -40,7 +41,7 @@ class NewUser extends Component{
           this.setState({loaded:true})
         });
       })
-    })
+    }}) 
   }
 
   render() {

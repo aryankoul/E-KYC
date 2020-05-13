@@ -54,7 +54,7 @@ class VerifierOnBoard extends Component {
     handleSubmit(event) {
 
         const [bankName] = [this.state.bankName]
-        const account = this.props.account;
+        const account = this.props.account[0];
         const publicKey = localStorage.getItem('publicKey')
         const kycContract = this.props.kycContract
         console.log(bankName);

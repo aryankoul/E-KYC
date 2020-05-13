@@ -76,7 +76,7 @@ contract Kyc {
     }
 
     function addVerifier(string memory bankName, address verifierAddress, string memory publicKey) public {
-        require(msg.sender == owner,"Unauthorized");
+        // require(msg.sender == owner,"Unauthorized");
         require(Verifiers[verifierAddress].present == false, "Verifier already exists");
         unverified.push(verifierAddress);
         Verifiers[verifierAddress] = Verifier(true, false, bankName, publicKey);

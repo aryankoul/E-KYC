@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class Admin extends Component {
+class Verifier extends Component {
   componentWillMount() {
     this.loadAdminData()
   }
@@ -13,18 +13,6 @@ class Admin extends Component {
         otp += letters[Math.floor(Math.random() * len)]
     }
     return otp
-  }
-
-  async loadAdminData() {
-    this.props.KycContract.methods.getUnverifiedVerifiers().call({}, (err, unverifiedVerifiers) => {
-        unverifiedVerifiers.map((unverifiedVerifier, key) => {
-          this.props.KycContract.methods.getVerifier(unverifiedVerifier).call({}, (err,verifierDetails) => {
-            const verifier = {bankName: verifierDetails, address: unverifiedVerifier}
-            this.setState({unverifiedVerifiers:[...this.state.unverifiedVerifiers,verifier]})
-          });
-        })
-    })
-    
   }
 
   constructor(props) {
@@ -68,4 +56,4 @@ class Admin extends Component {
   }
 }
 
-export default Admin;
+export default Verifier;
