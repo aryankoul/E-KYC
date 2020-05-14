@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+const forge = require('node-forge');
 
 class VerifierOnBoard extends Component {
 
@@ -26,9 +27,6 @@ class VerifierOnBoard extends Component {
   }
 
   generateKeys(){
-
-    const forge = require('node-forge');
-
     forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;
