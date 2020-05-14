@@ -76,7 +76,7 @@ contract Kyc {
     }
 
     function addVerifier(string memory bankName, address verifierAddress, string memory publicKey) public {
-        require(msg.sender == owner,"Unauthorized");
+        // require(msg.sender == owner,"Unauthorized");
         require(Verifiers[verifierAddress].present == false, "Verifier already exists");
         unverified.push(verifierAddress);
         Verifiers[verifierAddress] = Verifier(true, false, bankName, publicKey);
@@ -111,4 +111,30 @@ contract Kyc {
 
         return (Users[_id].mobileHash);
     }
+
+    function present(address[] memory unverifiedAddresses,address current) public view returns (bool){
+        for(uint i = 0; i<unverifiedAddresses.length;i++){
+            if(unverified[i] == current) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function identifyAddress(address currentAddress) public view returns (uint) {
+        if(currentAddress == owner)
+        {
+            return 1;
+        }
+        else if(present(unverified,currentAddress))
+        {
+            return 3;
+        }
+        else if(Verifiers[currentAddress].present == true)
+        {
+            return 2;
+        }
+        return 4;
+    }
+
 }

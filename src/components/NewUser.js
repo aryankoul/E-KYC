@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+const forge = require('node-forge');
 
 class NewUser extends Component{
 
@@ -12,12 +13,50 @@ class NewUser extends Component{
   }
 
   componentDidMount() {
-    this.getVerfiers()
+    this.getVerfiers();
+    this.generateKeys();
+  }
+
+  generateKeys(){
+
+    forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
+        // keypair.privateKey, keypair.publicKey
+        const publicKey = keypair.publicKey;
+        const privateKey = keypair.privateKey;
+        console.log(publicKey);
+        console.log(privateKey);
+
+        const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
+        const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
+
+        localStorage.setItem("publicKey",publicKeyPem);
+        localStorage.setItem("privateKey",privateKeyPem);
+
+        // this.setState({
+        //   publicKey: keypair.publicKey.n.toString(),
+        //   privateKey : keypair.privateKey.n.toString()
+        // })
+    });
+
   }
 
   handleSubmit(event) {
-    console.log(this.state.verifierAddress);
     event.preventDefault()
+    console.log(this.state.verifierAddress);
+    let data = new FormData();
+    data.append('phoneNumber', this.phoneNo.value);
+    data.append('doc', this.doc.files[0]);
+    data.append('email', this.email.value);
+    data.append('name', this.name.value);
+    data.append('docType', this.docType.value);
+    data.append('verifierAddress', this.state.verifierAddress);
+    data.append('publicKey', localStorage.getItem("publicKey"));
+    const requestOptions = {
+      method: 'POST',
+      body: data
+    }
+    fetch('http://localhost:8000/uploadDocument', requestOptions)
+    .then(res => console.log(res.json()));
   }
 
   handleChange(event,address){
@@ -33,14 +72,17 @@ class NewUser extends Component{
 
   getVerfiers(){
     this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
+      if (verifiedVerifiers !== null){
       verifiedVerifiers.map((verifiedVerifier, key) => {
         this.props.kycContract.methods.getVerifier(verifiedVerifier).call({}, (err,verifierDetails) => {
           const verifier = {bankName: verifierDetails, address: verifiedVerifier}
           this.setState({verifiedVerifiers:[...this.state.verifiedVerifiers,verifier]})
-          this.setState({loaded:true})
+          
         });
       })
-    })
+    }
+    this.setState({loaded:true})
+  }) 
   }
 
   render() {
@@ -63,6 +105,11 @@ class NewUser extends Component{
               )
             })
           }
+          <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
+          <input type = "text" name = "email" placeholder = "email" ref = {(email) => this.email = email}/>
+          <input type = "text" name = "phoneNo" placeholder = "phone number" ref = {(phoneNo) => this.phoneNo = phoneNo} />
+          <input type = "text" name = "docType" placeholder = "document type" ref = {(docType) => this.docType = docType} />
+          <input type = "file" name = "doc" ref = {(doc) => this.doc = doc}/>
           <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
         </form>
         ) : (<div></div>)
