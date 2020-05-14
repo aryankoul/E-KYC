@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import 'url-search-params-polyfill';
 
-const axios = require('axios');
 var forge = require('node-forge');
 const url = "http://localhost:8000/";
 
@@ -51,11 +49,12 @@ class AddUser extends Component {
 
     const requestOptions = {
       method: 'POST',
-      body: new URLSearchParams({
+      body: JSON.stringify({
         _id: this.state.id
       }),
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
      }
     };
     fetch(url+"request/delete",requestOptions)
