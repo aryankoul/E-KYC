@@ -4,6 +4,7 @@ var forge = require('node-forge');
 const url = "http://localhost:8000/";
 
 
+
 class AddUser extends Component {
 
   constructor(props) {
@@ -14,6 +15,9 @@ class AddUser extends Component {
       requests : [],
       name : "",
       phoneNumber: "",
+      email:"",
+      documentType:"",
+      publicKey:"",
       id:"",
       loaded : false
     }
@@ -65,6 +69,9 @@ class AddUser extends Component {
           requests : [],
           name : "",
           phoneNumber: "",
+          email:"",
+          documentType:"",
+          publicKey:"",
           id:"",
           loaded : false
         })
@@ -133,12 +140,14 @@ class AddUser extends Component {
     window.open(url+'download/'+fileName, '_blank');
   }
 
-  handleVerify(event,name,phoneNumber,id){
+  handleVerify(event,name,phoneNumber,email,publicKey,id){
     event.preventDefault();
     this.setState({
       name:name,
       phoneNumber:phoneNumber,
-      id:id
+      email:email,
+      id:id,
+      publicKey:publicKey
     })
   }
 
@@ -165,6 +174,22 @@ class AddUser extends Component {
     .then((key)=>{
       console.log(key)
       this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
+      var qrData={
+        signature:signature,
+        publicKey:this.state.publicKey,
+        userId:userId,
+        phoneNumber:this.state.phoneNumber
+      }
+      qrData=JSON.stringify(qrData);
+      console.log(qrData)
+      fetch(url+'sendMail?email='+this.state.email+'&data='+qrData.substring(1,500))
+      .then(data => data.text())
+        .then((text) => {
+          console.log('request succeeded with JSON response', text)
+        }).catch(function (error) {
+          console.log('request failed', error)
+      });
+      // this.sendQRMail(this.state.email,qrData)
     }).then(x=>{
       console.log(x);
       this.removeUser();
@@ -187,8 +212,9 @@ class AddUser extends Component {
                             [<div className="request" key={request._id}>
                               <h3>{request.name}</h3>
                               <h4>{request.phoneNumber}</h4>
+                              <h5>{request.email}</h5>
                               <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
-                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request._id)}}/>
+                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id)}}/>
                             </div>,
                             <br/>]
                           )
@@ -213,6 +239,12 @@ class AddUser extends Component {
               placeholder = "Phone number"
               value = {this.state.phoneNumber}
               />
+            <input
+              name="email"
+              type="text"
+              placeholder = "email"
+              value = {this.state.email}
+              />  
               <input
               name="userData"
               type="text"
