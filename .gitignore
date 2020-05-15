@@ -11,6 +11,9 @@
 # production
 /build
 
+#contract files
+abis/
+
 # misc
 .DS_Store
 .env
