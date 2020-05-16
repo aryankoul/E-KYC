@@ -49,20 +49,19 @@ class VerifierOnBoard extends Component {
   }
 
 
-    handleSubmit(event) {
+  handleSubmit(event) {
+    const [bankName] = [this.state.bankName]
+    const account = this.props.account[0];
+    const publicKey = localStorage.getItem('publicKey')
+    const kycContract = this.props.kycContract
+    console.log(bankName);
+    console.log(this.props.kycContract);
 
-        const [bankName] = [this.state.bankName]
-        const account = this.props.account[0];
-        const publicKey = localStorage.getItem('publicKey')
-        const kycContract = this.props.kycContract
-        console.log(bankName);
-        console.log(this.props.kycContract);
+    kycContract.methods.addVerifier(bankName,account,publicKey).send({ from: account, gas: 672195 })
 
-        kycContract.methods.addVerifier(bankName,account,publicKey).send({ from: account, gas: 672195 })
+    event.preventDefault()
 
-        event.preventDefault()
-
-    }
+  }
 
   render() {
     return (

@@ -51,12 +51,13 @@ class NewUser extends Component{
     data.append('docType', this.docType.value);
     data.append('verifierAddress', this.state.verifierAddress);
     data.append('publicKey', localStorage.getItem("publicKey"));
+    data.append('type',"1");
     const requestOptions = {
       method: 'POST',
       body: data
     }
     fetch('http://localhost:8000/uploadDocument', requestOptions)
-    .then(res => console.log(res.json()));
+    .then(res => console.log(res.text()));
   }
 
   handleChange(event,address){

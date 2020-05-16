@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Type2Requests from './Type2Requests.js'
 
 var forge = require('node-forge');
 const url = "http://localhost:8000/";
@@ -253,6 +254,7 @@ class AddUser extends Component {
               onChange={this.handleChange} />
             <input type="button" value="Submit" onClick={this.handleSubmit} />
           </form>
+          <div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts}/> </div>
         </div>
     );
   }
