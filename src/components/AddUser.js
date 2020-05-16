@@ -33,7 +33,7 @@ class AddUser extends Component {
 
   loadRequests(){
     const currentAddress = this.props.account[0]
-    fetch(url+"getPendingRequest?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
+    fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=1", {mode: 'cors'}).then(res => {
       return res.json()
     }).then(res=>{
       // console.log(res.requests);
@@ -221,7 +221,7 @@ class AddUser extends Component {
                           )
                         })
                       }
-                    </div>) : (<h1>No pending requets</h1>)
+                    </div>) : (<div>No pending first time user requets</div>)
                 }
                </div>
             ) : (<div>Not loaded</div>)
@@ -254,7 +254,7 @@ class AddUser extends Component {
               onChange={this.handleChange} />
             <input type="button" value="Submit" onClick={this.handleSubmit} />
           </form>
-          <div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts}/> </div>
+          <div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.account}/> </div>
         </div>
     );
   }
