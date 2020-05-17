@@ -192,18 +192,19 @@ class AddUser extends Component {
         method: 'POST',
         body: JSON.stringify({
           email: this.state.email,
-          data:qrData
+          data:qrData,
+          userId:userId
         }),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
        }
       };
-      fetch(url+"sendMail",requestOptions)
+      fetch(url+"mailQR",requestOptions)
     .then(res => console.log(res.text()));
     }).then(x=>{
       console.log(x);
-      // this.removeUser();
+      this.removeUser();
     });
   }
 
