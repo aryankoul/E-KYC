@@ -109,6 +109,7 @@ class AddUser extends Component {
       var md = forge.md.sha1.create();
       md.update(rawData, 'utf8');
       var signature = privateKey.sign(md);
+      signature = forge.util.encode64(signature)
       console.log(signature)
       return signature;
   } 
@@ -175,25 +176,34 @@ class AddUser extends Component {
     .then((key)=>{
       console.log(key)
       this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
+      var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
+      var plaintextBytes = forge.util.encodeUtf8(rawData);
+      var encrypted = pkey.encrypt(plaintextBytes)
+      encrypted = forge.util.encode64(encrypted)
       var qrData={
-        signature:signature,
+        encryptedData:encrypted,
         publicKey:this.state.publicKey,
         userId:userId,
-        phoneNumber:this.state.phoneNumber
+        email:this.state.email
       }
       qrData=JSON.stringify(qrData);
       console.log(qrData)
-      fetch(url+'sendMail?email='+this.state.email+'&data='+qrData.substring(1,500))
-      .then(data => data.text())
-        .then((text) => {
-          console.log('request succeeded with JSON response', text)
-        }).catch(function (error) {
-          console.log('request failed', error)
-      });
-      // this.sendQRMail(this.state.email,qrData)
+      const requestOptions = {
+        method: 'POST',
+        body: JSON.stringify({
+          email: this.state.email,
+          data:qrData
+        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+       }
+      };
+      fetch(url+"sendMail",requestOptions)
+    .then(res => console.log(res.text()));
     }).then(x=>{
       console.log(x);
-      this.removeUser();
+      // this.removeUser();
     });
   }
 
