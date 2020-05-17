@@ -8,7 +8,8 @@ import AddUser from './AddUser.js'
 import Admin from './Admin.js'
 import NewUser from './NewUser.js'
 import Verifier from './Verifier.js'
-import ExistingUser from './ExistingUser'
+import ExistingUser from './ExistingUser.js'
+import VerfiedUsers from './VerifiedUsers.js'
 
 class App extends Component {
 
@@ -51,8 +52,9 @@ class App extends Component {
       case 2:
         return (<div>Verified verifier<div>Add user(Verifier)</div><br/>
         <AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        
-        <br/><br/></div>)
+        <br/>
+        <VerfiedUsers kycContract = {this.state.kycContract} account = {this.state.accounts}/>  
+        <br/></div>)
       case 3:
         return (<p>Please wait while admin verifies your request</p>)
       default:

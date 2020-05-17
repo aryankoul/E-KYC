@@ -1,2 +1,1 @@
-export const providerUrl = "http://localhost:7545";
-
+export const providerUrl = "http://localhost:7545/";
