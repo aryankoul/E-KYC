@@ -60,7 +60,7 @@ class Type2Requests extends Component {
         e.preventDefault();
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
-            this.props.kycContract.methods.getVerfierPublicKeyForUser(id).call().then(key=>{
+            this.props.kycContract.methods.getVerifierPublicKeyForUser(id).call().then(key=>{
                 var verifierPublicKey = key;
                 var signature = this.state.signature;
                 var otp = this.generateOtp();
@@ -68,6 +68,16 @@ class Type2Requests extends Component {
                 var userId = id;
                 var userPublicKey = key;
                 console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
+                const reqOptions= {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email
+                    }),
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                  }};
+                  fetch(url+"initiateVerification",reqOptions)
             })
         })
     }
