@@ -66,7 +66,7 @@ class Type2Requests extends Component {
                 var otp = this.generateOtp();
                 var verifierAddress = this.props.account[0];
                 var userId = id;
-                var userPublicKey = key;
+                var userPublicKey = localStorage.getItem("publicKeyUser");
                 console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
                 const reqOptions= {
                     method: 'POST',

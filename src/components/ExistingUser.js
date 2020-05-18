@@ -95,8 +95,13 @@ class ExistingUSer extends Component{
     const decodedOtp = forge.util.decode64(otp);
     let privateKey = localStorage.getItem('privateKeyUser');
     privateKey = forge.pki.privateKeyFromPem(privateKey);
-    const finalOtp = privateKey.decrypt(decodedOtp)
-
+    var finalOtp ='' 
+    try{
+      finalOtp = privateKey.decrypt(decodedOtp)
+    }catch(e){
+      console.log(e)
+      console.log("error decrypring otp")
+    }
     const requestOptions = {
       method: 'POST',
       body: JSON.stringify({
