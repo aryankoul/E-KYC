@@ -25,7 +25,7 @@ class VerifiedUsers extends Component {
             console.log(res);
             this.setState({
                 loaded : true
-            })
+            }) 
             // return res.requests;
         })
         // .then(requests => {

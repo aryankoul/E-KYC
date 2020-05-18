@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+
 const url = "http://localhost:8000/";
+var forge = require('node-forge');
 
 
 class Type2Requests extends Component {
@@ -18,6 +20,16 @@ class Type2Requests extends Component {
         this.loadRequests();
     }
 
+    generateOtp() {
+        var letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        let otp = ''
+        const len = letters.length
+        for(let i = 0; i < 10; i++) {
+            otp += letters[Math.floor(Math.random() * len)]
+        }
+        return otp
+    }
+
     loadRequests(){
         const currentAddress = this.props.account[0]
         fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=2", {mode: 'cors'}).then(res => {
@@ -34,11 +46,17 @@ class Type2Requests extends Component {
     
     }
 
-    handleDownload(event,fileName){
-        event.preventDefault();
-        console.log(fileName);
-        // fetch(url+'download/'+fileName);
-        window.open(url+'download/'+fileName, '_blank');
+    handleClick(e,id,key,email){
+        e.preventDefault();
+        this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
+            var pubKey = localStorage.getItem('publicKey');
+            var verifierPublicKey = forge.pki.publicKeyFromPem(pubKey);
+            var otp = this.generateOtp();
+            var verifierAddress = this.props.account[0];
+            var userId = id;
+            var userPublicKey = key;
+            console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
+        })
     }
 
     render(){
@@ -55,9 +73,10 @@ class Type2Requests extends Component {
                                         this.state.requests.map((request,key)=>{
                                             return(
                                                 <li>
-                                                    UserId : {request.userId} filename : {request.fileName}
-                                                    <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
-                                                    <input type="button" value="send OTP" />
+                                                    <h4>User ID: {request.id} </h4>
+                                                    <h4>Email ID: {request.email} </h4>
+                                                    <h4>Public Key: {request.publicKey} </h4>
+                                                    <input type="button" value="send OTP" onClick={(e)=>this.handleClick(e,request.id,request.publicKey,request.email)}/>
                                                 </li>
                                             )
                                         })
