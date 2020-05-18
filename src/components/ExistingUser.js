@@ -93,7 +93,7 @@ class ExistingUSer extends Component{
     event.preventDefault();
     const { requestId, otp, userData } = this.state;
     const decodedOtp = forge.util.decode64(otp);
-    let privateKey = localStorage.getItem('privateKey');
+    let privateKey = localStorage.getItem('privateKeyUser');
     privateKey = forge.pki.privateKeyFromPem(privateKey);
     const finalOtp = privateKey.decrypt(decodedOtp)
 

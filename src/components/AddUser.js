@@ -103,7 +103,7 @@ class AddUser extends Component {
       // foo=JSON.parse(foo);
       // const pkeyPem = localStorage.getItem('privateKey');
       // var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
-      var priKey = localStorage.getItem('privateKey');
+      var priKey = localStorage.getItem('privateKey' + address[0]);
       var privateKey = forge.pki.privateKeyFromPem(priKey);
       console.log(privateKey)
       var md = forge.md.sha1.create();

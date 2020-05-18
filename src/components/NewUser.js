@@ -18,8 +18,10 @@ class NewUser extends Component{
   }
 
   generateKeys(){
-
-    forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
+    const publicKey = localStorage.getItem("publicKeyUser");
+    const privateKey = localStorage.getItem("privateKeyUser");
+    if((publicKey == null || publicKey == "") && (privateKey == null || privateKey == "")){
+      forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;
         const privateKey = keypair.privateKey;
@@ -29,15 +31,15 @@ class NewUser extends Component{
         const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
         const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
 
-        localStorage.setItem("publicKey",publicKeyPem);
-        localStorage.setItem("privateKey",privateKeyPem);
+        localStorage.setItem("publicKeyUser",publicKeyPem);
+        localStorage.setItem("privateKeyUser",privateKeyPem);
 
         // this.setState({
         //   publicKey: keypair.publicKey.n.toString(),
         //   privateKey : keypair.privateKey.n.toString()
         // })
     });
-
+    }
   }
 
   handleSubmit(event) {
@@ -50,7 +52,7 @@ class NewUser extends Component{
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
     data.append('verifierAddress', this.state.verifierAddress);
-    data.append('publicKey', localStorage.getItem("publicKey"));
+    data.append('publicKey', localStorage.getItem("publicKeyUser"));
     data.append('type',"1");
     const requestOptions = {
       method: 'POST',
