@@ -157,10 +157,10 @@ class AddUser extends Component {
 
     event.preventDefault();
     // this.init()
-    var phoneNumberHash = this.calculateHash(this.state.phoneNumber).toHex();
-    console.log(phoneNumberHash)
+    var emailHash = this.calculateHash(this.state.email).toHex();
+    console.log(emailHash)
    
-    const [rawData, hash] = [this.state.userData, phoneNumberHash]
+    const [rawData, hash] = [this.state.userData, emailHash]
     const userId = this.makeUserId(rawData)
     console.log(userId)
     console.log(hash)
@@ -203,9 +203,22 @@ class AddUser extends Component {
       fetch(url+"mailQR",requestOptions)
     .then(res => console.log(res.text()));
     }).then(x=>{
+      const reqOptions= {
+        method: 'POST',
+        body: JSON.stringify({
+          originalData: this.state.userData,
+          verifierAddress:this.props.account[0],
+          userId:userId
+        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }};
+      fetch(url+"verify",reqOptions)
       console.log(x);
       this.removeUser();
     });
+    
   }
 
   render() {

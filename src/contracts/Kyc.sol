@@ -11,7 +11,7 @@ contract Kyc {
     struct User {
         bool present;
         string signature;
-        string mobileHash;
+        string emailHash;
     }
 
     struct Verifier{
@@ -27,7 +27,7 @@ contract Kyc {
     //To store verifier data with key : publickey
     mapping(address => Verifier) Verifiers;
 
-    //From User's unique ID -> Verifier
+    //From User's unique ID -> Verifier address
     mapping(string => string) linkedVerifiers;
 
     //For User Data
@@ -70,8 +70,8 @@ contract Kyc {
         return 0;
     }
 
-    function getVerifierForUser(string memory _id) public view returns (string memory){
-        require(Users[_id].present == true, "User does not exist");
+    function getVerifierPublicKeyForUser(string memory _id) public view returns (string memory){
+         require(Users[_id].present == true, "User does not exist");
         return (linkedVerifiers[_id]);
     }
 
@@ -88,14 +88,14 @@ contract Kyc {
 
     function addUser(string memory _id,
                     string memory _signature,
-                    string memory _mobileHash,
+                    string memory _emailHash,
                     address verifierAddress) public {
         require(
             Users[_id].present == false,
             "User already exist"
          );
 
-        Users[_id] = User(true, _signature, _mobileHash);
+        Users[_id] = User(true, _signature, _emailHash);
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
     }
@@ -106,10 +106,10 @@ contract Kyc {
         return(Users[_id].signature);
     }
 
-    function getUserMobileHash(string memory _id) public view returns (string memory) {
+    function getUserEmailHash(string memory _id) public view returns (string memory) {
         require(Users[_id].present == true, "User does not exist");
 
-        return (Users[_id].mobileHash);
+        return (Users[_id].emailHash);
     }
 
     function present(address[] memory unverifiedAddresses,address current) public view returns (bool){

@@ -40,7 +40,7 @@ class VerifiedUsers extends Component {
     render(){
         return(
             <div>
-            Viewing verified Users
+            Viewing fully verified Users
             {
                 this.state.loaded === true ? (
                     <div>

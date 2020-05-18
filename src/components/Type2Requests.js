@@ -36,8 +36,12 @@ class Type2Requests extends Component {
             return res.json()
         }).then(res=>{
             console.log(res.requests);
+            // console.log(JSON.parse(res.requests[2].qrData))
             return res.requests;
         }).then(requests => {
+            var newRequests = requests.map((request,key)=>{
+                return ({email : JSON.parse(request.qrData).email})
+            })
             this.setState({
             requests : requests,
             loaded : true
@@ -73,9 +77,9 @@ class Type2Requests extends Component {
                                         this.state.requests.map((request,key)=>{
                                             return(
                                                 <li>
-                                                    <h4>User ID: {request.id} </h4>
-                                                    <h4>Email ID: {request.email} </h4>
-                                                    <h4>Public Key: {request.publicKey} </h4>
+                                                    <h4>User ID: {JSON.parse(request.qrData).userId} </h4>
+                                                    <h4>Email ID: {JSON.parse(request.qrData).email} </h4>
+                                                    <h4>Public Key: {JSON.parse(request.qrData).publicKey} </h4>
                                                     <input type="button" value="send OTP" onClick={(e)=>this.handleClick(e,request.id,request.publicKey,request.email)}/>
                                                 </li>
                                             )
