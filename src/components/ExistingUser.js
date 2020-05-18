@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+const forge = require('node-forge');
 
 class ExistingUSer extends Component{
 
@@ -87,6 +88,34 @@ class ExistingUSer extends Component{
       [name]: value
     })
   }
+
+  verifyOtp(event){
+    event.preventDefault();
+    const { requestId, otp, userData } = this.state;
+    const decodedOtp = forge.util.decode64(otp);
+    let privateKey = localStorage.getItem('privateKey');
+    privateKey = forge.pki.privateKeyFromPem(privateKey);
+    const finalOtp = privateKey.decrypt(decodedOtp)
+
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        _id: requestId,
+        otp: finalOtp,
+        originalData: userData,
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch("http://localhost:8000/verifyOtp",requestOptions)
+    .then(res=> res.json()).then(
+      data => {
+        console.log(data);
+      }
+    )
+  }
     // handleUpload(event){
     //   event.preventDefault();
     //   this.setState({
@@ -96,7 +125,6 @@ class ExistingUSer extends Component{
 
 
     render(){
-        console.log(this.state)
         return(
             <div>
               <h1>for existing users</h1>
@@ -125,6 +153,15 @@ class ExistingUSer extends Component{
                     </form>
                     ) : (<div></div>)
                 }
+                <h1>Otp verification</h1>
+                
+                <form>
+                  <input type="text" name="requestId" placeholder="request Id" onChange={(event) => this.handleChange(event)} />
+                  <input type="text" name="otp" placeholder="OTP" onChange={(event) => this.handleChange(event)} />
+                  <input type="text" name="userData" placeholder="Data of user" onChange={(event) => this.handleChange(event)} />
+                  <input type="button" value="Verify" onClick = {(event) => this.verifyOtp(event)} />
+                </form>
+                
             </div>
         )
     }
