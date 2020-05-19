@@ -26,6 +26,16 @@ class VerifiedUsers extends Component {
             return res.data;
         })
         .then(users => {
+            users = users.map((user,key)=>{
+                console.log(user)
+                return(
+                    {
+                        ...user,
+                        data : JSON.parse(user.data)
+                    }
+                    
+                )
+            })
             this.setState({
             users : users,
             loaded : true
@@ -48,7 +58,9 @@ class VerifiedUsers extends Component {
                                         this.state.users.map((user,key)=>{
                                             return(
                                                 <div className="user" key={key}>
-                                                    <h4>{user.data}</h4>
+                                                    <h4>{user.data.name}</h4>
+                                                    <h4>{user.data.phoneNumber}</h4>
+                                                    <h4>{user.data.email}</h4>
                                                     <h4>{user.userId}</h4>
                                                 </div>
                                             )

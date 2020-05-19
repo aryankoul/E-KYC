@@ -164,15 +164,15 @@ class AddUser extends Component {
     console.log(emailHash)
    
     const data = {
-      name: this.state.name,
-      phoneNumber: this.state.phoneNumber,
-      email: this.state.email,
-      docType: this.state.docType,
-      docId : this.state.docId
+      "name": this.state.name,
+      "phoneNumber": this.state.phoneNumber,
+      "email": this.state.email,
+      "docType": this.state.docType,
+      "docId" : this.state.docId
     }
 
     const rawData = JSON.stringify(data); 
-
+    console.log(rawData)
     const hash = emailHash
     const userId = this.makeUserId(rawData)
     console.log(userId)
@@ -218,7 +218,7 @@ class AddUser extends Component {
       const reqOptions= {
         method: 'POST',
         body: JSON.stringify({
-          originalData: this.state.userData,
+          originalData: rawData,
           verifierAddress:this.props.account[0],
           userId:userId
         }),
