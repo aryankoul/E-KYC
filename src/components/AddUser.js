@@ -100,6 +100,7 @@ class AddUser extends Component {
   }
 
   signUserData(address, rawData){ 
+    console.log(rawData)
       // var foo = localStorage.getItem('foo');
       // foo=JSON.parse(foo);
       // const pkeyPem = localStorage.getItem('privateKey');
@@ -292,6 +293,7 @@ class AddUser extends Component {
               type="text"
               placeholder = "document ID"
               onChange={this.handleChange} 
+              ref = {this.textInput}
               />  
             <input type="button" value="Submit" onClick={this.handleSubmit} />
           </form>
