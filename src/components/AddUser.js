@@ -186,7 +186,7 @@ class AddUser extends Component {
 
     this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
     .then((key)=>{
-      console.log(key)
+      console.log(this.state.publicKey);
       this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
       var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
       var plaintextBytes = forge.util.encodeUtf8(rawData);

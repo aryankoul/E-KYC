@@ -4,6 +4,7 @@
   "description": "An Ethereum Marketplace",
   "author": "gregory@dappuniversity.com",
   "dependencies": {
+    "@material-ui/core": "^4.9.14",
     "axios": "^0.19.2",
     "babel-polyfill": "6.26.0",
     "babel-preset-env": "1.7.0",
