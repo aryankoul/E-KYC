@@ -56,7 +56,7 @@ class Type2Requests extends Component {
     
     }
 
-    handleClick(e,id,key,email){
+    handleClick(e,id,key,email,_id){
         e.preventDefault();
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
@@ -71,7 +71,7 @@ class Type2Requests extends Component {
                 const reqOptions= {
                     method: 'POST',
                     body: JSON.stringify({
-                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email
+                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id
                     }),
                     headers: {
                       'Accept': 'application/json',
@@ -96,10 +96,10 @@ class Type2Requests extends Component {
                                         this.state.requests.map((request,key)=>{
                                             return(
                                                 <li>
-                                                    <h4>User ID: {request.userId} </h4>
-                                                    <h4>Email ID: {request.qrData.email} </h4>
-                                                    <h4>Public Key: {request.qrData.publicKey} </h4>
-                                                    <input type="button" value="send OTP" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email)}/>
+                                                    <h5>User ID: {request.userId} </h5>
+                                                    <h5>Email ID: {request.qrData.email} </h5>
+                                                    <h5>Public Key: {request.qrData.publicKey} </h5>
+                                                    <input type="button" value="send OTP" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id)}/>
                                                 </li>
                                             )
                                         })
