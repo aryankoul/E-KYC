@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
@@ -16,7 +18,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      loaded : false
+      loaded : false,
+      tabIndex: 0
     }
   } 
 
@@ -44,6 +47,7 @@ class App extends Component {
       this.setState({ loaded:true })
     })
   }
+  
 
   getComponent = () => {
     switch(this.state.type) {
@@ -59,10 +63,22 @@ class App extends Component {
         return (<p>Please wait while admin verifies your request</p>)
       default:
         return (<div>
-          <div>Existing user</div><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+           <Tabs
+        value={this.state.tabIndex}
+        onChange={(event, newValue) => this.setState({ tabIndex: newValue})}
+        indicatorColor="primary"
+        textColor="primary"
+        centered
+      >
+        <Tab label="User" />
+        <Tab label="Verifier" />
+      </Tabs>
+      <div hidden = {this.state.tabIndex !==0}>
+      <div>Existing user</div><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
         <div>New user</div><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} /> 
+      </div>
         <br/>
-        <div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div> 
+        <div hidden = {this.state.tabIndex !==1}><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div> 
         </div>
         )
         
