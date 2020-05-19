@@ -22,18 +22,15 @@ class VerifiedUsers extends Component {
         fetch(url+"kycData?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
             return res.json()
         }).then(res=>{
-            console.log(res);
-            this.setState({
-                loaded : true
-            }) 
-            // return res.requests;
+            console.log(res); 
+            return res.data;
         })
-        // .then(requests => {
-        //     this.setState({
-        //     requests : requests,
-        //     loaded : true
-        //     },x=>{console.log(this.state)})
-        // })
+        .then(users => {
+            this.setState({
+            users : users,
+            loaded : true
+            },x=>{console.log(this.state)})
+        })
     
     }
 
@@ -48,9 +45,12 @@ class VerifiedUsers extends Component {
                             this.state.users.length > 0 ? (
                                 <ul>
                                     {
-                                        this.state.users.map((request,key)=>{
+                                        this.state.users.map((user,key)=>{
                                             return(
-                                                <div>users</div>
+                                                <div className="user" key={key}>
+                                                    <h4>{user.data}</h4>
+                                                    <h4>{user.userId}</h4>
+                                                </div>
                                             )
                                         })
                                     }
