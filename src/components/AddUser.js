@@ -17,7 +17,7 @@ class AddUser extends Component {
       name : "",
       phoneNumber: "",
       email:"",
-      documentType:"",
+      docType:"",
       publicKey:"",
       id:"",
       loaded : false
@@ -74,6 +74,7 @@ class AddUser extends Component {
           documentType:"",
           publicKey:"",
           id:"",
+          docId : "",
           loaded : false
         })
         this.loadRequests();
@@ -142,14 +143,15 @@ class AddUser extends Component {
     window.open(url+'download/'+fileName, '_blank');
   }
 
-  handleVerify(event,name,phoneNumber,email,publicKey,id){
+  handleVerify(event,name,phoneNumber,email,publicKey,id,docType){
     event.preventDefault();
     this.setState({
       name:name,
       phoneNumber:phoneNumber,
       email:email,
       id:id,
-      publicKey:publicKey
+      publicKey:publicKey,
+      docType:docType
     })
   }
 
@@ -160,7 +162,17 @@ class AddUser extends Component {
     var emailHash = this.calculateHash(this.state.email).toHex();
     console.log(emailHash)
    
-    const [rawData, hash] = [this.state.userData, emailHash]
+    const data = {
+      name: this.state.name,
+      phoneNumber: this.state.phoneNumber,
+      email: this.state.email,
+      docType: this.state.docType,
+      docId : this.state.docId
+    }
+
+    const rawData = JSON.stringify(data); 
+
+    const hash = emailHash
     const userId = this.makeUserId(rawData)
     console.log(userId)
     console.log(hash)
@@ -170,7 +182,6 @@ class AddUser extends Component {
     console.log(this.props.account[0])
     console.log(this.textInput.current)
     this.textInput.current.value = ""
-    // this.removeUser();
 
     this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
     .then((key)=>{
@@ -239,7 +250,7 @@ class AddUser extends Component {
                               <h4>{request.phoneNumber}</h4>
                               <h5>{request.email}</h5>
                               <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
-                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id)}}/>
+                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id,request.docType)}}/>
                             </div>,
                             <br/>]
                           )
@@ -269,13 +280,19 @@ class AddUser extends Component {
               type="text"
               placeholder = "email"
               value = {this.state.email}
-              />  
+              />
               <input
-              name="userData"
+              name="docType"
               type="text"
-              placeholder = "data"
-              ref= {this.textInput}
-              onChange={this.handleChange} />
+              placeholder = "document Type"
+              value = {this.state.docType}
+              />
+              <input
+              name="docId"
+              type="text"
+              placeholder = "document ID"
+              onChange={this.handleChange} 
+              />  
             <input type="button" value="Submit" onClick={this.handleSubmit} />
           </form>
           <div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.account}/> </div>
