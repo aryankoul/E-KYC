@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import { TextField, Button, Icon } from '@material-ui/core';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import SaveIcon from '@material-ui/icons/Save';
 const forge = require('node-forge');
 
 class ExistingUSer extends Component{
@@ -118,7 +121,9 @@ class ExistingUSer extends Component{
     //   this.setState({
     //     file : event.target.files[0]
     //   })
-    // }
+    // } 
+    /* <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
+    <input type="button" value="Verify" onClick = {(event) => this.verifyOtp(event)} /> */
 
 
     render(){
@@ -143,22 +148,42 @@ class ExistingUSer extends Component{
                         })
                     }
                     
-                    <input type="text" name="userId" placeholder="Enter your kyc ID" onChange={(event)=>this.handleChange(event)}/>
-                    <input type="file" name="upload QR code" onChange={this.onFileChange} placeholder="QR code"/>
+                    <TextField required id="outlined-required" variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
+                    <input style={{display: 'none'}} type="file" name="upload QR code" onChange={this.onFileChange} placeholder="QR code" id="contained-button-file"/>
+                    <label htmlFor="contained-button-file">
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />}>
+                       Upload
+                    </Button>
+                    </label>
                     <br/>
-                    <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
+                    <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick= {(event) => this.handleSubmit(event)}
+                  >
+                    Submit
+                  </Button>
+                    
                     </form>
                     ) : (<div></div>)
                 }
                 <h1>Otp verification</h1>
                 
                 <form>
-                  <input type="text" name="requestId" placeholder="request Id" onChange={(event) => this.handleChange(event)} />
-                  <input type="text" name="otp" placeholder="OTP" onChange={(event) => this.handleChange(event)} />
-                  <input type="text" name="userData" placeholder="Data of user" onChange={(event) => this.handleChange(event)} />
-                  <input type="button" value="Verify" onClick = {(event) => this.verifyOtp(event)} />
+                  <TextField required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
+                  <TextField required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
+                  <TextField required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    endIcon={<Icon>send</Icon>}
+                    onClick= {(event) => this.verifyOtp(event)}
+                  >
+                    Verify
+                  </Button>
+                  
                 </form>
-                
             </div>
         )
     }

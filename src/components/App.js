@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
@@ -13,7 +11,7 @@ import NewUser from './NewUser.js'
 import ExistingUser from './ExistingUser.js'
 import VerfiedUsers from './VerifiedUsers.js'
 
-import { AppBar } from '@material-ui/core';
+import { AppBar, Tabs, Tab } from '@material-ui/core';
 
 class App extends Component {
 
