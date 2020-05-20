@@ -48,16 +48,6 @@ class Admin extends Component {
     return (
       <div>
         <h3>Unverified Verifiers</h3>
-        <List component="nav"
-        aria-labelledby="Unverified Verifiersr"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            Nested List Items
-          </ListSubheader>
-        }
-        className={classes.root}> 
-
-        </List>
         <ol>
           {
             this.state.unverifiedVerifiers.map((verifier,key) => {

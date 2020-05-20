@@ -13,7 +13,7 @@ import NewUser from './NewUser.js'
 import ExistingUser from './ExistingUser.js'
 import VerfiedUsers from './VerifiedUsers.js'
 
-import { AppBar,Tabs,Tab } from '@material-ui/core';
+import { AppBar } from '@material-ui/core';
 
 class App extends Component {
 
