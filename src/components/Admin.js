@@ -53,13 +53,14 @@ class Admin extends Component {
   render() {
     return (
       <div>
-        <h5 style={{ display:'flex', justifyContent:'center' }}>Unverified Verifiers</h5>
+        <br/>
+        <h2>Unverified Verifiers</h2>
           {
           this.state.unverifiedVerifiers.map((verifier,key) => {
               return([<br/>,
-                <div style={{ display:'flex', justifyContent:'center' }}>
-                <Card style={{width: '30%', height: '20%', align: 'center'}}>
-                <List component="div" style={{width: '90%', height: '20%'}}>
+                <div>
+                <Card style={{ align: 'center'}}>
+                <List component="div">
                   <ListItem button>
                     <ListItemIcon>
                       <AccountBalance />
@@ -73,15 +74,6 @@ class Admin extends Component {
                     <ListItemText primary={verifier.address} />
                   </ListItem>
                   <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}}>Verify</Button>
-
-                  {/* <input type="button" id = {key} onClick = {this.handleAdd}/> */}
-                  {/* <input style={{display: 'none'}} type="button" id = {key} onClick = {(event)=>{this.handleAdd(event)}}/>
-                  <label htmlFor={key}>
-                    <Button variant="contained" color="primary" component="span">
-                       Submit
-                     </Button>
-                    </label> */}
-                  {/* <Button component="span" name = {key} onClick = {(event)=>{this.handleAdd(event)}}>Submit</Button> */}
                 </List>
                 </Card>
                 <br/><br/>

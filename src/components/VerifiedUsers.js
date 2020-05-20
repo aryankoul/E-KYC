@@ -70,8 +70,8 @@ class VerifiedUsers extends Component {
                                             return(
                                                 <div>
                                                 <br/>
-                                                <Card style={{width: '40%', height: '20%', align: 'center'}}>
-                                                <List component="div" style={{width: '90%', height: '20%'}}>
+                                                <Card style={{ align: 'center'}}>
+                                                <List component="div">
                                                 <ListItem button>
                                                     <ListItemIcon>
                                                     <ContactsIcon />
@@ -112,12 +112,6 @@ class VerifiedUsers extends Component {
                                                 </Card>
                                                 <br/><br/>
                                                 </div>
-                                                // <div className="user" key={key}>
-                                                //     <h4>{user.data.name}</h4>
-                                                //     <h4>{user.data.phoneNumber}</h4>
-                                                //     <h4>{user.data.email}</h4>
-                                                //     <h4>{user.userId}</h4>
-                                                // </div>
                                             )
                                         })
                                     }

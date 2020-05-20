@@ -3,6 +3,8 @@ import { TextField } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -62,15 +64,14 @@ class NewUser extends Component{
     .then(res => console.log(res.text()));
   }
 
-  handleChange(event,address){
-    if (this.state.verifierAddress === address)
+  handleChange(event) {
+    const target = event.target
+    const value = target.value
+    const name = target.name
+
     this.setState({
-      verifierAddress : ''
+      [name]: value
     })
-    else
-      this.setState({
-        verifierAddress : address
-      })
   }
 
   getVerfiers(){
@@ -94,20 +95,28 @@ class NewUser extends Component{
       {
         this.state.loaded === true ? (
         <FormControl>
-          {
-            this.state.verifiedVerifiers.map((verifier,key) => {
+          <FormControl variant="outlined" style={{minWidth:"150px"}}>
+            <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
+            <Select
+            native
+            value={this.state.verifierAddress}
+            onChange={(event)=>this.handleChange(event)}
+            label="Select Bank"
+            inputProps={{
+              name: 'verifierAddress',
+              id: 'filled-age-native-simple',
+            }}
+            >
+            <option aria-label="None" value="" />
+            {
+              this.state.verifiedVerifiers.map((verifier,key) => {
               return(
-                <div className="verifier" id = {verifier.address}>
-                  <input 
-                  type="radio" 
-                  name="bankName"
-                  value = {verifier.address}
-                  onChange={(event)=>{this.handleChange(event,verifier.address)}}/>
-                  <label for = {verifier.address}>{verifier.bankName}</label>
-                </div>
+                  <option value={verifier.address} key={key}>{verifier.bankName}</option>
               )
-            })
-          }
+              })
+            }
+            </Select>
+          </FormControl>
           <div>
           <TextField
           required
@@ -118,7 +127,6 @@ class NewUser extends Component{
           inputRef = {(name) => this.name = name} 
           variant="outlined"
           />
-          {/* <br/> */}
           <TextField
           required
           id="outlined-required"
@@ -129,7 +137,7 @@ class NewUser extends Component{
           variant="outlined"
           />
           </div>
-          {/* <br/> */}
+
           <div>
           <TextField
           required
@@ -140,7 +148,6 @@ class NewUser extends Component{
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
           />
-          {/* <br/> */}
           <TextField
           required
           id="outlined-required"
@@ -151,7 +158,7 @@ class NewUser extends Component{
           variant="outlined"
           />
           </div>
-          {/* <br/> */}
+
           <div>
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
                     <label htmlFor="contained-button-file">
@@ -160,7 +167,6 @@ class NewUser extends Component{
                      </Button>
                     </label>
           <br/>
-          
           <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
           </div>
         </FormControl>

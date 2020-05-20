@@ -103,10 +103,10 @@ class Type2Requests extends Component {
                                     {
                                         this.state.requests.map((request,key)=>{
                                             return(
-                                                <br/>,
-                                                <div style={{ display:'flex', justifyContent:'center' }}>
-                                                <Card style={{width: '50%', height: '20%', align: 'center'}}>
-                                                <List component="div" style={{width: '90%', height: '20%'}}>
+                                                <div>
+                                                <br/>
+                                                <Card style={{ align: 'center'}}>
+                                                <List component="div">
                                                 <ListItem button>
                                                     <ListItemIcon>
                                                     <AccountBoxIcon />
@@ -120,7 +120,6 @@ class Type2Requests extends Component {
                                                     <ListItemText primary={request.qrData.email} />
                                                 </ListItem>
                                                 <Button variant="contained" color="primary" component="span" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id)}>Send OTP</Button>
-
                                                
                                                 </List>
                                                 </Card>
