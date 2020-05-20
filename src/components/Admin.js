@@ -5,6 +5,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { Button } from '@material-ui/core';
+import AccountBalance from '@material-ui/icons/AccountBalance';
+import BusinessIcon from '@material-ui/icons/Business';
+import Card from '@material-ui/core/Card';
+
 
 class Admin extends Component {
   componentWillMount() {
@@ -30,9 +35,10 @@ class Admin extends Component {
     console.log(this.props.kycContract)
   } 
 
-  handleAdd(event) {
+  handleAdd(event, id) {
     const target = event.target
     const key = target.id
+    console.log(target)
     const address = this.state.unverifiedVerifiers[key].address
     console.log(this.props.kycContract);
     this.props.kycContract.methods.verifyVerifier(address).send({from: this.props.account[0], gas: 672195}, (err, result) => {
@@ -47,24 +53,46 @@ class Admin extends Component {
   render() {
     return (
       <div>
-        <h3>Unverified Verifiers</h3>
-        <ol>
+        <h5 style={{ display:'flex', justifyContent:'center' }}>Unverified Verifiers</h5>
           {
-            this.state.unverifiedVerifiers.map((verifier,key) => {
-              return(
-                <ui>
-                  <li>{verifier.bankName}</li> 
-                  <li>{verifier.address}</li> 
-                  <input type = "button" value = "Verify" id = {key} onClick = {this.handleAdd} />
-                </ui>
-              )
-            })
-          }
-        </ol>
-        <li></li>
+          this.state.unverifiedVerifiers.map((verifier,key) => {
+              return([<br/>,
+                <div style={{ display:'flex', justifyContent:'center' }}>
+                <Card style={{width: '30%', height: '20%', align: 'center'}}>
+                <List component="div" style={{width: '90%', height: '20%'}}>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <AccountBalance />
+                    </ListItemIcon>
+                    <ListItemText primary={verifier.bankName} />
+                  </ListItem>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <BusinessIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={verifier.address} />
+                  </ListItem>
+                  <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, {key})}}>Submit</Button>
+
+                  {/* <input type="button" id = {key} onClick = {this.handleAdd}/> */}
+                  {/* <input style={{display: 'none'}} type="button" id = {key} onClick = {(event)=>{this.handleAdd(event)}}/>
+                  <label htmlFor={key}>
+                    <Button variant="contained" color="primary" component="span">
+                       Submit
+                     </Button>
+                    </label> */}
+                  {/* <Button component="span" name = {key} onClick = {(event)=>{this.handleAdd(event)}}>Submit</Button> */}
+                </List>
+                </Card>
+                <br/><br/>
+                </div>
+              ])
+          })
+        }
       </div>
     );
   }
-}
+} 
+
 
 export default Admin;
