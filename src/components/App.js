@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
@@ -47,6 +49,7 @@ class App extends Component {
       this.setState({ loaded:true })
     })
   }
+  
 
   handleChange(e,value){
     this.setState({
