@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import Type2Requests from './Type2Requests.js'
-
+import { TextField } from '@material-ui/core';
+import { FormControl } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 var forge = require('node-forge');
 const url = "http://localhost:8000/";
 
@@ -250,8 +251,8 @@ class AddUser extends Component {
                               <h3>{request.name}</h3>
                               <h4>{request.phoneNumber}</h4>
                               <h5>{request.email}</h5>
-                              <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
-                              <input type="button" value="verify" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id,request.docType)}}/>
+                              <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}>Download File</Button>
+                              <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id,request.docType)}}>Verify</Button>
                             </div>,
                             <br/>]
                           )
@@ -263,32 +264,52 @@ class AddUser extends Component {
             ) : (<div>Not loaded</div>)
           }
         </div>
-          <form>
-            <input
+          <FormControl>
+          <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
               name="name"
               type="text"
+              label="Name"
               placeholder = "name"
               value = {this.state.name}
               />
-            <input
+             <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Phone Number"
               name="phoneNumber"
               type="text"
               placeholder = "Phone number"
               value = {this.state.phoneNumber}
               />
-            <input
+             <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Email Address"
               name="email"
               type="text"
               placeholder = "email"
               value = {this.state.email}
               />
-              <input
+               <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Document Type"
               name="docType"
               type="text"
               placeholder = "document Type"
               value = {this.state.docType}
               />
-              <input
+               <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Document IDs"
               name="docId"
               type="text"
               placeholder = "document ID"
@@ -296,8 +317,7 @@ class AddUser extends Component {
               ref = {this.textInput} 
               />  
             <input type="button" value="Submit" onClick={this.handleSubmit} />
-          </form>
-          <div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.account}/> </div>
+          </FormControl>
         </div>
     );
   }

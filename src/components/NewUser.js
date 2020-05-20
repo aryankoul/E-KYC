@@ -160,13 +160,8 @@ class NewUser extends Component{
                      </Button>
                     </label>
           <br/>
-          {/* <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
-          <input type = "text" name = "email" placeholder = "email" ref = {(email) => this.email = email}/>
-          <input type = "text" name = "phoneNo" placeholder = "phone number" ref = {(phoneNo) => this.phoneNo = phoneNo} />
-          <input type = "text" name = "docType" placeholder = "document type" ref = {(docType) => this.docType = docType} />
-          <input type = "file" name = "doc" ref = {(doc) => this.doc = doc}/> */}
+          
           <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
-          {/* <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} /> */}
           </div>
         </FormControl>
         

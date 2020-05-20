@@ -5,6 +5,7 @@ import kyc from '../abis/Kyc'
 import './App.css'
 
 import VerifierOnBoard from './VerifierOnBoard.js'
+import Type2Requests from './Type2Requests.js'
 import AddUser from './AddUser.js'
 import Admin from './Admin.js'
 import NewUser from './NewUser.js'
@@ -60,11 +61,32 @@ class App extends Component {
       case 1:
         return (<div><div>Admin</div><br/><Admin kycContract = {this.state.kycContract} account = {this.state.accounts}></Admin></div>)
       case 2:
-        return (<div>Verified verifier<div>Add user(Verifier)</div><br/>
-        <AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        <br/>
-        <VerfiedUsers kycContract = {this.state.kycContract} account = {this.state.accounts}/>  
-        <br/></div>)
+        return (
+        <div>
+          <AppBar position="static">
+            <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
+              <Tab label="Add User" />
+              <Tab label="View Verification Requests" />
+              <Tab label="Veiw Verified Users"/>
+            </Tabs>
+          </AppBar>
+          <div>Verified verifier<div>Add user(Verifier)</div><br/>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 0}
+          ><AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} /></div>
+          <br/>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 1}
+          ><div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.state.kycContract} account = {this.state.accounts}/> </div></div>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 2}
+          >
+          <VerfiedUsers kycContract = {this.state.kycContract} account = {this.state.accounts}/>  </div>
+          <br/></div>
+        </div>)
       case 3:
         return (<p>Please wait while admin verifies your request</p>)
       default:
