@@ -29,7 +29,7 @@ class VerifierOnBoard extends Component {
   generateKeys(){
     const address = this.props.account[0];
     const pubKey = localStorage.getItem("publicKey"+address), priKey = localStorage.getItem("privateKey"+address);
-    if((pubKey == null || pubKey == "") && (priKey == null || priKey == "")){
+    if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;

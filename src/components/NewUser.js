@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { TextField } from '@material-ui/core';
+import { FormControl } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -20,7 +23,7 @@ class NewUser extends Component{
   generateKeys(){
     const pubKey = localStorage.getItem("publicKeyUser");
     const priKey = localStorage.getItem("privateKeyUser");
-    if((pubKey == null || pubKey == "") && (priKey == null || priKey == "")){
+    if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;
@@ -34,10 +37,6 @@ class NewUser extends Component{
         localStorage.setItem("publicKeyUser",publicKeyPem);
         localStorage.setItem("privateKeyUser",privateKeyPem);
 
-        // this.setState({
-        //   publicKey: keypair.publicKey.n.toString(),
-        //   privateKey : keypair.privateKey.n.toString()
-        // })
     });
     }
   }
@@ -93,7 +92,7 @@ class NewUser extends Component{
       <div>
       {
         this.state.loaded === true ? (
-        <form>
+        <FormControl>
           {
             this.state.verifiedVerifiers.map((verifier,key) => {
               return(
@@ -108,13 +107,70 @@ class NewUser extends Component{
               )
             })
           }
-          <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "name"
+          type = "text"
+          label="Name"
+          ref = {(name) => this.name = name} 
+          variant="outlined"
+          />
+          {/* <br/> */}
+          <TextField
+          required
+          id="outlined-required"
+          name = "email"
+          type = "text"
+          label="Email"
+          ref = {(email) => this.email = email} 
+          variant="outlined"
+          />
+          </div>
+          {/* <br/> */}
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "phoneNo"
+          type = "text"
+          label="Phone Number"
+          ref = {(phoneNo) => this.phoneNo = phoneNo}  
+          variant="outlined"
+          />
+          {/* <br/> */}
+          <TextField
+          required
+          id="outlined-required"
+          name = "docType"
+          type = "text"
+          label="Document Type"
+          ref = {(docType) => this.docType = docType}   
+          variant="outlined"
+          />
+          </div>
+          {/* <br/> */}
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "doc"
+          type = "file"
+          ref = {(doc) => this.doc = doc} 
+          variant="outlined"
+          />
+          <br/>
+          {/* <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
           <input type = "text" name = "email" placeholder = "email" ref = {(email) => this.email = email}/>
           <input type = "text" name = "phoneNo" placeholder = "phone number" ref = {(phoneNo) => this.phoneNo = phoneNo} />
           <input type = "text" name = "docType" placeholder = "document type" ref = {(docType) => this.docType = docType} />
-          <input type = "file" name = "doc" ref = {(doc) => this.doc = doc}/>
-          <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
-        </form>
+          <input type = "file" name = "doc" ref = {(doc) => this.doc = doc}/> */}
+          <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
+          {/* <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} /> */}
+          </div>
+        </FormControl>
+        
         ) : (<div></div>)
       }
       </div>
