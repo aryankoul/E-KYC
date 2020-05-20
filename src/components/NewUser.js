@@ -18,9 +18,9 @@ class NewUser extends Component{
   }
 
   generateKeys(){
-    const pubKey = localStorage.getItem("publicKeyUser");
-    const priKey = localStorage.getItem("privateKeyUser");
-    if((pubKey == null || pubKey == "") && (priKey == null || priKey == "")){
+    const publicKey = localStorage.getItem("publicKeyUser");
+    const privateKey = localStorage.getItem("privateKeyUser");
+    if((publicKey == null || publicKey == "") && (privateKey == null || privateKey == "")){
       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;

@@ -1,4 +1,10 @@
 import React, { Component } from 'react'
+import { makeStyles } from '@material-ui/core/styles';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 class Admin extends Component {
   componentWillMount() {
@@ -41,18 +47,30 @@ class Admin extends Component {
   render() {
     return (
       <div>
-        <h1>Unverified Verifiers</h1>
-        <ul>
+        <h3>Unverified Verifiers</h3>
+        <List component="nav"
+        aria-labelledby="Unverified Verifiersr"
+        subheader={
+          <ListSubheader component="div" id="nested-list-subheader">
+            Nested List Items
+          </ListSubheader>
+        }
+        className={classes.root}> 
+
+        </List>
+        <ol>
           {
             this.state.unverifiedVerifiers.map((verifier,key) => {
               return(
-                <li>
-                  {verifier.bankName} {verifier.address} <input type = "button" value = "Verify" id = {key} onClick = {this.handleAdd} />
-                </li>
+                <ui>
+                  <li>{verifier.bankName}</li> 
+                  <li>{verifier.address}</li> 
+                  <input type = "button" value = "Verify" id = {key} onClick = {this.handleAdd} />
+                </ui>
               )
             })
           }
-        </ul>
+        </ol>
         <li></li>
       </div>
     );
