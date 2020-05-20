@@ -1,4 +1,16 @@
 import React, { Component } from 'react'
+import PhoneIcon from '@material-ui/icons/Phone';
+import EmailIcon from '@material-ui/icons/Email';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
+import ContactsIcon from '@material-ui/icons/Contacts';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import DescriptionIcon from '@material-ui/icons/Description';
+import Card from '@material-ui/core/Card';
+
 const url = "http://localhost:8000/";
 
 class VerifiedUsers extends Component {
@@ -56,12 +68,56 @@ class VerifiedUsers extends Component {
                                     {
                                         this.state.users.map((user,key)=>{
                                             return(
-                                                <div className="user" key={key}>
-                                                    <h4>{user.data.name}</h4>
-                                                    <h4>{user.data.phoneNumber}</h4>
-                                                    <h4>{user.data.email}</h4>
-                                                    <h4>{user.userId}</h4>
+                                                <div>
+                                                <br/>
+                                                <Card style={{width: '40%', height: '20%', align: 'center'}}>
+                                                <List component="div" style={{width: '90%', height: '20%'}}>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <ContactsIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.data.name} />
+                                                </ListItem>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <PhoneIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.data.phoneNumber} />
+                                                </ListItem>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <EmailIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.data.email} />
+                                                </ListItem>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <AssignmentIndIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.data.docId} />
+                                                </ListItem>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <DescriptionIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.data.docType} />
+                                                </ListItem>
+                                                <ListItem button>
+                                                    <ListItemIcon>
+                                                    <PermIdentityIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={user.userId} />
+                                                </ListItem>
+                                                </List>
+                                                </Card>
+                                                <br/><br/>
                                                 </div>
+                                                // <div className="user" key={key}>
+                                                //     <h4>{user.data.name}</h4>
+                                                //     <h4>{user.data.phoneNumber}</h4>
+                                                //     <h4>{user.data.email}</h4>
+                                                //     <h4>{user.userId}</h4>
+                                                // </div>
                                             )
                                         })
                                     }

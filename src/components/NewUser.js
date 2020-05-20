@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TextField } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -114,7 +115,7 @@ class NewUser extends Component{
           name = "name"
           type = "text"
           label="Name"
-          ref = {(name) => this.name = name} 
+          inputRef = {(name) => this.name = name} 
           variant="outlined"
           />
           {/* <br/> */}
@@ -124,7 +125,7 @@ class NewUser extends Component{
           name = "email"
           type = "text"
           label="Email"
-          ref = {(email) => this.email = email} 
+          inputRef = {(email) => this.email = email} 
           variant="outlined"
           />
           </div>
@@ -136,7 +137,7 @@ class NewUser extends Component{
           name = "phoneNo"
           type = "text"
           label="Phone Number"
-          ref = {(phoneNo) => this.phoneNo = phoneNo}  
+          inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
           />
           {/* <br/> */}
@@ -146,20 +147,18 @@ class NewUser extends Component{
           name = "docType"
           type = "text"
           label="Document Type"
-          ref = {(docType) => this.docType = docType}   
+          inputRef = {(docType) => this.docType = docType}   
           variant="outlined"
           />
           </div>
           {/* <br/> */}
           <div>
-          <TextField
-          required
-          id="outlined-required"
-          name = "doc"
-          type = "file"
-          ref = {(doc) => this.doc = doc} 
-          variant="outlined"
-          />
+          <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
+                    <label htmlFor="contained-button-file">
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />}>
+                       Upload
+                     </Button>
+                    </label>
           <br/>
           {/* <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
           <input type = "text" name = "email" placeholder = "email" ref = {(email) => this.email = email}/>

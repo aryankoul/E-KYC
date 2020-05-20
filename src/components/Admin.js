@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -22,10 +21,10 @@ class Admin extends Component {
           this.props.kycContract.methods.getVerifier(unverifiedVerifier).call({}, (err,verifierDetails) => {
             const verifier = {bankName: verifierDetails, address: unverifiedVerifier}
             this.setState({unverifiedVerifiers:[...this.state.unverifiedVerifiers,verifier]})
+            console.log(unverifiedVerifier)
           });
         })
     })
-
   }
 
   constructor(props) {
@@ -35,10 +34,11 @@ class Admin extends Component {
     console.log(this.props.kycContract)
   } 
 
-  handleAdd(event, id) {
+  handleAdd(event, key) {
+    console.log(this.state.unverifiedVerifier)
     const target = event.target
-    const key = target.id
     console.log(target)
+    console.log(key)
     const address = this.state.unverifiedVerifiers[key].address
     console.log(this.props.kycContract);
     this.props.kycContract.methods.verifyVerifier(address).send({from: this.props.account[0], gas: 672195}, (err, result) => {
@@ -72,7 +72,7 @@ class Admin extends Component {
                     </ListItemIcon>
                     <ListItemText primary={verifier.address} />
                   </ListItem>
-                  <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, {key})}}>Submit</Button>
+                  <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}}>Verify</Button>
 
                   {/* <input type="button" id = {key} onClick = {this.handleAdd}/> */}
                   {/* <input style={{display: 'none'}} type="button" id = {key} onClick = {(event)=>{this.handleAdd(event)}}/>
