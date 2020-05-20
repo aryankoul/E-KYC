@@ -292,8 +292,8 @@ class AddUser extends Component {
               name="docId"
               type="text"
               placeholder = "document ID"
-              onChange={this.handleChange} 
-              ref = {this.textInput}
+              onChange={this.handleChange}
+              ref = {this.textInput} 
               />  
             <input type="button" value="Submit" onClick={this.handleSubmit} />
           </form>

@@ -59,15 +59,7 @@ class ExistingUSer extends Component{
         this.setState({ selectedFile: event.target.files[0] }); 
        
     }; 
-    handleChange(event) {
-      const target = event.target
-      const value = target.value
-      const name = target.name
-
-      this.setState({
-        [name]: value
-      })
-    }
+    
   handleChangeAddress(event,address){
     if (this.state.verifierAddress === address)
     this.setState({

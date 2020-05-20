@@ -27,7 +27,6 @@ class VerifiedUsers extends Component {
         })
         .then(users => {
             users = users.map((user,key)=>{
-                console.log(user)
                 return(
                     {
                         ...user,

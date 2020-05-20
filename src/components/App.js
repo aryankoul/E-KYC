@@ -5,13 +5,15 @@ import Tab from '@material-ui/core/Tab';
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
+
 import VerifierOnBoard from './VerifierOnBoard.js'
 import AddUser from './AddUser.js'
 import Admin from './Admin.js'
 import NewUser from './NewUser.js'
-import Verifier from './Verifier.js'
 import ExistingUser from './ExistingUser.js'
 import VerfiedUsers from './VerifiedUsers.js'
+
+import { AppBar,Tabs,Tab } from '@material-ui/core';
 
 class App extends Component {
 
@@ -19,9 +21,9 @@ class App extends Component {
     super(props)
     this.state = {
       loaded : false,
-      tabIndex: 0
+      value : 0
     }
-  } 
+  }
 
   componentDidMount() {
     this.loadBlockchainData();
@@ -49,6 +51,12 @@ class App extends Component {
   }
   
 
+  handleChange(e,value){
+    this.setState({
+      value:value
+    })
+  }
+
   getComponent = () => {
     switch(this.state.type) {
       case 1:
@@ -62,23 +70,27 @@ class App extends Component {
       case 3:
         return (<p>Please wait while admin verifies your request</p>)
       default:
-        return (<div>
-           <Tabs
-        value={this.state.tabIndex}
-        onChange={(event, newValue) => this.setState({ tabIndex: newValue})}
-        indicatorColor="primary"
-        textColor="primary"
-        centered
-      >
-        <Tab label="User" />
-        <Tab label="Verifier" />
-      </Tabs>
-      <div hidden = {this.state.tabIndex !==0}>
-      <div>Existing user</div><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        <div>New user</div><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} /> 
-      </div>
-        <br/>
-        <div hidden = {this.state.tabIndex !==1}><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div> 
+        return (
+        <div> 
+          <AppBar position="static">
+            <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
+              <Tab label="User" />
+              <Tab label="Verifier" />
+            </Tabs>
+          </AppBar>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 0}
+          >
+            <br/><h2>Existing user</h2><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+            <h2>New user</h2><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+          </div>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 1}
+          >
+            <br/><div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div>
+          </div>
         </div>
         )
         
