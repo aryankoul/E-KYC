@@ -208,6 +208,7 @@ class AddUser extends Component {
       }
       qrData=JSON.stringify(qrData);
       console.log(qrData)
+      console.log(this.state)
       const requestOptions = {
         method: 'POST',
         body: JSON.stringify({
@@ -241,10 +242,10 @@ class AddUser extends Component {
                 snackbarOpen: true
              })
              this.removeUser();
+             this.setState({name:'', phoneNumber:'', email:'', docType:''})
             })
       console.log(x);
     });
-    
   }
 
   render() {
@@ -337,6 +338,7 @@ class AddUser extends Component {
             placeholder = "document ID"
             onChange={this.handleChange}
             ref = {this.textInput} 
+            value = {this.textInput.value}
             style={{marginBottom:"15px"}}
             />
             <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>

@@ -75,6 +75,12 @@ class NewUser extends Component{
         })
         console.log(res.text())
     });
+    this.phoneNo.value='';
+    this.email.value='';
+    this.name.value='';
+    this.docType.value='';
+    this.setState({verifierAddress:''});
+    this.doc.files=null;
   }
 
   handleChange(event) {

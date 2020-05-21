@@ -22,7 +22,8 @@ class ExistingUSer extends Component{
           loaded : false,
           selectedFile: null,
           snackbarMeassage: '',
-          snackbarOpen: false
+          snackbarOpen: false,
+          userId: ''
         }
     }
 
@@ -68,6 +69,7 @@ class ExistingUSer extends Component{
           })
           console.log(res.json())
       });
+      this.setState({userId: '', verifierAddress: ''})
     }
 
     onFileChange = event => {
@@ -167,7 +169,7 @@ class ExistingUSer extends Component{
 
                         <br/>
                       
-                      <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
+                      <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" type="text" value = {this.state.userId} name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
                       <input style={{display: 'none', margin: "1%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
                       <label htmlFor="contained-button-qr" style={{ margin: "1%", width: "80%"}}>
                       <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}}>

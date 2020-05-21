@@ -13,8 +13,12 @@ class VerifierOnBoard extends Component {
     this.state = {
       publicKey : '',
       privateKey : '',
+<<<<<<< Updated upstream
       snackbarOpen: false,
       snackbarMessage: ''
+=======
+      bankName: ''
+>>>>>>> Stashed changes
     }
     // console.log(props.kycContract);
   } 
@@ -63,13 +67,13 @@ class VerifierOnBoard extends Component {
 
 
   handleSubmit(event) {
+    event.preventDefault()
     const [bankName] = [this.state.bankName]
     const account = this.props.account[0];
     const publicKey = localStorage.getItem('publicKey'+account)
     const kycContract = this.props.kycContract
     console.log(bankName);
     console.log(this.props.kycContract);
-
     kycContract.methods.addVerifier(bankName,account,publicKey).send({ from: account, gas: 672195 })
     this.setState({
         snackbarMessage: 'Verifier request Initiated',
@@ -77,16 +81,12 @@ class VerifierOnBoard extends Component {
     })
     event.preventDefault()
 
+    this.setState({bankName: ''})
   }
 
   render() {
     return (
       <form style={{ display:'flex', justifyContent:'center' }}>
-        {/* <input
-          name="bankName"
-          type="text"
-          placeholder = "Bank Name"
-          onChange={(event)=>{this.handleChange(event)}} /> */}
         <TextField
           required
           id="bankName"
@@ -96,9 +96,11 @@ class VerifierOnBoard extends Component {
           onChange={(event)=>{this.handleChange(event)}}  
           variant="outlined"
           style = {{margin: '10px'}}
+          value = {this.state.bankName}
           />
           <br/>
           <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style = {{margin: '10px'}}>Submit</Button>
+<<<<<<< Updated upstream
           {/* <input type="button" value="Submit" onClick={(event)=>{this.handleSubmit(event)}} /> */}
           {/* {
             localStorage.getItem('publicKey'+this.props.account[0]) !== null ? ([
@@ -117,6 +119,8 @@ class VerifierOnBoard extends Component {
         
         
          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+=======
+>>>>>>> Stashed changes
       </form>
     );
   }
