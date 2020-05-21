@@ -100,27 +100,7 @@ class VerifierOnBoard extends Component {
           />
           <br/>
           <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style = {{margin: '10px'}}>Submit</Button>
-<<<<<<< Updated upstream
-          {/* <input type="button" value="Submit" onClick={(event)=>{this.handleSubmit(event)}} /> */}
-          {/* {
-            localStorage.getItem('publicKey'+this.props.account[0]) !== null ? ([
-              <input
-                name="publicKey"
-                type="text"
-                value={localStorage.getItem('publicKey'+this.props.account[0])}
-                readOnly />,
-              <input
-                name="privateKey"
-                type="text"
-                value={localStorage.getItem('privateKey'+this.props.account[0])}
-                readOnly />]
-            ) : (<div></div>) 
-          }   */}
-        
-        
          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
-=======
->>>>>>> Stashed changes
       </form>
     );
   }
