@@ -5,6 +5,8 @@ import { Button } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import SaveIcon from '@material-ui/icons/Save';
+
 
 import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
@@ -176,13 +178,13 @@ class NewUser extends Component{
 
           <div>
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
-                    <label htmlFor="contained-button-file">
-                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ margin: "1%"}}>
+                    <label htmlFor="contained-button-file" style={{ margin: "1%", width: "80%"}}>
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
                        Upload
                      </Button>
                     </label>
           <br/>
-          <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "1%"}}>Submit</Button>
+          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "1%", width:"80%"}}>Submit</Button>
           </div>
         </FormControl>
         

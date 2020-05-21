@@ -163,14 +163,14 @@ class ExistingUSer extends Component{
                       
                       <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
                       <input style={{display: 'none', margin: "1%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
-                      <label htmlFor="contained-button-qr" style={{ margin: "1%", width: "30%"}}>
-                      <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ margin: "1%"}}>
+                      <label htmlFor="contained-button-qr" style={{ margin: "1%", width: "80%"}}>
+                      <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}}>
                         Upload
                       </Button>
                       </label>
                       <br/>
                       <Button
-                      style={{ margin: "1%", width: "30%"}}
+                      style={{ margin: "1%", width: "80%"}}
                       variant="contained"
                       color="primary"
                       startIcon={<SaveIcon />}
@@ -188,14 +188,15 @@ class ExistingUSer extends Component{
                   <h3>OTP verification</h3>
                   
                   <form>
-                    <TextField required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
-                    <TextField required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
-                    <TextField required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
                     <Button
                       variant="contained"
                       color="primary"
-                      endIcon={<Icon>send</Icon>}
+                      startIcon={<Icon>send</Icon>}
                       onClick= {(event) => this.verifyOtp(event)}
+                      style={{margin: "1%", width: "80%"}}
                     >
                       Verify
                     </Button>

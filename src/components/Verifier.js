@@ -31,7 +31,7 @@ class Verifier extends Component {
             <Tab label="Veiw Verified Users"/>
           </Tabs>
         </AppBar>
-        <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
+        <div style={{backgroundColor:"white", display:"flex", justifyContent:"center", height:"100vh", width:"100"}}>
         <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center"
           hidden={this.state.value !== 0}>
         {/* <div

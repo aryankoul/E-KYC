@@ -247,11 +247,13 @@ class AddUser extends Component {
                 <div>
                   {
                     this.state.requests.length > 0 ? (
-                      <div style={{textAlign:"-webkit-center"}}>
+                      // <div style={{textAlign:"-webkit-center"}}>
+                      <div>
                         {
                           this.state.requests.map((request,key)=>{
                             return(
-                              <Card style={{maxWidth:"70%",marginBottom:"18px"}} key={request._id}>
+                              // <Card style={{maxWidth:"70%",marginBottom:"18px"}} key={request._id}>
+                              <Card style = {{ align: 'center' }} key={request.id}>
                                 <CardContent>
                                   <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>

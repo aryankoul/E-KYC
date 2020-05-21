@@ -118,7 +118,7 @@ class App extends Component {
     
     return (
       <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%"}}>
-        <Container maxWidth="lg">
+        <Container style={{maxWidth:"170vh"}}>
         {
           this.state.loaded ? this.getComponent() : (<div></div>)
         }
