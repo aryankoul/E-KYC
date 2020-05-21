@@ -12,7 +12,7 @@ import ExistingUser from './ExistingUser.js'
 
 import { Tab,Tabs,AppBar } from '@material-ui/core';
 import { Container } from '@material-ui/core';
-
+import Grid from '@material-ui/core/Grid';
 
 class App extends Component {
 
@@ -92,8 +92,14 @@ class App extends Component {
             role="tabpanel"
             hidden={this.state.value !== 0}
           >
-            <h3>New user</h3><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-            <br/><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+            <Grid container spacing={3} style={{margin: 4}}>
+              <Grid item xs = {4}>
+                <h3>New user</h3><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+              </Grid>
+              <Grid item xs = {8}>
+                <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+              </Grid>
+            </Grid>
           </div>
           <div
             role="tabpanel"

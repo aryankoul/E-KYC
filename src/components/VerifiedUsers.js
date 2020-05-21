@@ -57,21 +57,21 @@ class VerifiedUsers extends Component {
 
     render(){
         return(
-            <div>
+            <div> 
             Viewing fully verified Users
             {
                 this.state.loaded === true ? (
                     <div>
                         {
                             this.state.users.length > 0 ? (
-                                <ul>
+                                <div  style = {{ overflow: 'auto' }}>
                                     {
                                         this.state.users.map((user,key)=>{
                                             return(
-                                                <div>
+                                                <div >
                                                 <br/>
-                                                <Card style={{ align: 'center'}}>
-                                                <List component="div">
+                                                <Card style = {{ align: 'center' }}>
+                                                <List >
                                                 <ListItem button>
                                                     <ListItemIcon>
                                                     <ContactsIcon />
@@ -110,12 +110,11 @@ class VerifiedUsers extends Component {
                                                 </ListItem>
                                                 </List>
                                                 </Card>
-                                                <br/><br/>
                                                 </div>
                                             )
                                         })
                                     }
-                                </ul>
+                                </div>
                             ) : (
                                 <div>No pending requests</div>
                             )
