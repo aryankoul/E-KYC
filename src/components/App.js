@@ -77,7 +77,9 @@ class App extends Component {
           <Verifier kycContract = {this.state.kycContract} accounts = {this.state.accounts} />
         </div>)
       case 3:
-        return (<p>Please wait while admin verifies your request</p>)
+        return (
+          <h1 style={{textAlign:"center",color:"white",marginTop:"10%"}}>Please wait while the Admin verifies you :)</h1>
+        )
       default:
         return (
         <div> 
@@ -87,14 +89,14 @@ class App extends Component {
               <Tab label="Verifier" />
             </Tabs>
           </AppBar>
-          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", height: "100vh", width:"100%"}}>
+          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
           <div
             role="tabpanel"
             hidden={this.state.value !== 0}
           >
             <Grid container spacing={3} style={{margin: 4}}>
               <Grid item xs = {4}>
-                <h3>New user</h3><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+                <h3  style={{margin: "2%"}}>New User</h3><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
               </Grid>
               <Grid item xs = {8}>
                 <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
@@ -117,8 +119,8 @@ class App extends Component {
   render() {
     
     return (
-      <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%"}}>
-        <Container style={{maxWidth:"170vh"}}>
+      <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
+        <Container style={{maxWidth:"190vh"}}>
         {
           this.state.loaded ? this.getComponent() : (<div></div>)
         }

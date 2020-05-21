@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import ListSubheader from '@material-ui/core/ListSubheader';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Button } from '@material-ui/core';
 import AccountBalance from '@material-ui/icons/AccountBalance';
 import BusinessIcon from '@material-ui/icons/Business';
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 import SnackBarNotification from './SnackBarNotification';
 
@@ -62,33 +58,21 @@ class Admin extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{align:"center"}}>
         <br/>
-        <h2>Unverified Verifiers</h2>
+        <h2 style={{textAlign:"center"}}>Unverified Verifiers</h2>
+        <br/><br/>
           {
           this.state.unverifiedVerifiers.map((verifier,key) => {
-              return([<br/>,
-                <div>
-                <Card style={{ align: 'center'}}>
-                <List component="div">
-                  <ListItem button>
-                    <ListItemIcon>
-                      <AccountBalance />
-                    </ListItemIcon>
-                    <ListItemText primary={verifier.bankName} />
-                  </ListItem>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <BusinessIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={verifier.address} />
-                  </ListItem>
-                  <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}}>Verify</Button>
-                </List>
+              return(
+                <Card style={{marginBottom:"22px"}} key={key}>
+                  <CardContent>
+                    <h5><AccountBalance style={{marginRight:"7px"}}/>{verifier.bankName}</h5>
+                    <h5><BusinessIcon style={{marginRight:"7px"}}/>{verifier.address}</h5>
+                    <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}} style={{marginTop:"5px"}}>Verify</Button>
+                  </CardContent>
                 </Card>
-                <br/><br/>
-                </div>
-              ])
+              )
           })
         }
 

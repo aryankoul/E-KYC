@@ -1,17 +1,13 @@
 import React, { Component } from 'react'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Button } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import EmailIcon from '@material-ui/icons/Email';
 
 import SnackBarNotification from './SnackBarNotification';
 
 const url = "http://localhost:8000/";
-// var forge = require('node-forge');
 
 
 class Type2Requests extends Component {
@@ -48,7 +44,6 @@ class Type2Requests extends Component {
             return res.json()
         }).then(res=>{
             console.log(res.requests);
-            // console.log(JSON.parse(res.requests[2].qrData))
             return res.requests;
         }).then(requests => {
             requests = requests.map((request,key)=>{
@@ -100,44 +95,29 @@ class Type2Requests extends Component {
 
     render(){
         return(
-            <div>
-            Viewing Type 2 requests
+            <div style={{align:"center"}}>
+            <br/>
+            <h2 style={{textAlign:"center"}}>Users previously registered with other banks</h2>
+            <br/>
             {
                 this.state.loaded === true ? (
                     <div>
                         {
                             this.state.requests.length > 0 ? (
-                                <ul>
-                                    {
-                                        this.state.requests.map((request,key)=>{
-                                            return(
-                                                <div>
-                                                <br/>
-                                                <Card style={{ align: 'center'}}>
-                                                <List component="div">
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <AccountBoxIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={request.userId} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <EmailIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={request.qrData.email} />
-                                                </ListItem>
-                                                <Button variant="contained" color="primary" component="span" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id, request.qrData.encryptedData)}>Send OTP</Button>
-                                               
-                                                </List>
-                                                </Card>
-                                                <br/><br/>
-                                                </div>
-
-                                            )
-                                        })
-                                    }
-                                </ul>
+                                this.state.requests.map((request,key)=>{
+                                    return(
+                                    <Card style={{marginBottom:"22px"}} key={key}>
+                                        <CardContent>
+                                            <h6><AccountBoxIcon style={{marginRight:"7px"}}/>{request.userId}</h6>
+                                            <h5><EmailIcon style={{marginRight:"7px"}}/>{request.qrData.email}</h5>
+                                            <Button variant="contained" color="primary" component="span" 
+                                            onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id)}
+                                            style={{marginTop:"5px"}}>Send OTP
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                    )
+                                })  
                             ) : (
                                 <div>No pending requests</div>
                             )

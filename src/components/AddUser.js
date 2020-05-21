@@ -166,7 +166,7 @@ class AddUser extends Component {
   handleSubmit(event) {
 
     event.preventDefault();
-    
+
     var emailHash = this.calculateHash(this.state.email).toHex();
     console.log(emailHash)
    
@@ -262,8 +262,7 @@ class AddUser extends Component {
                         {
                           this.state.requests.map((request,key)=>{
                             return(
-                              // <Card style={{maxWidth:"70%",marginBottom:"18px"}} key={request._id}>
-                              <Card style = {{ align: 'center' }} key={request.id}>
+                              <Card style={{maxWidth:"70%",marginBottom:"18px"}} key={request._id}>
                                 <CardContent>
                                   <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>

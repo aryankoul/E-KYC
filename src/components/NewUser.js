@@ -114,7 +114,7 @@ class NewUser extends Component{
       {
         this.state.loaded === true ? (
         <FormControl>
-          <FormControl variant="outlined" style={{ margin: "1%", maxWidth: "80%"}}>
+          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
             <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
             <Select
             native
@@ -145,7 +145,7 @@ class NewUser extends Component{
           label="Name"
           inputRef = {(name) => this.name = name} 
           variant="outlined"
-          style={{ margin: "1%", width: "80%" }}
+          style={{ margin: "2%", width: "80%" }}
           />
           <TextField
           required
@@ -155,7 +155,7 @@ class NewUser extends Component{
           label="Email"
           inputRef = {(email) => this.email = email} 
           variant="outlined"
-          style={{ margin: "1%",  width: "80%"}}
+          style={{ margin: "2%",  width: "80%"}}
           />
           </div>
 
@@ -168,7 +168,7 @@ class NewUser extends Component{
           label="Phone Number"
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
-          style={{ margin: "1%",  width: "80%"}}
+          style={{ margin: "2%",  width: "80%"}}
           />
           <TextField
           required
@@ -178,19 +178,19 @@ class NewUser extends Component{
           label="Document Type"
           inputRef = {(docType) => this.docType = docType}   
           variant="outlined"
-          style={{ margin: "1%",  width: "80%"}}
+          style={{ margin: "2%",  width: "80%"}}
           />
           </div>
 
           <div>
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
-                    <label htmlFor="contained-button-file" style={{ margin: "1%", width: "80%"}}>
+                    <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
                     <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
                        Upload
                      </Button>
                     </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "1%", width:"80%"}}>Submit</Button>
+          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
           </div>
         </FormControl>
         

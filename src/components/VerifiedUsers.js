@@ -3,13 +3,11 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import ContactsIcon from '@material-ui/icons/Contacts';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 
 const url = "http://localhost:8000/";
 
@@ -57,64 +55,31 @@ class VerifiedUsers extends Component {
 
     render(){
         return(
-            <div> 
-            Viewing fully verified Users
+            <div style={{align:"center"}}>
+            <br/>
+            <h2 style={{textAlign:"center"}}>Fully Verified Users</h2>
+            <br/>
             {
                 this.state.loaded === true ? (
                     <div>
                         {
                             this.state.users.length > 0 ? (
-                                <div  style = {{ overflow: 'auto' }}>
-                                    {
+                                
                                         this.state.users.map((user,key)=>{
                                             return(
-                                                <div >
-                                                <br/>
-                                                <Card style = {{ align: 'center' }}>
-                                                <List >
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <ContactsIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.data.name} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <PhoneIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.data.phoneNumber} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <EmailIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.data.email} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <AssignmentIndIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.data.docId} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <DescriptionIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.data.docType} />
-                                                </ListItem>
-                                                <ListItem button>
-                                                    <ListItemIcon>
-                                                    <PermIdentityIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={user.userId} />
-                                                </ListItem>
-                                                </List>
+                                                <Card style={{marginBottom:"22px"}} key={key}>
+                                                    <CardContent>
+                                                        <Typography style={{fontSize:"1.1rem"}}><ContactsIcon style={{marginRight:"15px"}}/>{user.data.name}</Typography>
+                                                        <Typography style={{fontSize:"1.1rem"}}><PhoneIcon style={{marginRight:"15px"}}/>{user.data.phoneNumber}</Typography>
+                                                        <Typography style={{fontSize:"1.1rem"}}><EmailIcon style={{marginRight:"15px"}}/>{user.data.email}</Typography>
+                                                        <Typography style={{fontSize:"1.1rem"}}><AssignmentIndIcon style={{marginRight:"15px"}}/>{user.data.docId}</Typography>
+                                                        <Typography style={{fontSize:"1.1rem"}}><DescriptionIcon style={{marginRight:"15px"}}/>{user.data.docType}</Typography>
+                                                        <Typography style={{fontSize:"1.1rem"}}><PermIdentityIcon style={{marginRight:"15px"}}/>{user.userId}</Typography>
+                                                    </CardContent>
                                                 </Card>
-                                                </div>
                                             )
                                         })
-                                    }
-                                </div>
+                                    
                             ) : (
                                 <div>No pending requests</div>
                             )

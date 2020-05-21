@@ -6,8 +6,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-
-
 import SnackBarNotification from './SnackBarNotification';
 
 const forge = require('node-forge');
@@ -146,12 +144,13 @@ class ExistingUSer extends Component{
             <div>
               <Grid container spacing={3}>
                 <Grid item xs = {6}>
-                <h3>For existing users</h3>
+                <h3 style={{margin: "2%"}}>Existing User</h3>
+                <br/>
                   {
                       this.state.loaded === true ? (
                       <form>
 
-                        <FormControl variant="outlined" style={{ margin: "1%",  width: "80%"}}>
+                        <FormControl variant="outlined" style={{ margin: "2%",  width: "80%"}}>
                           <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
                           <Select
                           native
@@ -176,16 +175,16 @@ class ExistingUSer extends Component{
 
                         <br/>
                       
-                      <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" type="text" value = {this.state.userId} name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
-                      <input style={{display: 'none', margin: "1%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
-                      <label htmlFor="contained-button-qr" style={{ margin: "1%", width: "80%"}}>
+                      <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
+                      <input style={{display: 'none', margin: "2%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
+                      <label htmlFor="contained-button-qr" style={{ margin: "2%", width: "80%"}}>
                       <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}}>
                         Upload
                       </Button>
                       </label>
                       <br/>
                       <Button
-                      style={{ margin: "1%", width: "80%"}}
+                      style={{ margin: "2%", width: "80%"}}
                       variant="contained"
                       color="primary"
                       startIcon={<SaveIcon />}
@@ -200,18 +199,18 @@ class ExistingUSer extends Component{
                   }
                   </Grid>
                   <Grid item xs = {6}>
-                  <h3>OTP verification</h3>
+                  <h3 style={{margin: "2%"}}>OTP Verification</h3><br/>
                   
                   <form>
-                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.requestId} required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.otp} required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.userData} required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
                     <Button
                       variant="contained"
                       color="primary"
                       startIcon={<Icon>send</Icon>}
                       onClick= {(event) => this.verifyOtp(event)}
-                      style={{margin: "1%", width: "80%"}}
+                      style={{margin: "2%", width: "80%"}}
                     >
                       Verify
                     </Button>

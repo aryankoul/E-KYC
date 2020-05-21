@@ -52,10 +52,6 @@ class VerifierOnBoard extends Component {
         localStorage.setItem("publicKey"+address,publicKeyPem);
         localStorage.setItem("privateKey"+address,privateKeyPem);
 
-        // this.setState({
-        //   publicKey: keypair.publicKey.n.toString(),
-        //   privateKey : keypair.privateKey.n.toString()
-        // })
     });
     }
     

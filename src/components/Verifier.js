@@ -31,21 +31,15 @@ class Verifier extends Component {
             <Tab label="Veiw Verified Users"/>
           </Tabs>
         </AppBar>
-        <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"100vh",width:"100%"}}>
-        <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center"
-          hidden={this.state.value !== 0}>
-        {/* <div
-          role="tabpanel"
-          hidden={this.state.value !== 0}
-        > */}
+        <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",minHeight:"100vh",width:"100%"}}>
+        <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center" hidden={this.state.value !== 0}>
         <AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} />
-        {/* </div> */}
         </Grid>
         <br/>
         <div
           role="tabpanel"
           hidden={this.state.value !== 1}
-        ><div className="type2requets"> Users previously registered with other banks<Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts}/> </div></div>
+        ><div className="type2requets"><Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts}/> </div></div>
         <div
           role="tabpanel"
           hidden={this.state.value !== 2}
