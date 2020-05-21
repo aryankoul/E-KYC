@@ -64,7 +64,7 @@ class Type2Requests extends Component {
     
     }
 
-    handleClick(e,id,key,email,_id){
+    handleClick(e,id,userPubKey,email,_id){
         e.preventDefault();
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
@@ -74,7 +74,7 @@ class Type2Requests extends Component {
                 var otp = this.generateOtp();
                 var verifierAddress = this.props.account[0];
                 var userId = id;
-                var userPublicKey = localStorage.getItem("publicKeyUser");
+                var userPublicKey = userPubKey;
                 console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
                 const reqOptions= {
                     method: 'POST',
