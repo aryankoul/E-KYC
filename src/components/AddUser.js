@@ -247,8 +247,7 @@ class AddUser extends Component {
                 <div>
                   {
                     this.state.requests.length > 0 ? (
-                      // <div style={{textAlign:"-webkit-center"}}>
-                      <div>
+                      <div style={{textAlign:"-webkit-center"}}>
                         {
                           this.state.requests.map((request,key)=>{
                             return(
