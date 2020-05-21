@@ -64,7 +64,7 @@ class Type2Requests extends Component {
     
     }
 
-    handleClick(e,id,userPubKey,email,_id){
+    handleClick(e,id,userPubKey,email,_id, encryptedData){
         e.preventDefault();
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
@@ -79,7 +79,7 @@ class Type2Requests extends Component {
                 const reqOptions= {
                     method: 'POST',
                     body: JSON.stringify({
-                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id
+                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData
                     }),
                     headers: {
                       'Accept': 'application/json',
@@ -119,7 +119,7 @@ class Type2Requests extends Component {
                                                     </ListItemIcon>
                                                     <ListItemText primary={request.qrData.email} />
                                                 </ListItem>
-                                                <Button variant="contained" color="primary" component="span" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id)}>Send OTP</Button>
+                                                <Button variant="contained" color="primary" component="span" onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id, request.qrData.encryptedData)}>Send OTP</Button>
                                                
                                                 </List>
                                                 </Card>

@@ -88,16 +88,22 @@ class ExistingUSer extends Component{
 
   verifyOtp(event){
     event.preventDefault();
-    const { requestId, otp, userData } = this.state;
+    var { requestId, otp, userData } = this.state;
     const decodedOtp = forge.util.decode64(otp);
+    userData = forge.util.decode64(userData);
     let privateKey = localStorage.getItem('privateKeyUser');
     privateKey = forge.pki.privateKeyFromPem(privateKey);
-    var finalOtp ='' 
+    var finalOtp =''
     try{
       finalOtp = privateKey.decrypt(decodedOtp)
     }catch(e){
       console.log(e)
-      console.log("error decrypring otp")
+      console.log("error decrypting otp")
+    }
+    try{
+      userData = privateKey.decrypt(userData)
+    }catch(e){
+      console.log("error decrypting user data")
     }
     const requestOptions = {
       method: 'POST',
