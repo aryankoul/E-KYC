@@ -2,6 +2,12 @@ import React, { Component } from 'react'
 import { TextField } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import PhoneIcon from '@material-ui/icons/Phone';
+import EmailIcon from '@material-ui/icons/Email';
+
 var forge = require('node-forge');
 const url = "http://localhost:8000/";
 
@@ -127,9 +133,6 @@ class AddUser extends Component {
   init(){
 
     var rsa = forge.pki.rsa;
-    // generate an RSA key pair synchronously
-    // *NOT RECOMMENDED*: Can be significantly slower than async and may block
-    // JavaScript execution. Will use native Node.js 10.12.0+ API if possible.
     var keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
     var foo = JSON.stringify({
       publicKeyPem: forge.pki.publicKeyToPem(keypair.publicKey),
@@ -141,7 +144,6 @@ class AddUser extends Component {
   handleDownload(event,fileName){
     event.preventDefault();
     console.log(fileName);
-    // fetch(url+'download/'+fileName);
     window.open(url+'download/'+fileName, '_blank');
   }
 
@@ -160,7 +162,7 @@ class AddUser extends Component {
   handleSubmit(event) {
 
     event.preventDefault();
-    // this.init()
+    
     var emailHash = this.calculateHash(this.state.email).toHex();
     console.log(emailHash)
    
@@ -237,89 +239,99 @@ class AddUser extends Component {
 
   render() {
     return (
-      <div>
-        <div className='requests'>
-          {
-            this.state.loaded === true ? (
-              <div>
-                {
-                  this.state.requests.length > 0 ? (
-                    <div>
-                      {
-                        this.state.requests.map((request,key)=>{
-                          return(
-                            [<div className="request" key={request._id}>
-                              <h3>{request.name}</h3>
-                              <h4>{request.phoneNumber}</h4>
-                              <h5>{request.email}</h5>
-                              <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}>Download File</Button>
-                              <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id,request.docType)}}>Verify</Button>
-                            </div>,
-                            <br/>]
-                          )
-                        })
-                      }
-                    </div>) : (<div>No pending first time user requets</div>)
-                }
-               </div>
-            ) : (<div>Not loaded</div>)
-          }
-        </div>
-          <FormControl>
-          <TextField
+     [
+        <Grid item xs={6} style={{textAlign:"center"}}>
+          <div className='requests'>
+            {
+              this.state.loaded === true ? (
+                <div>
+                  {
+                    this.state.requests.length > 0 ? (
+                      <div style={{textAlign:"-webkit-center"}}>
+                        {
+                          this.state.requests.map((request,key)=>{
+                            return(
+                              <Card style={{maxWidth:"70%",marginBottom:"18px"}} key={request._id}>
+                                <CardContent>
+                                  <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
+                                  <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>
+                                  <h5><EmailIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.email}</h5>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id,request.docType)}}>Verify</Button>
+                                </CardContent>
+                              </Card>
+                            )
+                          })
+                        }
+                      </div>) : (<div>No pending first time user requets</div>)
+                  }
+                </div>
+              ) : (<div>Not loaded</div>)
+            }
+          </div>
+        </Grid>,
+        <Grid item xs={6} style={{textAlign:"center"}} >
+          <FormControl style={{width:"60%"}}>
+            <TextField
             required
             id="outlined-required"
             variant="outlined"
-              name="name"
-              type="text"
-              label="Name"
-              placeholder = "name"
-              value = {this.state.name}
-              />
-             <TextField
+            name="name"
+            type="text"
+            label="Name"
+            placeholder = "name"
+            value = {this.state.name}
+            style={{marginBottom:"15px"}}
+            />
+            <TextField
             required
             id="outlined-required"
             variant="outlined"
             label="Phone Number"
-              name="phoneNumber"
-              type="text"
-              placeholder = "Phone number"
-              value = {this.state.phoneNumber}
-              />
-             <TextField
+            name="phoneNumber"
+            type="text"
+            placeholder = "Phone number"
+            value = {this.state.phoneNumber}
+            style={{marginBottom:"15px"}}
+            />
+            <TextField
             required
             id="outlined-required"
             variant="outlined"
             label="Email Address"
-              name="email"
-              type="text"
-              placeholder = "email"
-              value = {this.state.email}
-              />
-               <TextField
+            name="email"
+            type="text"
+            placeholder = "email"
+            value = {this.state.email}
+            style={{marginBottom:"15px"}}
+            />
+            <TextField
             required
             id="outlined-required"
             variant="outlined"
             label="Document Type"
-              name="docType"
-              type="text"
-              placeholder = "document Type"
-              value = {this.state.docType}
-              />
-               <TextField
+            name="docType"
+            type="text"
+            placeholder = "document Type"
+            value = {this.state.docType}
+            style={{marginBottom:"15px"}}
+            />
+            <TextField
             required
             id="outlined-required"
             variant="outlined"
             label="Document IDs"
-              name="docId"
-              type="text"
-              placeholder = "document ID"
-              onChange={this.handleChange}
-              ref = {this.textInput} 
-              />  
-            <input type="button" value="Submit" onClick={this.handleSubmit} />
+            name="docId"
+            type="text"
+            placeholder = "document ID"
+            onChange={this.handleChange}
+            ref = {this.textInput} 
+            style={{marginBottom:"15px"}}
+            />
+            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
           </FormControl>
-        </div>
+        </Grid>
+      ]
     );
   }
 }

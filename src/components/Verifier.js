@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Tab,Tabs,AppBar } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import AddUser from './AddUser.js'
 import Type2Requests from './Type2Requests.js'
 import VerfiedUsers from './VerifiedUsers.js'
@@ -31,11 +32,15 @@ class Verifier extends Component {
           </Tabs>
         </AppBar>
         <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
-        
-        <div
+        <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center"
+          hidden={this.state.value !== 0}>
+        {/* <div
           role="tabpanel"
           hidden={this.state.value !== 0}
-        ><AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} /></div>
+        > */}
+        <AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} />
+        {/* </div> */}
+        </Grid>
         <br/>
         <div
           role="tabpanel"
