@@ -6,6 +6,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
+import SnackBarNotification from './SnackBarNotification';
+
 const forge = require('node-forge');
 
 class ExistingUSer extends Component{
@@ -17,6 +19,8 @@ class ExistingUSer extends Component{
           verifierAddress : '',
           loaded : false,
           selectedFile: null,
+          snackbarMeassage: '',
+          snackbarOpen: false
         }
     }
 
@@ -55,7 +59,13 @@ class ExistingUSer extends Component{
           body: formdata,
       };
       fetch('http://localhost:8000/uploadDocument', requestOptions)
-      .then(res => console.log(res.json()));
+      .then(res => {
+          this.setState({
+              snackbarMessage: "data send successfully",
+              snackbarOpen: true
+          })
+          console.log(res.json())
+      });
     }
 
     onFileChange = event => {
@@ -102,7 +112,13 @@ class ExistingUSer extends Component{
     fetch("http://localhost:8000/verifyOtp",requestOptions)
     .then(res=> res.json()).then(
       data => {
+          this.setState({
+              snackbarMessage: "otp verified Successfully",
+              snackbarOpen: true
+          
+          })
         console.log(data);
+
       }
     )
   }
@@ -178,6 +194,7 @@ class ExistingUSer extends Component{
                   </Button>
                   
                 </form>
+                <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
             </div>
         )
     }

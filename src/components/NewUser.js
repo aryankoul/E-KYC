@@ -5,6 +5,8 @@ import { Button } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+
+import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -14,7 +16,9 @@ class NewUser extends Component{
     this.state = {
       verifiedVerifiers : [],
       verifierAddress : '',
-      loaded : false
+      loaded : false,
+      snackbarMessage: '',
+      snackbarOpen: false
     }
   }
 
@@ -62,7 +66,13 @@ class NewUser extends Component{
       body: data
     }
     fetch('http://localhost:8000/uploadDocument', requestOptions)
-    .then(res => console.log(res.text()));
+    .then(res =>{
+        this.setState({
+            snackbarMessage: 'data uploaded successfully',
+            snackbarOpen: true
+        })
+        console.log(res.text())
+    });
   }
 
   handleChange(event) {
@@ -174,6 +184,7 @@ class NewUser extends Component{
         
         ) : (<div></div>)
       }
+          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>
       
     );
