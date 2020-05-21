@@ -172,6 +172,7 @@ class AddUser extends Component {
       "docId" : this.state.docId
     }
 
+
     const rawData = JSON.stringify(data); 
     console.log(rawData)
     const hash = emailHash

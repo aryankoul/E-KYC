@@ -47,6 +47,7 @@ class NewUser extends Component{
   handleSubmit(event) {
     event.preventDefault()
     console.log(this.state.verifierAddress);
+    console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
     data.append('doc', this.doc.files[0]);

@@ -44,9 +44,9 @@ class ExistingUSer extends Component{
       console.log(this.state);
       
 	    var formdata = new FormData();
-      var files = this.state.selectedFile;
-      console.log(files)
-      formdata.append('doc', files);
+      var files = this.doc;
+      console.log(files.files[0])
+      formdata.append('doc', files.files[0]);
       formdata.append('verifierAddress',this.state.verifierAddress);
       formdata.append('type',2);
       formdata.append('userId', this.state.userId);
@@ -58,7 +58,8 @@ class ExistingUSer extends Component{
       .then(res => console.log(res.json()));
     }
 
-    onFileChange = event => { 
+    onFileChange = event => {
+        console.log(event.target.files[0])
         this.setState({ selectedFile: event.target.files[0] }); 
     }; 
 
@@ -141,8 +142,8 @@ class ExistingUSer extends Component{
                       <br/>
                     
                     <TextField required id="outlined-required" variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
-                    <input style={{display: 'none'}} type="file" name="upload QR code" onChange={this.onFileChange} placeholder="QR code" id="contained-button-file"/>
-                    <label htmlFor="contained-button-file">
+                        <input style={{display: 'none'}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
+                    <label htmlFor="contained-button-qr">
                     <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />}>
                        Upload
                     </Button>

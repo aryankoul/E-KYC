@@ -87,7 +87,7 @@ class App extends Component {
               <Tab label="Verifier" />
             </Tabs>
           </AppBar>
-          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
+          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", height: "100vh", width:"100%"}}>
           <div
             role="tabpanel"
             hidden={this.state.value !== 0}
