@@ -8,6 +8,8 @@ import Card from '@material-ui/core/Card';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import EmailIcon from '@material-ui/icons/Email';
 
+import SnackBarNotification from './SnackBarNotification';
+
 const url = "http://localhost:8000/";
 // var forge = require('node-forge');
 
@@ -20,7 +22,9 @@ class Type2Requests extends Component {
         console.log(props.account);
         this.state={
             loaded : false,
-            requests : []
+            requests : [],
+            snackbarOpen: false,
+            snackbarMessage: ''
         }
     }
 
@@ -86,6 +90,10 @@ class Type2Requests extends Component {
                       'Content-Type': 'application/json'
                   }};
                   fetch(url+"initiateVerification",reqOptions)
+                    .then(req => this.setState({
+                        snackbarMessage: 'Otp sent successfully',
+                        snackbarOpen: true
+                    }))
             })
         })
     }
@@ -134,6 +142,8 @@ class Type2Requests extends Component {
                                 <div>No pending requests</div>
                             )
                         }
+                    
+                        <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
                     </div>
                 ) : (
                     <div>Not loaded</div>

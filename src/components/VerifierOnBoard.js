@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 
+import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
 
 
@@ -11,7 +12,9 @@ class VerifierOnBoard extends Component {
     super(props)
     this.state = {
       publicKey : '',
-      privateKey : ''
+      privateKey : '',
+      snackbarOpen: false,
+      snackbarMessage: ''
     }
     // console.log(props.kycContract);
   } 
@@ -68,7 +71,10 @@ class VerifierOnBoard extends Component {
     console.log(this.props.kycContract);
 
     kycContract.methods.addVerifier(bankName,account,publicKey).send({ from: account, gas: 672195 })
-
+    this.setState({
+        snackbarMessage: 'Verifier request Initiated',
+        snackbarOpen: true
+    })
     event.preventDefault()
 
   }
@@ -110,6 +116,7 @@ class VerifierOnBoard extends Component {
           }   */}
         
         
+         <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
       </form>
     );
   }

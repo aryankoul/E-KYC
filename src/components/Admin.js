@@ -9,6 +9,8 @@ import AccountBalance from '@material-ui/icons/AccountBalance';
 import BusinessIcon from '@material-ui/icons/Business';
 import Card from '@material-ui/core/Card';
 
+import SnackBarNotification from './SnackBarNotification';
+
 
 class Admin extends Component {
   componentWillMount() {
@@ -29,7 +31,11 @@ class Admin extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { unverifiedVerifiers: [] }
+    this.state = { 
+        unverifiedVerifiers: [],
+        snackbarMessage: '',
+        snackbarOpen: false
+    }
     this.handleAdd = this.handleAdd.bind(this)
     console.log(this.props.kycContract)
   } 
@@ -44,6 +50,10 @@ class Admin extends Component {
     this.props.kycContract.methods.verifyVerifier(address).send({from: this.props.account[0], gas: 672195}, (err, result) => {
       if(err) console.log(err);
       console.log(result)
+      this.setState({
+        snackbarMessage: 'Verifier verified successfully',
+        snackbarOpen: true
+      })
       this.setState({unverifiedVerifiers: []})
       this.loadAdminData();
     })
@@ -81,6 +91,8 @@ class Admin extends Component {
               ])
           })
         }
+
+      <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
       </div>
     );
   }

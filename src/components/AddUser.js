@@ -8,6 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
 
+import SnackBarNotification from './SnackBarNotification';
+
 var forge = require('node-forge');
 const url = "http://localhost:8000/";
 
@@ -27,7 +29,9 @@ class AddUser extends Component {
       docType:"",
       publicKey:"",
       id:"",
-      loaded : false
+      loaded : false,
+      snackbarMessage: '',
+      snackbarOpen: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -231,8 +235,14 @@ class AddUser extends Component {
           'Content-Type': 'application/json'
       }};
       fetch(url+"verify",reqOptions)
+            .then(res => {
+             this.setState({
+                snackbarMessage: 'Data verified successfully',
+                snackbarOpen: true
+             })
+             this.removeUser();
+            })
       console.log(x);
-      this.removeUser();
     });
     
   }
@@ -331,6 +341,8 @@ class AddUser extends Component {
             />
             <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
           </FormControl>
+  
+          <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
         </Grid>
       ]
     );
