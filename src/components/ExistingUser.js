@@ -23,7 +23,10 @@ class ExistingUSer extends Component{
           selectedFile: null,
           snackbarMeassage: '',
           snackbarOpen: false,
-          userId: ''
+          userId: '',
+          requestId: '',
+          otp: '',
+          userData: ''
         }
     }
 
@@ -128,7 +131,11 @@ class ExistingUSer extends Component{
           
           })
         console.log(data);
-
+        this.setState({
+          requestId: '',
+          otp: '',
+          userData: ''
+        })
       }
     )
   }
@@ -196,9 +203,9 @@ class ExistingUSer extends Component{
                   <h3>OTP verification</h3>
                   
                   <form>
-                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "1%",  width: "80%"}} required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.requestId} required id="outlined-required" variant="outlined" name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.otp} required id="outlined-required" variant="outlined" name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "1%",  width: "80%"}} value = {this.state.userData} required id="outlined-required" variant="outlined" name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
                     <Button
                       variant="contained"
                       color="primary"
