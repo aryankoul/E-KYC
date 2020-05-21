@@ -13,12 +13,9 @@ class VerifierOnBoard extends Component {
     this.state = {
       publicKey : '',
       privateKey : '',
-<<<<<<< Updated upstream
       snackbarOpen: false,
-      snackbarMessage: ''
-=======
+      snackbarMessage: '',
       bankName: ''
->>>>>>> Stashed changes
     }
     // console.log(props.kycContract);
   } 
