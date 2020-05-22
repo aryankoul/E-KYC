@@ -26,6 +26,8 @@ class App extends Component {
       loadedNewUser : false,
       loadedAdmin : false
     }
+    this.handleLogin.bind(this);
+    this.handleFile.bind(this);
   }
 
   componentDidMount() {
@@ -53,6 +55,25 @@ class App extends Component {
     })
   }
   
+  handleFile = (e) => {
+    const content = e.target.result;
+    var keys= JSON.parse(content)
+    for(var key in keys){
+      localStorage.setItem(key,keys[key]);
+    }
+
+  }
+  
+  handleLogin = (file) => {
+    let fileData = new FileReader();
+    fileData.onloadend = this.handleFile;
+    fileData.readAsText(file);
+  }
+
+  handleLogout(){
+    localStorage.clear()
+  }
+
 
   handleChange(e,value){
     this.setState({
