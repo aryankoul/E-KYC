@@ -103,13 +103,23 @@ class ExistingUSer extends Component{
     try{
       finalOtp = privateKey.decrypt(decodedOtp)
     }catch(e){
-      console.log(e)
+      this.setState({
+          snackbarMessage: 'error decrypting otp',
+          snackbarOpen: true
+      })
       console.log("error decrypting otp")
+      return
     }
+
     try{
       userData = privateKey.decrypt(userData)
     }catch(e){
+        this.setState({
+            snackbarMessage: 'error decrypting user data',
+            snackbarOpen: true
+        })
       console.log("error decrypting user data")
+      return
     }
     const requestOptions = {
       method: 'POST',
