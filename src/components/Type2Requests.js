@@ -1,4 +1,12 @@
 import React, { Component } from 'react'
+import { Button } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import EmailIcon from '@material-ui/icons/Email';
+
+import SnackBarNotification from './SnackBarNotification';
+
 const url = "http://localhost:8000/";
 
 
@@ -10,12 +18,24 @@ class Type2Requests extends Component {
         console.log(props.account);
         this.state={
             loaded : false,
-            requests : []
+            requests : [],
+            snackbarOpen: false,
+            snackbarMessage: ''
         }
     }
 
     componentDidMount(){
         this.loadRequests();
+    }
+
+    generateOtp() {
+        var letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        let otp = ''
+        const len = letters.length
+        for(let i = 0; i < 10; i++) {
+            otp += letters[Math.floor(Math.random() * len)]
+        }
+        return otp
     }
 
     loadRequests(){
@@ -26,6 +46,15 @@ class Type2Requests extends Component {
             console.log(res.requests);
             return res.requests;
         }).then(requests => {
+            requests = requests.map((request,key)=>{
+                return(
+                    {
+                        ...request,
+                        qrData : JSON.parse(request.qrData)
+                    }
+                    
+                )
+            })
             this.setState({
             requests : requests,
             loaded : true
@@ -34,39 +63,67 @@ class Type2Requests extends Component {
     
     }
 
-    handleDownload(event,fileName){
-        event.preventDefault();
-        console.log(fileName);
-        // fetch(url+'download/'+fileName);
-        window.open(url+'download/'+fileName, '_blank');
+    handleClick(e,id,userPubKey,email,_id, encryptedData){
+        e.preventDefault();
+        this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
+            this.setState({signature:signature})
+            this.props.kycContract.methods.getVerifierPublicKeyForUser(id).call().then(key=>{
+                var verifierPublicKey = key;
+                var signature = this.state.signature;
+                var otp = this.generateOtp();
+                var verifierAddress = this.props.account[0];
+                var userId = id;
+                var userPublicKey = userPubKey;
+                console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
+                const reqOptions= {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData
+                    }),
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                  }};
+                  fetch(url+"initiateVerification",reqOptions)
+                    .then(req => this.setState({
+                        snackbarMessage: 'Otp sent successfully',
+                        snackbarOpen: true
+                    }))
+            })
+        })
     }
 
     render(){
         return(
-            <div>
-            Viewing Type 2 requests
+            <div style={{align:"center"}}>
+            <br/>
+            <h2 style={{textAlign:"center"}}>Users previously registered with other banks</h2>
+            <br/>
             {
                 this.state.loaded === true ? (
                     <div>
                         {
                             this.state.requests.length > 0 ? (
-                                <ul>
-                                    {
-                                        this.state.requests.map((request,key)=>{
-                                            return(
-                                                <li>
-                                                    UserId : {request.userId} filename : {request.fileName}
-                                                    <input type="button" value="Download File" onClick={(event)=>{this.handleDownload(event,request.fileName)}}/>
-                                                    <input type="button" value="send OTP" />
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </ul>
+                                this.state.requests.map((request,key)=>{
+                                    return(
+                                    <Card style={{marginBottom:"22px"}} key={key}>
+                                        <CardContent>
+                                            <h6><AccountBoxIcon style={{marginRight:"7px"}}/>{request.userId}</h6>
+                                            <h5><EmailIcon style={{marginRight:"7px"}}/>{request.qrData.email}</h5>
+                                            <Button variant="contained" color="primary" component="span" 
+                                            onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id, request.qrData.encryptedData)}
+                                            style={{marginTop:"5px"}}>Send OTP
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                    )
+                                })  
                             ) : (
                                 <div>No pending requests</div>
                             )
                         }
+                    
+                        <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
                     </div>
                 ) : (
                     <div>Not loaded</div>

@@ -1,4 +1,14 @@
 import React, { Component } from 'react';
+import { TextField } from '@material-ui/core';
+import { FormControl } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import SaveIcon from '@material-ui/icons/Save';
+
+
+import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -8,7 +18,9 @@ class NewUser extends Component{
     this.state = {
       verifiedVerifiers : [],
       verifierAddress : '',
-      loaded : false
+      loaded : false,
+      snackbarMessage: '',
+      snackbarOpen: false
     }
   }
 
@@ -18,8 +30,10 @@ class NewUser extends Component{
   }
 
   generateKeys(){
-
-    forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
+    const pubKey = localStorage.getItem("publicKeyUser");
+    const priKey = localStorage.getItem("privateKeyUser");
+    if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
+      forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
         // keypair.privateKey, keypair.publicKey
         const publicKey = keypair.publicKey;
         const privateKey = keypair.privateKey;
@@ -29,20 +43,17 @@ class NewUser extends Component{
         const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
         const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
 
-        localStorage.setItem("publicKey",publicKeyPem);
-        localStorage.setItem("privateKey",privateKeyPem);
+        localStorage.setItem("publicKeyUser",publicKeyPem);
+        localStorage.setItem("privateKeyUser",privateKeyPem);
 
-        // this.setState({
-        //   publicKey: keypair.publicKey.n.toString(),
-        //   privateKey : keypair.privateKey.n.toString()
-        // })
     });
-
+    }
   }
 
   handleSubmit(event) {
     event.preventDefault()
     console.log(this.state.verifierAddress);
+    console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
     data.append('doc', this.doc.files[0]);
@@ -50,25 +61,36 @@ class NewUser extends Component{
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
     data.append('verifierAddress', this.state.verifierAddress);
-    data.append('publicKey', localStorage.getItem("publicKey"));
+    data.append('publicKey', localStorage.getItem("publicKeyUser"));
     data.append('type',"1");
     const requestOptions = {
       method: 'POST',
       body: data
     }
     fetch('http://localhost:8000/uploadDocument', requestOptions)
-    .then(res => console.log(res.text()));
+    .then(res =>{
+        this.setState({
+            snackbarMessage: 'data uploaded successfully',
+            snackbarOpen: true
+        })
+        console.log(res.text())
+    });
+    this.phoneNo.value='';
+    this.email.value='';
+    this.name.value='';
+    this.docType.value='';
+    this.setState({verifierAddress:''});
+    this.doc.files=null;
   }
 
-  handleChange(event,address){
-    if (this.state.verifierAddress === address)
+  handleChange(event) {
+    const target = event.target
+    const value = target.value
+    const name = target.name
+
     this.setState({
-      verifierAddress : ''
+      [name]: value
     })
-    else
-      this.setState({
-        verifierAddress : address
-      })
   }
 
   getVerfiers(){
@@ -91,30 +113,90 @@ class NewUser extends Component{
       <div>
       {
         this.state.loaded === true ? (
-        <form>
-          {
-            this.state.verifiedVerifiers.map((verifier,key) => {
+        <FormControl>
+          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
+            <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
+            <Select
+            native
+            value={this.state.verifierAddress}
+            onChange={(event)=>this.handleChange(event)}
+            label="Select Bank"
+            inputProps={{
+              name: 'verifierAddress',
+              id: 'filled-age-native-simple',
+            }}
+            >
+            <option aria-label="None" value="" />
+            {
+              this.state.verifiedVerifiers.map((verifier,key) => {
               return(
-                <div className="verifier" id = {verifier.address}>
-                  <input 
-                  type="radio" 
-                  name="bankName"
-                  value = {verifier.address}
-                  onChange={(event)=>{this.handleChange(event,verifier.address)}}/>
-                  <label for = {verifier.address}>{verifier.bankName}</label>
-                </div>
+                  <option value={verifier.address} key={key}>{verifier.bankName}</option>
               )
-            })
-          }
-          <input type = "text" name = "name" placeholder = "name" ref = {(name) => this.name = name} />
-          <input type = "text" name = "email" placeholder = "email" ref = {(email) => this.email = email}/>
-          <input type = "text" name = "phoneNo" placeholder = "phone number" ref = {(phoneNo) => this.phoneNo = phoneNo} />
-          <input type = "text" name = "docType" placeholder = "document type" ref = {(docType) => this.docType = docType} />
-          <input type = "file" name = "doc" ref = {(doc) => this.doc = doc}/>
-          <input type="button" value="Submit" onClick = {(event)=>{this.handleSubmit(event)}} />
-        </form>
+              })
+            }
+            </Select>
+          </FormControl>
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "name"
+          type = "text"
+          label="Name"
+          inputRef = {(name) => this.name = name} 
+          variant="outlined"
+          style={{ margin: "2%", width: "80%" }}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "email"
+          type = "text"
+          label="Email"
+          inputRef = {(email) => this.email = email} 
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          </div>
+
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "phoneNo"
+          type = "text"
+          label="Phone Number"
+          inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "docType"
+          type = "text"
+          label="Document Type"
+          inputRef = {(docType) => this.docType = docType}   
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          </div>
+
+          <div>
+          <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
+                    <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
+                       Upload
+                     </Button>
+                    </label>
+          <br/>
+          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
+          </div>
+        </FormControl>
+        
         ) : (<div></div>)
       }
+          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>
       
     );

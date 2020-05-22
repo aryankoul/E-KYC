@@ -3,22 +3,26 @@ import Web3 from 'web3'
 import { providerUrl } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
+
+import Verifier from './Verifier.js'
 import VerifierOnBoard from './VerifierOnBoard.js'
-import AddUser from './AddUser.js'
 import Admin from './Admin.js'
 import NewUser from './NewUser.js'
-import Verifier from './Verifier.js'
 import ExistingUser from './ExistingUser.js'
-import VerfiedUsers from './VerifiedUsers.js'
+
+import { Tab,Tabs,AppBar } from '@material-ui/core';
+import { Container } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 class App extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      loaded : false
+      loaded : false,
+      value : 0
     }
-  } 
+  }
 
   componentDidMount() {
     this.loadBlockchainData();
@@ -44,25 +48,68 @@ class App extends Component {
       this.setState({ loaded:true })
     })
   }
+  
+
+  handleChange(e,value){
+    this.setState({
+      value:value
+    })
+  }
 
   getComponent = () => {
     switch(this.state.type) {
       case 1:
-        return (<div><div>Admin</div><br/><Admin kycContract = {this.state.kycContract} account = {this.state.accounts}></Admin></div>)
+        return (
+        <div>
+          <AppBar position="static" elevation={0}>
+            <Tabs value={this.state.value} centered>
+              <Tab label="Admin" />
+            </Tabs>
+          </AppBar>
+          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
+          <div role="tabpanel">
+            <Admin kycContract = {this.state.kycContract} account = {this.state.accounts}></Admin></div>
+          </div>
+        </div>)
       case 2:
-        return (<div>Verified verifier<div>Add user(Verifier)</div><br/>
-        <AddUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        <br/>
-        <VerfiedUsers kycContract = {this.state.kycContract} account = {this.state.accounts}/>  
-        <br/></div>)
+        return (
+        <div>
+          <Verifier kycContract = {this.state.kycContract} accounts = {this.state.accounts} />
+        </div>)
       case 3:
-        return (<p>Please wait while admin verifies your request</p>)
+        return (
+          <h1 style={{textAlign:"center",color:"white",marginTop:"10%"}}>Please wait while the Admin verifies you :)</h1>
+        )
       default:
-        return (<div>
-          <div>Existing user</div><ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-        <div>New user</div><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} /> 
-        <br/>
-        <div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div> 
+        return (
+        <div> 
+          <AppBar position="static" elevation={0}>
+            <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
+              <Tab label="User" />
+              <Tab label="Verifier" />
+            </Tabs>
+          </AppBar>
+          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 0}
+          >
+            <Grid container spacing={3} style={{margin: 4}}>
+              <Grid item xs = {4}>
+                <h3  style={{margin: "2%"}}>New User</h3><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+              </Grid>
+              <Grid item xs = {8}>
+                <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+              </Grid>
+            </Grid>
+          </div>
+          <div
+            role="tabpanel"
+            hidden={this.state.value !== 1}
+          >
+            <br/><div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div>
+          </div>
+          </div>
         </div>
         )
         
@@ -72,13 +119,12 @@ class App extends Component {
   render() {
     
     return (
-      <div className='app'>
-
+      <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
+        <Container style={{maxWidth:"190vh"}}>
         {
           this.state.loaded ? this.getComponent() : (<div></div>)
-          
         }
-        
+        </Container>
       </div>
     );
   }

@@ -1,56 +1,51 @@
 import React, { Component } from 'react'
+import { Tab,Tabs,AppBar } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import AddUser from './AddUser.js'
+import Type2Requests from './Type2Requests.js'
+import VerfiedUsers from './VerifiedUsers.js'
 
 class Verifier extends Component {
-  componentWillMount() {
-    this.loadAdminData()
-  }
-
-  generateOtp() {
-    var letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    let otp = ''
-    const len = letters.length
-    for(let i = 0; i < 10; i++) {
-        otp += letters[Math.floor(Math.random() * len)]
-    }
-    return otp
-  }
-
+  
   constructor(props) {
     super(props)
-    this.state = { kycRequests: [] }
-    this.handleAdd = this.handleAdd.bind(this)
-    console.log(this.props.KycContract)
+    console.log(props);
+    this.state={
+      value : 0
+    }
   } 
 
-  handleAdd(event) {
-    const target = event.target
-    const key = target.id
-    const address = this.state.unverifiedVerifiers[key].address
-    
-    this.props.KycContract.methods.verifyVerifier(address).send({from: this.props.Account, gas: 672195}, (err, result) => {
-      console.log(result)
-      this.setState({unverifiedVerifiers: []})
-      this.loadAdminData();
+  handleChange(e,value){
+    this.setState({
+      value:value
     })
   }
-
 
   render() {
     return (
       <div>
-        <h1>Requests</h1>
-        <ul>
-          {
-            this.state.kycRequests.map((request,key) => {
-              return(
-                <li>
-                  {request.id} {request.name} <input type = "button" value = "Verify" id = {key} onClick = {this.handleAdd} />
-                </li>
-              )
-            })
-          }
-        </ul>
-        <li></li>
+        <AppBar position="static" elevation={0}>
+          <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
+            <Tab label="Add User" />
+            <Tab label="View Verification Requests" />
+            <Tab label="Veiw Verified Users"/>
+          </Tabs>
+        </AppBar>
+        <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",minHeight:"100vh",width:"100%"}}>
+        <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center" hidden={this.state.value !== 0}>
+        <AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} />
+        </Grid>
+        <br/>
+        <div
+          role="tabpanel"
+          hidden={this.state.value !== 1}
+        ><div className="type2requets"><Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts}/> </div></div>
+        <div
+          role="tabpanel"
+          hidden={this.state.value !== 2}
+        >
+        <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts}/>  </div>
+        <br/></div>
       </div>
     );
   }
