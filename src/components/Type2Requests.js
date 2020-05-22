@@ -111,7 +111,7 @@ class Type2Requests extends Component {
                                             <h6><AccountBoxIcon style={{marginRight:"7px"}}/>{request.userId}</h6>
                                             <h5><EmailIcon style={{marginRight:"7px"}}/>{request.qrData.email}</h5>
                                             <Button variant="contained" color="primary" component="span" 
-                                            onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id)}
+                                            onClick={(e)=>this.handleClick(e,request.userId,request.qrData.publicKey,request.qrData.email, request._id, request.qrData.encryptedData)}
                                             style={{marginTop:"5px"}}>Send OTP
                                             </Button>
                                         </CardContent>
