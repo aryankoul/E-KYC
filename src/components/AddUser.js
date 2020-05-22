@@ -242,7 +242,7 @@ class AddUser extends Component {
                 snackbarOpen: true
              })
              this.removeUser();
-             this.setState({name:'', phoneNumber:'', email:'', docType:''})
+             this.setState({name:'', phoneNumber:'', email:'', docType:'', docId:''})
             })
       console.log(x);
     });
@@ -337,7 +337,7 @@ class AddUser extends Component {
             placeholder = "document ID"
             onChange={this.handleChange}
             ref = {this.textInput} 
-            value = {this.textInput.value}
+            value = {this.state.docId}
             style={{marginBottom:"15px"}}
             />
             <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
