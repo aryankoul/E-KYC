@@ -229,12 +229,14 @@ class AddUser extends Component {
         body: JSON.stringify({
           originalData: rawData,
           verifierAddress:this.props.account[0],
-          userId:userId
+          userId:userId,
+          userPublicKey:this.state.publicKey
         }),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       }};
+      console.log(reqOptions)
       fetch(url+"verify",reqOptions)
             .then(res => {
              this.setState({

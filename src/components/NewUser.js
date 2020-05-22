@@ -56,13 +56,13 @@ class NewUser extends Component{
     console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
-    data.append('doc', this.doc.files[0]);
     data.append('email', this.email.value);
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
     data.append('verifierAddress', this.state.verifierAddress);
     data.append('publicKey', localStorage.getItem("publicKeyUser"));
     data.append('type',"1");
+    data.append('doc', this.doc.files[0]);
     const requestOptions = {
       method: 'POST',
       body: data

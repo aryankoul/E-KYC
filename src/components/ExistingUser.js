@@ -54,10 +54,10 @@ class ExistingUSer extends Component{
 	    var formdata = new FormData();
       var files = this.doc;
       console.log(files.files[0])
-      formdata.append('doc', files.files[0]);
       formdata.append('verifierAddress',this.state.verifierAddress);
       formdata.append('type',2);
       formdata.append('userId', this.state.userId);
+      formdata.append('doc', files.files[0]);
       var requestOptions = {
           method: 'POST',
           body: formdata,
