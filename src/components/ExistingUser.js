@@ -63,12 +63,12 @@ class ExistingUSer extends Component{
           body: formdata,
       };
       fetch('http://localhost:8000/uploadDocument', requestOptions)
-      .then(res => {
+      .then(res => res.json())
+            .then(data => {
           this.setState({
-              snackbarMessage: "data send successfully",
+              snackbarMessage: data.message,
               snackbarOpen: true
           })
-          console.log(res.json())
       });
       this.setState({userId: '', verifierAddress: ''})
     }
@@ -124,7 +124,7 @@ class ExistingUSer extends Component{
     .then(res=> res.json()).then(
       data => {
           this.setState({
-              snackbarMessage: "otp verified Successfully",
+              snackbarMessage: data.message, 
               snackbarOpen: true
           
           })

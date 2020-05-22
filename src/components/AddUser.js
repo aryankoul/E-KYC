@@ -238,9 +238,10 @@ class AddUser extends Component {
       }};
       console.log(reqOptions)
       fetch(url+"verify",reqOptions)
-            .then(res => {
+            .then(res => res.json())
+            .then(data => {
              this.setState({
-                snackbarMessage: 'Data verified successfully',
+                snackbarMessage: data.message,
                 snackbarOpen: true
              })
              this.removeUser();

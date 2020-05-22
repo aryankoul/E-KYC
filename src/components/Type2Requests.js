@@ -85,8 +85,9 @@ class Type2Requests extends Component {
                       'Content-Type': 'application/json'
                   }};
                   fetch(url+"initiateVerification",reqOptions)
-                    .then(req => this.setState({
-                        snackbarMessage: 'Otp sent successfully',
+                    .then(req => req.json())
+                    .then(data => this.setState({
+                        snackbarMessage: data.message,
                         snackbarOpen: true
                     }))
             })

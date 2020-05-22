@@ -44,12 +44,19 @@ class Admin extends Component {
     const address = this.state.unverifiedVerifiers[key].address
     console.log(this.props.kycContract);
     this.props.kycContract.methods.verifyVerifier(address).send({from: this.props.account[0], gas: 672195}, (err, result) => {
-      if(err) console.log(err);
-      console.log(result)
-      this.setState({
-        snackbarMessage: 'Verifier verified successfully',
-        snackbarOpen: true
-      })
+      if(err){
+        this.setState({
+            snackbarMessage: 'Could not verify user',
+            snackbarOpen: true,
+        })
+      }
+      else{
+        console.log(result)
+        this.setState({
+            snackbarMessage: 'Verifier verified successfully',
+            snackbarOpen: true
+        })
+      }
       this.setState({unverifiedVerifiers: []})
       this.loadAdminData();
     })

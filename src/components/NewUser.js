@@ -68,12 +68,12 @@ class NewUser extends Component{
       body: data
     }
     fetch('http://localhost:8000/uploadDocument', requestOptions)
-    .then(res =>{
+    .then(res => res.json())
+          .then(data  => {
         this.setState({
-            snackbarMessage: 'data uploaded successfully',
+            snackbarMessage: data.message, 
             snackbarOpen: true
         })
-        console.log(res.text())
     });
     this.phoneNo.value='';
     this.email.value='';
