@@ -105,12 +105,12 @@ class ExistingUSer extends Component{
     }catch(e){
       this.setState({
           snackbarMessage: 'error decrypting otp',
-          snackabarOpen: true
+          snackbarOpen: true
       })
-      console.log(e)
       console.log("error decrypting otp")
       return
     }
+
     try{
       userData = privateKey.decrypt(userData)
     }catch(e){
