@@ -7,6 +7,7 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import SnackBarNotification from './SnackBarNotification';
+import Loader from './Loader.js'
 
 const forge = require('node-forge');
 
@@ -14,6 +15,7 @@ class ExistingUSer extends Component{
 
     constructor(props){
         super(props)
+        console.log(props);
         this.state = {
           verifiedVerifiers : [],
           verifierAddress : '',
@@ -41,6 +43,7 @@ class ExistingUSer extends Component{
               const verifier = {bankName: verifierDetails, address: verifiedVerifier}
               this.setState({verifiedVerifiers:[...this.state.verifiedVerifiers,verifier]})
               this.setState({loaded:true})
+              this.props.loadComponent(true)
           });
           })
       }}) 
@@ -144,63 +147,60 @@ class ExistingUSer extends Component{
     render(){
         return(
             <div>
-              <Grid container spacing={3}>
-                <Grid item xs = {6}>
-                <h3 style={{margin: "2%"}}>Existing User</h3>
-                <br/>
-                  {
-                      this.state.loaded === true ? (
-                      <form>
-
-                        <FormControl variant="outlined" style={{ margin: "2%",  width: "80%"}}>
-                          <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
-                          <Select
-                          native
-                          value={this.state.verifierAddress}
-                          onChange={(event)=>this.handleChange(event)}
-                          label="Select Bank"
-                          inputProps={{
-                            name: 'verifierAddress',
-                            id: 'filled-age-native-simple',
-                          }}
-                          >
-                          <option aria-label="None" value="" />
-                          {
-                            this.state.verifiedVerifiers.map((verifier,key) => {
-                            return(
-                                <option value={verifier.address} key={key}>{verifier.bankName}</option>
-                            )
-                            })
-                          }
-                          </Select>
-                        </FormControl>
-
-                        <br/>
-                      
-                      <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" value={this.state.userId} variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
-                      <input style={{display: 'none', margin: "2%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
-                      <label htmlFor="contained-button-qr" style={{ margin: "2%", width: "80%"}}>
-                      <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}}>
-                        Upload
-                      </Button>
-                      </label>
-                      <br/>
-                      <Button
-                      style={{ margin: "2%", width: "80%"}}
-                      variant="contained"
-                      color="primary"
-                      startIcon={<SaveIcon />}
-                      onClick= {(event) => this.handleSubmit(event)}
-                    >
-                      Submit
-                    </Button>
-                      
-                      </form>
-
-                      ) : (<div></div>)
-                  }
-                  </Grid>
+            {
+              this.state.loaded === true ? (
+                <Grid container spacing={3}>
                   <Grid item xs = {6}>
+                  <h3 style={{margin: "2%"}}>Existing User</h3>
+                  <br/>
+                  <form>
+                    <FormControl variant="outlined" style={{ margin: "2%",  width: "80%"}}>
+                      <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
+                      <Select
+                      native
+                      value={this.state.verifierAddress}
+                      onChange={(event)=>this.handleChange(event)}
+                      label="Select Bank"
+                      inputProps={{
+                        name: 'verifierAddress',
+                        id: 'filled-age-native-simple',
+                      }}
+                      >
+                      <option aria-label="None" value="" />
+                      {
+                        this.state.verifiedVerifiers.map((verifier,key) => {
+                        return(
+                            <option value={verifier.address} key={key}>{verifier.bankName}</option>
+                        )
+                        })
+                      }
+                      </Select>
+                    </FormControl>
+
+                    <br/>
+                  
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" value={this.state.userId} variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
+                    <input style={{display: 'none', margin: "2%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
+                    <label htmlFor="contained-button-qr" style={{ margin: "2%", width: "80%"}}>
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}}>
+                      Upload
+                    </Button>
+                    </label>
+                    <br/>
+                    <Button
+                    style={{ margin: "2%", width: "80%"}}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick= {(event) => this.handleSubmit(event)}
+                    >
+                    Submit
+                    </Button>
+                  
+                  </form>
+                </Grid>
+
+                <Grid item xs = {6}>
                   <h3 style={{margin: "2%"}}>OTP Verification</h3><br/>
                   
                   <form>
@@ -219,8 +219,15 @@ class ExistingUSer extends Component{
                     
                   </form>
                   <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
-                  </Grid>
+                </Grid>
               </Grid>
+
+                ) : (
+                  <div style={{position:"fixed",top:"40%",left:"50%"}}>
+                    <Loader />
+                  </div>
+                )
+            }    
             </div>
         )
     }

@@ -5,6 +5,7 @@ import { Button } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import Loader from './Loader.js'
 import SaveIcon from '@material-ui/icons/Save';
 
 
@@ -14,6 +15,7 @@ const forge = require('node-forge');
 class NewUser extends Component{
 
   constructor(props){
+    console.log("hi")
     super(props)
     this.state = {
       verifiedVerifiers : [],
@@ -105,6 +107,7 @@ class NewUser extends Component{
       })
     }
     this.setState({loaded:true})
+    this.props.loadComponent(true)
   }) 
   }
 
@@ -113,6 +116,9 @@ class NewUser extends Component{
       <div>
       {
         this.state.loaded === true ? (
+        <div>
+        <h3  style={{margin: "2%"}}>New User</h3>
+        <br/>
         <FormControl>
           <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
             <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
@@ -193,8 +199,12 @@ class NewUser extends Component{
           <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
           </div>
         </FormControl>
-        
-        ) : (<div></div>)
+        </div>
+        ) : (
+          <div style={{position:"fixed",top:"40%",left:"50%"}}>
+            <Loader />
+          </div>
+          )
       }
           <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>

@@ -59,6 +59,7 @@ class Type2Requests extends Component {
             requests : requests,
             loaded : true
             },x=>{console.log(this.state)})
+            this.props.loadComponent(true)
         })
     
     }
@@ -120,7 +121,7 @@ class Type2Requests extends Component {
                                     )
                                 })  
                             ) : (
-                                <div>No pending requests</div>
+                                <div>No pending requests :)</div>
                             )
                         }
                     

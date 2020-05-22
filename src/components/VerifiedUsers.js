@@ -49,6 +49,7 @@ class VerifiedUsers extends Component {
             users : users,
             loaded : true
             },x=>{console.log(this.state)})
+            this.props.loadComponent(true)
         })
     
     }
@@ -81,7 +82,7 @@ class VerifiedUsers extends Component {
                                         })
                                     
                             ) : (
-                                <div>No pending requests</div>
+                                <div>No User :)</div>
                             )
                         }
                     </div>

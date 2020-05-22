@@ -9,6 +9,7 @@ import VerifierOnBoard from './VerifierOnBoard.js'
 import Admin from './Admin.js'
 import NewUser from './NewUser.js'
 import ExistingUser from './ExistingUser.js'
+import Loader from './Loader.js'
 
 import { Tab,Tabs,AppBar } from '@material-ui/core';
 import { Container } from '@material-ui/core';
@@ -20,7 +21,10 @@ class App extends Component {
     super(props)
     this.state = {
       loaded : false,
-      value : 0
+      value : 0,
+      loadedExistingUser : false,
+      loadedNewUser : false,
+      loadedAdmin : false
     }
   }
 
@@ -59,8 +63,8 @@ class App extends Component {
   getComponent = () => {
     switch(this.state.type) {
       case 1:
-        return (
-        <div>
+        return (<>
+        <div hidden={!this.state.loadedAdmin}>
           <AppBar position="static" elevation={0}>
             <Tabs value={this.state.value} centered>
               <Tab label="Admin" />
@@ -68,9 +72,13 @@ class App extends Component {
           </AppBar>
           <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
           <div role="tabpanel">
-            <Admin kycContract = {this.state.kycContract} account = {this.state.accounts}></Admin></div>
+            <Admin kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedAdmin:val})}}/></div>
           </div>
-        </div>)
+        </div>
+        <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.state.loadedAdmin}>
+          <Loader />
+        </div>
+        </>)
       case 2:
         return (
         <div>
@@ -81,36 +89,42 @@ class App extends Component {
           <h1 style={{textAlign:"center",color:"white",marginTop:"10%"}}>Please wait while the Admin verifies you :)</h1>
         )
       default:
-        return (
-        <div> 
-          <AppBar position="static" elevation={0}>
-            <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
-              <Tab label="User" />
-              <Tab label="Verifier" />
-            </Tabs>
-          </AppBar>
-          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
-          <div
-            role="tabpanel"
-            hidden={this.state.value !== 0}
-          >
-            <Grid container spacing={3} style={{margin: 4}}>
-              <Grid item xs = {4}>
-                <h3  style={{margin: "2%"}}>New User</h3><br/><NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
+        return (<>
+          <div hidden={!(this.state.loadedExistingUser === true && this.state.loadedNewUser === true)}> 
+            <AppBar position="static" elevation={0}>
+              <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
+                <Tab label="User" />
+                <Tab label="Verifier" />
+              </Tabs>
+            </AppBar>
+            <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
+            <div
+              role="tabpanel"
+              hidden={this.state.value !== 0}
+            >
+              <Grid container spacing={3} style={{margin: 4}}>
+                <Grid item xs = {4}>
+                  <NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedNewUser:val})}}/>
+                </Grid>
+                <Grid item xs = {8}>
+                  <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>this.setState({loadedExistingUser:val})}/>
+                </Grid>
               </Grid>
-              <Grid item xs = {8}>
-                <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} />
-              </Grid>
-            </Grid>
+            </div>
+            <div
+              role="tabpanel"
+              hidden={this.state.value !== 1}
+            >
+              <br/><div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div>
+            </div>
+            </div>
           </div>
-          <div
-            role="tabpanel"
-            hidden={this.state.value !== 1}
-          >
-            <br/><div><VerifierOnBoard kycContract = {this.state.kycContract} account = {this.state.accounts}/></div>
-          </div>
-          </div>
-        </div>
+          
+            <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.state.loadedExistingUser === true && this.state.loadedNewUser === true}>
+              <Loader />
+            </div>
+          </>
+       
         )
         
     }
@@ -122,7 +136,11 @@ class App extends Component {
       <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
         <Container style={{maxWidth:"190vh"}}>
         {
-          this.state.loaded ? this.getComponent() : (<div></div>)
+          this.state.loaded ? this.getComponent() : (
+            <div style={{position:"fixed",top:"40%",left:"50%"}}>
+              <Loader />
+            </div>
+          )
         }
         </Container>
       </div>

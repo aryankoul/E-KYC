@@ -20,6 +20,7 @@ class Admin extends Component {
             const verifier = {bankName: verifierDetails, address: unverifiedVerifier}
             this.setState({unverifiedVerifiers:[...this.state.unverifiedVerifiers,verifier]})
             console.log(unverifiedVerifier)
+            this.props.loadComponent(true)
           });
         })
     })
@@ -58,6 +59,7 @@ class Admin extends Component {
         })
       }
       this.setState({unverifiedVerifiers: []})
+      this.props.loadComponent(false)
       this.loadAdminData();
     })
   }

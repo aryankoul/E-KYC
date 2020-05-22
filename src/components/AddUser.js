@@ -54,6 +54,7 @@ class AddUser extends Component {
         requests : requests,
         loaded : true
       },x=>{console.log(this.state)})
+      this.props.loadComponent(true)
     })
 
   }
@@ -244,6 +245,7 @@ class AddUser extends Component {
                 snackbarMessage: data.message,
                 snackbarOpen: true
              })
+             this.props.loadComponent(false)
              this.removeUser();
              this.setState({name:'', phoneNumber:'', email:'', docType:'', docId:''})
             })
@@ -277,7 +279,7 @@ class AddUser extends Component {
                             )
                           })
                         }
-                      </div>) : (<div>No pending first time user requets</div>)
+                      </div>) : (<div>No pending first time user requets :)</div>)
                   }
                 </div>
               ) : (<div>Not loaded</div>)
