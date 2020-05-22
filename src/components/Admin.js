@@ -15,6 +15,9 @@ class Admin extends Component {
 
   async loadAdminData() {
     this.props.kycContract.methods.getUnverifiedVerifiers().call({}, (err, unverifiedVerifiers) => {
+      if(unverifiedVerifiers.length === 0){
+        this.props.loadComponent(true)
+      }
         unverifiedVerifiers.map((unverifiedVerifier, key) => {
           this.props.kycContract.methods.getVerifier(unverifiedVerifier).call({}, (err,verifierDetails) => {
             const verifier = {bankName: verifierDetails, address: unverifiedVerifier}
@@ -72,17 +75,21 @@ class Admin extends Component {
         <h2 style={{textAlign:"center"}}>Unverified Verifiers</h2>
         <br/><br/>
           {
-          this.state.unverifiedVerifiers.map((verifier,key) => {
-              return(
-                <Card style={{marginBottom:"22px"}} key={key}>
-                  <CardContent>
-                    <h5><AccountBalance style={{marginRight:"7px"}}/>{verifier.bankName}</h5>
-                    <h5><BusinessIcon style={{marginRight:"7px"}}/>{verifier.address}</h5>
-                    <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}} style={{marginTop:"5px"}}>Verify</Button>
-                  </CardContent>
-                </Card>
-              )
-          })
+            this.state.unverifiedVerifiers.length === 0 ? (
+              <div style={{textAlign:"center"}}>No pending requests :)</div>
+            ) : (
+              this.state.unverifiedVerifiers.map((verifier,key) => {
+                return(
+                  <Card style={{marginBottom:"22px"}} key={key}>
+                    <CardContent>
+                      <h5><AccountBalance style={{marginRight:"7px"}}/>{verifier.bankName}</h5>
+                      <h5><BusinessIcon style={{marginRight:"7px"}}/>{verifier.address}</h5>
+                      <Button variant="contained" color="primary" component="span" id={key} onClick={(event)=>{this.handleAdd(event, key)}} style={{marginTop:"5px"}}>Verify</Button>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            )
         }
 
       <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
