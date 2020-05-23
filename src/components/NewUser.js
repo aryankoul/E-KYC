@@ -61,6 +61,7 @@ class NewUser extends Component{
     console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
+    data.append('address',this.address.value)
     data.append('email', this.email.value);
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
@@ -87,6 +88,7 @@ class NewUser extends Component{
     this.setState({verifierAddress:'',userName:this.name.value});
     this.doc.files=null;
     this.name.value='';
+    this.address.value=''
   }
 
   handleChange(event) {
@@ -115,7 +117,8 @@ class NewUser extends Component{
     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
     element.href =  URL.createObjectURL(file)
-    element.download = `KycKeys-${this.state.userName}.txt`
+    const name = this.state.userName.replace(/ /g, "")
+    element.download = `KycKeys-${name}.txt`
     document.body.append(element)
     element.click()
     element.parentNode.removeChild(element)
@@ -206,6 +209,16 @@ class NewUser extends Component{
           type = "text"
           label="Phone Number"
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "address"
+          type = "text"
+          label="Address"
+          inputRef = {(address) => this.address = address}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
           />

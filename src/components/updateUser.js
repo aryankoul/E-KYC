@@ -34,26 +34,6 @@ class UpdateUser extends Component{
     // this.generateKeys();
   }
 
-//   generateKeys(){
-//     const pubKey = localStorage.getItem("publicKeyUser");
-//     const priKey = localStorage.getItem("privateKeyUser");
-//     if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
-//       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
-//         // keypair.privateKey, keypair.publicKey
-//         const publicKey = keypair.publicKey;
-//         const privateKey = keypair.privateKey;
-//         console.log(publicKey);
-//         console.log(privateKey);
-
-//         const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
-//         const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
-
-//         localStorage.setItem("publicKeyUser",publicKeyPem);
-//         localStorage.setItem("privateKeyUser",privateKeyPem);
-
-//     });
-//     }
-//   }
 
   handleSubmit(event) {
     event.preventDefault()
@@ -61,6 +41,7 @@ class UpdateUser extends Component{
     console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
+    data.append('address', this.address.value);
     data.append('email', this.email.value);
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
@@ -88,6 +69,7 @@ class UpdateUser extends Component{
     this.setState({verifierAddress:''});
     this.doc.files=null;
     this.kycId.value='';
+    this.address.value=''
   }
 
   handleChange(event) {
@@ -99,34 +81,6 @@ class UpdateUser extends Component{
       [name]: value
     })
   }
-
-//   handleDownload(event){
-//     event.preventDefault();
-
-//     const privateKey = localStorage.getItem("privateKeyUser")
-//     const publicKey = localStorage.getItem("publicKeyUser")
-
-//     const data = {
-//         'privateKeyUser': privateKey,
-//         'publicKeyUser': publicKey
-//     }
-
-//     const rawData = JSON.stringify(data)
-//     console.log(rawData)
-//     const element = document.createElement('a')
-//     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
-
-//     element.href =  URL.createObjectURL(file)
-//     element.download = "Kyc-Keys.txt"
-
-//     document.body.append(element)
-//     element.click()
-//     element.parentNode.removeChild(element)
-
-//     this.setState({
-//       displayDownload:false
-//     })
-//   }
 
   getVerfiers(){
     this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
@@ -221,6 +175,16 @@ class UpdateUser extends Component{
           type = "text"
           label="Phone Number"
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "address"
+          type = "text"
+          label="Address"
+          inputRef = {(address) => this.address = address}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
           />

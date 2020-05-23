@@ -79,7 +79,8 @@ class VerifierOnBoard extends Component {
     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
     element.href =  URL.createObjectURL(file)
-    element.download = `KycKeys-${this.state.name}.txt`
+    const name = this.state.name.replace(/ /g, "")
+    element.download = `KycKeys-${name}.txt`
     document.body.append(element)
     element.click()
     element.parentNode.removeChild(element)
@@ -129,7 +130,9 @@ class VerifierOnBoard extends Component {
           style={{ margin: "5%", width: "100%"}}
           />
           <br/>
-          <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload} style={{ margin: "5%", width: "100%"}}>Submit</Button>
+          <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
+            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload} style={{ margin: "5%", width: "100%"}}>Submit</Button>
+          </Tooltip>
           <br/><div hidden={!this.state.displayDownload}>
             <Tooltip title="Download KycKeys file" placement="bottom" interactive>
               <Fab color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>

@@ -7,6 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
+import HomeIcon from '@material-ui/icons/Home';
 
 import SnackBarNotification from './SnackBarNotification';
 
@@ -32,7 +33,8 @@ class AddUser extends Component {
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-      kycId: ""
+      kycId: "",
+      address:""
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -89,9 +91,9 @@ class AddUser extends Component {
           id:"",
           docId : "",
           loaded : false,
-          kycId: ""
-        })
-        this.loadRequests();
+          kycId: "",
+          address:""
+        },x=>{this.loadRequests()})
       }
     )
   }
@@ -154,7 +156,7 @@ class AddUser extends Component {
     window.open(url+'download/'+fileName, '_blank');
   }
 
-  handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId){
+  handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId,address){
     event.preventDefault();
     this.setState({
       name:name,
@@ -163,7 +165,8 @@ class AddUser extends Component {
       id:id,
       publicKey:publicKey,
       docType:docType,
-      kycId: kycId
+      kycId: kycId,
+      address:address
     })
   }
 
@@ -179,7 +182,8 @@ class AddUser extends Component {
       "phoneNumber": this.state.phoneNumber,
       "email": this.state.email,
       "docType": this.state.docType,
-      "docId" : this.state.docId
+      "docId" : this.state.docId,
+      "address" : this.state.address
     }
 
 
@@ -258,11 +262,9 @@ class AddUser extends Component {
       .then(data => {
         this.setState({
           snackbarMessage: data.message,
-          snackbarOpen: true
-        })
-        // this.props.loadComponent(false)
-        this.removeUser();
-        this.setState({name:'', phoneNumber:'', email:'', docType:'', docId:''})
+          snackbarOpen: true,
+          name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
+        },x=>{this.removeUser()})
       })
 
       if(flag==true){
@@ -311,9 +313,10 @@ class AddUser extends Component {
                                 <CardContent>
                                   <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>
-                                  <h5><EmailIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.email}</h5>
+                                  <h5><EmailIcon style={{marginRight:"7px"}}/>{request.email}</h5>
+                                  <h5><HomeIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.address}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
-                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId)}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}}>Verify</Button>
                                 </CardContent>
                               </Card>
                             )
@@ -360,6 +363,17 @@ class AddUser extends Component {
             type="text"
             placeholder = "email"
             value = {this.state.email}
+            style={{marginBottom:"15px"}}
+            />
+            <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Address"
+            name="address"
+            type="text"
+            placeholder = "Address"
+            value = {this.state.address}
             style={{marginBottom:"15px"}}
             />
             <TextField

@@ -128,7 +128,7 @@ class App extends Component {
             </Tabs>
           </AppBar>
           <div style={{backgroundColor:"white", display:"flex", justifyContent:"center", height:"-webkit-fill-available", width:"100%"}}>
-          <div role="tabpanel">
+          <div role="tabpanel" style={{width:"inherit"}}>
             <Admin kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedAdmin:val})}}/></div>
           </div>
         </div>
@@ -151,7 +151,7 @@ class App extends Component {
             <AppBar position="static" elevation={0}>
               <Tabs value={this.state.value} onChange={(e,value)=>this.handleChange(e,value)} centered>
                 <Tab label="User" />
-                <Tab label="Verifier" />
+                <Tab label="Verifier" disabled={this.state.accounts.length === 0}/>
               </Tabs>
             </AppBar>
             <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
@@ -193,13 +193,13 @@ class App extends Component {
   
   render() {
     return (
-      <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
+      <div className='app' style={{backgroundColor:"#2c387e",minHeight:"100vh",position:"fixed",width:"100%",overflow:"auto"}}>
         <Container style={{maxWidth:"190vh"}}>
         {
           this.state.loaded ? 
           (
             <>
-              <div style={{position:"fixed",bottom:"3%",right:"5%"}} hidden={this.state.type===0 || this.state.type==1 || this.state.type==3}>
+              <div style={{position:"fixed",bottom:"3%",right:"4%"}} hidden={this.state.type===0 || this.state.type==1 || this.state.type==3}>
               {
                 this.state.uploaded === false ? (<>
                   <input style={{display:'none'}} type="file" name="inputFile" accept='.txt' id="fab-button" onChange={e=>this.handleLogin(e.target.files[0])}/>

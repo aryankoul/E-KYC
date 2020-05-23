@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
+import HomeIcon from '@material-ui/icons/Home';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import ContactsIcon from '@material-ui/icons/Contacts';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
@@ -74,6 +75,7 @@ class VerifiedUsers extends Component {
                                                             <Typography style={{fontSize:"1.1rem"}}><ContactsIcon style={{marginRight:"15px"}}/>{user.data.name}</Typography>
                                                             <Typography style={{fontSize:"1.1rem"}}><PhoneIcon style={{marginRight:"15px"}}/>{user.data.phoneNumber}</Typography>
                                                             <Typography style={{fontSize:"1.1rem"}}><EmailIcon style={{marginRight:"15px"}}/>{user.data.email}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><HomeIcon style={{marginRight:"15px"}}/>{user.data.address}</Typography>
                                                             <Typography style={{fontSize:"1.1rem"}}><AssignmentIndIcon style={{marginRight:"15px"}}/>{user.data.docId}</Typography>
                                                             <Typography style={{fontSize:"1.1rem"}}><DescriptionIcon style={{marginRight:"15px"}}/>{user.data.docType}</Typography>
                                                             <Typography style={{fontSize:"1.1rem"}}><PermIdentityIcon style={{marginRight:"15px"}}/>{user.userId}</Typography>
