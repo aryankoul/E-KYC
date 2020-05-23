@@ -36,6 +36,7 @@ class AddUser extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleReject = this.handleReject.bind(this)
     this.textInput = React.createRef();
   } 
 
@@ -94,6 +95,33 @@ class AddUser extends Component {
         this.loadRequests();
       }
     )
+  }
+
+  handleReject(id, email){
+    console.log(id)
+      this.setState({ id: id },(x) => {
+    console.log(this.state.id)
+    this.removeUser()
+     const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        data: 'Your KYC request was rejected by bank. Please try again.'
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch(url+'sendMail',requestOptions)
+              .then(res => res.json())
+              .then(data => {
+                if(data.success === true){
+                   this.setState({snackbarOpen: true, snackbarMessage:'Kyc request rejected'})
+                }
+              })
+      })
+
   }
 
 
@@ -313,7 +341,8 @@ class AddUser extends Component {
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>
                                   <h5><EmailIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.email}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
-                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId)}}>Verify</Button>
+                                    <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId)}} style={{marginRight: "12px"}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleReject(request._id, request.email)}}>Reject</Button>
                                 </CardContent>
                               </Card>
                             )
