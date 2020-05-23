@@ -7,7 +7,8 @@ import EmailIcon from '@material-ui/icons/Email';
 
 import SnackBarNotification from './SnackBarNotification';
 
-const url = "http://localhost:8000/";
+
+import { serverUrl } from '../config/config'
 
 
 class Type2Requests extends Component {
@@ -40,7 +41,7 @@ class Type2Requests extends Component {
 
     loadRequests(){
         const currentAddress = this.props.account[0]
-        fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=2", {mode: 'cors'}).then(res => {
+        fetch(serverUrl+"getPendingRequest?verifierAddress="+currentAddress+"&type=2", {mode: 'cors'}).then(res => {
             return res.json()
         }).then(res=>{
             console.log(res.requests);
@@ -85,7 +86,7 @@ class Type2Requests extends Component {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json'
                   }};
-                  fetch(url+"initiateVerification",reqOptions)
+                  fetch(serverUrl+"initiateVerification",reqOptions)
                     .then(req => req.json())
                     .then(data => this.setState({
                         snackbarMessage: data.message,

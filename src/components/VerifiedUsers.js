@@ -9,7 +9,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-const url = "http://localhost:8000/";
+
+import { serverUrl } from '../config/config'
 
 class VerifiedUsers extends Component {
 
@@ -29,7 +30,7 @@ class VerifiedUsers extends Component {
 
     loadUsers(){
         const currentAddress = this.props.account[0]
-        fetch(url+"kycData?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
+        fetch(serverUrl+"kycData?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
             return res.json()
         }).then(res=>{
             console.log(res); 

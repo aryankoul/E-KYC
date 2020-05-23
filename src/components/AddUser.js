@@ -9,9 +9,8 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
 
 import SnackBarNotification from './SnackBarNotification';
-
+import { serverUrl } from '../config/config'
 var forge = require('node-forge');
-const url = "http://localhost:8000/";
 
 
 
@@ -45,7 +44,7 @@ class AddUser extends Component {
 
   loadRequests(){
     const currentAddress = this.props.account[0]
-    fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
+    fetch(serverUrl+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
       return res.json()
     }).then(res=>{
       // console.log(res.requests);
@@ -75,7 +74,7 @@ class AddUser extends Component {
         'Content-Type': 'application/json'
      }
     };
-    fetch(url+"request/delete",requestOptions)
+    fetch(serverUrl+"request/delete",requestOptions)
     .then(res=>{return res.json()}).then(
       data => {
         console.log(data);
@@ -151,7 +150,7 @@ class AddUser extends Component {
   handleDownload(event,fileName){
     event.preventDefault();
     console.log(fileName);
-    window.open(url+'download/'+fileName, '_blank');
+    window.open(serverUrl+'download/'+fileName, '_blank');
   }
 
   handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId){
@@ -236,7 +235,7 @@ class AddUser extends Component {
           'Content-Type': 'application/json'
        }
       };
-      fetch(url+"mailQR",requestOptions)
+      fetch(serverUrl+"mailQR",requestOptions)
     .then(res => console.log(res.text()));
     }).then(x=>{
       const reqOptions= {
@@ -253,7 +252,7 @@ class AddUser extends Component {
       }};
       console.log(reqOptions)
 
-      fetch(url+"verify",reqOptions)
+      fetch(serverUrl+"verify",reqOptions)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -276,7 +275,7 @@ class AddUser extends Component {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }};
-        fetch(url+"updateKyc",options)
+        fetch(serverUrl+"updateKyc",options)
               .then(res => res.json())
               .then(data => {
                this.setState({
