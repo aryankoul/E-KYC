@@ -24,6 +24,19 @@ class App extends Component {
 
   constructor(props) {
     super(props)
+    if(localStorage.getItem('lastStoredKey1')!==null && localStorage.getItem('lastStoredKey2')!==null)
+    {
+      this.state = {
+        loaded : false,
+        value : 0,
+        loadedExistingUser : false,
+        loadedNewUser : false,
+        loadedAdmin : false,
+        uploaded : true,
+        accounts:[]
+      }
+    }
+    else{
     this.state = {
       loaded : false,
       value : 0,
@@ -33,6 +46,7 @@ class App extends Component {
       uploaded : false,
       accounts:[]
     }
+  }
     this.handleLogin.bind(this);
     this.handleFile.bind(this);
   }
@@ -40,7 +54,6 @@ class App extends Component {
   componentDidMount() {
     this.loadBlockchainData();
   }
-
 
   loadBlockchainData() {
     const web3 = new Web3(providerUrl)
@@ -54,6 +67,7 @@ class App extends Component {
       localStorage.setItem("accounts", acc[0])
       window.ethereum.on('accountsChanged', function(accounts){
         if(localStorage.getItem("accounts") !== accounts[0]){
+            localStorage.clear();
             localStorage.setItem("accounts", accounts[0])
             window.location.reload()
             console.log(accounts)
@@ -75,8 +89,11 @@ class App extends Component {
   handleFile = (e) => {
     const content = e.target.result;
     var keys= JSON.parse(content)
+    var i=0;
     for(var key in keys){
+      i+=1
       localStorage.setItem(key,keys[key]);
+      localStorage.setItem("lastStoredKey"+i,keys[key])
     }
     this.setState({uploaded:true})
   }
