@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
 import { providerUrl } from '../config/config'
+import { contractNetworkPort } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
 
@@ -79,7 +80,7 @@ class App extends Component {
         })
       })
     }
-      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address);
+      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[contractNetworkPort].address);
       this.setState({ kycContract })
       console.log(kycContract)
 
