@@ -90,10 +90,10 @@ contract Kyc {
                     string memory _signature,
                     string memory _emailHash,
                     address verifierAddress) public {
-        require(
-            Users[_id].present == false,
-            "User already exist"
-         );
+        // require(
+        //     Users[_id].present == false,
+        //     "User already exist"
+        //  );
 
         Users[_id] = User(true, _signature, _emailHash);
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");

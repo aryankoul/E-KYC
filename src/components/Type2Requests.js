@@ -59,6 +59,7 @@ class Type2Requests extends Component {
             requests : requests,
             loaded : true
             },x=>{console.log(this.state)})
+            this.props.loadComponent(true)
         })
     
     }
@@ -85,8 +86,9 @@ class Type2Requests extends Component {
                       'Content-Type': 'application/json'
                   }};
                   fetch(url+"initiateVerification",reqOptions)
-                    .then(req => this.setState({
-                        snackbarMessage: 'Otp sent successfully',
+                    .then(req => req.json())
+                    .then(data => this.setState({
+                        snackbarMessage: data.message,
                         snackbarOpen: true
                     }))
             })
@@ -101,7 +103,8 @@ class Type2Requests extends Component {
             <br/>
             {
                 this.state.loaded === true ? (
-                    <div>
+                    this.props.uploaded === true ? (
+                        <div>
                         {
                             this.state.requests.length > 0 ? (
                                 this.state.requests.map((request,key)=>{
@@ -119,12 +122,12 @@ class Type2Requests extends Component {
                                     )
                                 })  
                             ) : (
-                                <div>No pending requests</div>
+                                <div style={{textAlign:'center'}}>No pending requests :)</div>
                             )
                         }
-                    
-                        <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
-                    </div>
+                            <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+                        </div>
+                    ) : (<div style={{textAlign:'center'}}>Login to view the pending requests</div>)
                 ) : (
                     <div>Not loaded</div>
                 )

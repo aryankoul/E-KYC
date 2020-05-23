@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Tooltip from '@material-ui/core/Tooltip';
+import Fab from '@material-ui/core/Fab';
 
 import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
@@ -15,7 +18,8 @@ class VerifierOnBoard extends Component {
       privateKey : '',
       snackbarOpen: false,
       snackbarMessage: '',
-      bankName: ''
+      bankName: '',
+      displayDownload : false
     }
     // console.log(props.kycContract);
   } 
@@ -54,8 +58,40 @@ class VerifierOnBoard extends Component {
 
     });
     }
-    
 
+  }
+
+  handleDownload(event){
+    event.preventDefault();
+
+    const address = this.props.account[0];
+    const privateKey = localStorage.getItem("privateKey"+address)
+    const publicKey = localStorage.getItem("publicKey"+address)
+
+    const pri = "privateKey"+address;
+    const pub = "publicKey"+address;
+
+    const data = {
+        [pri]: privateKey,
+        [pub]: publicKey
+    }
+
+    const rawData = JSON.stringify(data)
+    console.log(rawData)
+    const element = document.createElement('a')
+    const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
+
+    element.href =  URL.createObjectURL(file)
+    element.download = "Kyc-Keys.txt"
+
+    document.body.append(element)
+    element.click()
+    element.parentNode.removeChild(element)
+
+    this.setState({
+      displayDownload:false
+    })
+    window.location.reload();
   }
 
 
@@ -70,7 +106,8 @@ class VerifierOnBoard extends Component {
     kycContract.methods.addVerifier(bankName,account,publicKey).send({ from: account, gas: 672195 })
     this.setState({
         snackbarMessage: 'Verifier request Initiated',
-        snackbarOpen: true
+        snackbarOpen: true,
+        displayDownload:true
     })
     event.preventDefault()
 
@@ -79,7 +116,9 @@ class VerifierOnBoard extends Component {
 
   render() {
     return (
-      <form style={{ display:'flex', justifyContent:'center' }}>
+      <div style={{textAlign:"center",minWidth:"80%"}}>
+      <h3  style={{margin: "5%"}}>VerifierOnBoard</h3>
+      <form>
         <TextField
           required
           id="bankName"
@@ -90,11 +129,20 @@ class VerifierOnBoard extends Component {
           variant="outlined"
           style = {{margin: '10px'}}
           value = {this.state.bankName}
+          style={{ margin: "5%", width: "100%"}}
           />
           <br/>
-          <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style = {{margin: '10px'}}>Submit</Button>
+          <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload} style={{ margin: "5%", width: "100%"}}>Submit</Button>
+          <br/><div hidden={!this.state.displayDownload}>
+            <Tooltip title="Download Kyc-Keys.txt" placement="bottom" interactive>
+              <Fab color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
+                <GetAppIcon />
+              </Fab>
+            </Tooltip>
+          </div>
          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
       </form>
+      </div>
     );
   }
 }

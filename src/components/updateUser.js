@@ -14,7 +14,7 @@ import Fab from '@material-ui/core/Fab';
 import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
 
-class NewUser extends Component{
+class UpdateUser extends Component{
 
   constructor(props){
     console.log("hi")
@@ -25,35 +25,35 @@ class NewUser extends Component{
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-      displayDownload : false
+    //   displayDownload : false
     }
   }
 
   componentDidMount() {
     this.getVerfiers();
-    this.generateKeys();
+    // this.generateKeys();
   }
 
-  generateKeys(){
-    const pubKey = localStorage.getItem("publicKeyUser");
-    const priKey = localStorage.getItem("privateKeyUser");
-    if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
-      forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
-        // keypair.privateKey, keypair.publicKey
-        const publicKey = keypair.publicKey;
-        const privateKey = keypair.privateKey;
-        console.log(publicKey);
-        console.log(privateKey);
+//   generateKeys(){
+//     const pubKey = localStorage.getItem("publicKeyUser");
+//     const priKey = localStorage.getItem("privateKeyUser");
+//     if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
+//       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
+//         // keypair.privateKey, keypair.publicKey
+//         const publicKey = keypair.publicKey;
+//         const privateKey = keypair.privateKey;
+//         console.log(publicKey);
+//         console.log(privateKey);
 
-        const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
-        const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
+//         const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
+//         const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
 
-        localStorage.setItem("publicKeyUser",publicKeyPem);
-        localStorage.setItem("privateKeyUser",privateKeyPem);
+//         localStorage.setItem("publicKeyUser",publicKeyPem);
+//         localStorage.setItem("privateKeyUser",privateKeyPem);
 
-    });
-    }
-  }
+//     });
+//     }
+//   }
 
   handleSubmit(event) {
     event.preventDefault()
@@ -66,7 +66,8 @@ class NewUser extends Component{
     data.append('docType', this.docType.value);
     data.append('verifierAddress', this.state.verifierAddress);
     data.append('publicKey', localStorage.getItem("publicKeyUser"));
-    data.append('type',"1");
+    data.append('type',"3");
+    data.append('userId', this.kycId.value)
     data.append('doc', this.doc.files[0]);
     const requestOptions = {
       method: 'POST',
@@ -78,7 +79,6 @@ class NewUser extends Component{
         this.setState({
             snackbarMessage: data.message, 
             snackbarOpen: true,
-            displayDownload:true,
         })
     });
     this.phoneNo.value='';
@@ -87,6 +87,7 @@ class NewUser extends Component{
     this.docType.value='';
     this.setState({verifierAddress:''});
     this.doc.files=null;
+    this.kycId.value='';
   }
 
   handleChange(event) {
@@ -99,33 +100,33 @@ class NewUser extends Component{
     })
   }
 
-  handleDownload(event){
-    event.preventDefault();
+//   handleDownload(event){
+//     event.preventDefault();
 
-    const privateKey = localStorage.getItem("privateKeyUser")
-    const publicKey = localStorage.getItem("publicKeyUser")
+//     const privateKey = localStorage.getItem("privateKeyUser")
+//     const publicKey = localStorage.getItem("publicKeyUser")
 
-    const data = {
-        'privateKeyUser': privateKey,
-        'publicKeyUser': publicKey
-    }
+//     const data = {
+//         'privateKeyUser': privateKey,
+//         'publicKeyUser': publicKey
+//     }
 
-    const rawData = JSON.stringify(data)
-    console.log(rawData)
-    const element = document.createElement('a')
-    const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
+//     const rawData = JSON.stringify(data)
+//     console.log(rawData)
+//     const element = document.createElement('a')
+//     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
-    element.href =  URL.createObjectURL(file)
-    element.download = "Kyc-Keys.txt"
+//     element.href =  URL.createObjectURL(file)
+//     element.download = "Kyc-Keys.txt"
 
-    document.body.append(element)
-    element.click()
-    element.parentNode.removeChild(element)
+//     document.body.append(element)
+//     element.click()
+//     element.parentNode.removeChild(element)
 
-    this.setState({
-      displayDownload:false
-    })
-  }
+//     this.setState({
+//       displayDownload:false
+//     })
+//   }
 
   getVerfiers(){
     this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
@@ -150,7 +151,7 @@ class NewUser extends Component{
       {
         this.state.loaded === true ? (
         <div>
-        <h3  style={{margin: "2%"}}>New User</h3>
+        <h3  style={{margin: "2%"}}>Update Deatils</h3>
         <br/>
         <FormControl>
           <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
@@ -186,6 +187,20 @@ class NewUser extends Component{
           variant="outlined"
           style={{ margin: "2%", width: "80%" }}
           />
+          </div>
+          <div>
+          <TextField
+          required
+          id="outlined-required"
+          name = "kycId"
+          type = "text"
+          label="KYC ID"
+          inputRef = {(kycId) => this.kycId = kycId}   
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          />
+          </div>
+          <div>
           <TextField
           required
           id="outlined-required"
@@ -225,19 +240,19 @@ class NewUser extends Component{
           
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
           <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
-          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload}>
-              Upload
+          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
+              Upload New Doc
             </Button>
           </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload}>Submit</Button>
-          <div hidden={!this.state.displayDownload}>
+          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
+          {/* <div hidden={!this.state.displayDownload}>
             <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
               <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
                 <GetAppIcon />
               </Fab>
             </Tooltip>
-          </div>
+          </div> */}
           </div>
         </FormControl>
         </div>
@@ -254,4 +269,4 @@ class NewUser extends Component{
   }
 }
 
-export default NewUser;
+export default UpdateUser;
