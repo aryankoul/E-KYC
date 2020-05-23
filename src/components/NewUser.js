@@ -10,8 +10,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
-
 import SnackBarNotification from './SnackBarNotification';
+
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -83,10 +83,10 @@ class NewUser extends Component{
     });
     this.phoneNo.value='';
     this.email.value='';
-    this.name.value='';
     this.docType.value='';
-    this.setState({verifierAddress:''});
+    this.setState({verifierAddress:'',userName:this.name.value});
     this.doc.files=null;
+    this.name.value='';
   }
 
   handleChange(event) {
@@ -104,7 +104,6 @@ class NewUser extends Component{
 
     const privateKey = localStorage.getItem("privateKeyUser")
     const publicKey = localStorage.getItem("publicKeyUser")
-
     const data = {
         'privateKeyUser': privateKey,
         'publicKeyUser': publicKey
@@ -116,8 +115,7 @@ class NewUser extends Component{
     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
     element.href =  URL.createObjectURL(file)
-    element.download = "Kyc-Keys.txt"
-
+    element.download = `KycKeys-${this.state.userName}.txt`
     document.body.append(element)
     element.click()
     element.parentNode.removeChild(element)
@@ -125,6 +123,8 @@ class NewUser extends Component{
     this.setState({
       displayDownload:false
     })
+    localStorage.clear()
+
   }
 
   getVerfiers(){
@@ -230,9 +230,11 @@ class NewUser extends Component{
             </Button>
           </label>
           <br/>
+          <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
           <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload}>Submit</Button>
+          </Tooltip>
           <div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
+            <Tooltip title="Download KycKeys-User.txt" placement="top" interactive>
               <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
                 <GetAppIcon />
               </Fab>

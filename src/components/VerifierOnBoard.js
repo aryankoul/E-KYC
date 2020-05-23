@@ -4,10 +4,9 @@ import { Button } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
-
 import SnackBarNotification from './SnackBarNotification';
-const forge = require('node-forge');
 
+const forge = require('node-forge');
 
 class VerifierOnBoard extends Component {
 
@@ -21,7 +20,6 @@ class VerifierOnBoard extends Component {
       bankName: '',
       displayDownload : false
     }
-    // console.log(props.kycContract);
   } 
 
   componentDidMount(){
@@ -70,7 +68,6 @@ class VerifierOnBoard extends Component {
 
     const pri = "privateKey"+address;
     const pub = "publicKey"+address;
-
     const data = {
         [pri]: privateKey,
         [pub]: publicKey
@@ -82,8 +79,7 @@ class VerifierOnBoard extends Component {
     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
     element.href =  URL.createObjectURL(file)
-    element.download = "Kyc-Keys.txt"
-
+    element.download = `KycKeys-${this.state.name}.txt`
     document.body.append(element)
     element.click()
     element.parentNode.removeChild(element)
@@ -92,6 +88,7 @@ class VerifierOnBoard extends Component {
       displayDownload:false
     })
     window.location.reload();
+
   }
 
 
@@ -110,7 +107,7 @@ class VerifierOnBoard extends Component {
         displayDownload:true
     })
     event.preventDefault()
-
+    this.setState({name:this.state.bankName})
     this.setState({bankName: ''})
   }
 
@@ -134,7 +131,7 @@ class VerifierOnBoard extends Component {
           <br/>
           <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload} style={{ margin: "5%", width: "100%"}}>Submit</Button>
           <br/><div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download Kyc-Keys.txt" placement="bottom" interactive>
+            <Tooltip title="Download KycKeys file" placement="bottom" interactive>
               <Fab color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
                 <GetAppIcon />
               </Fab>

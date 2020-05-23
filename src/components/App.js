@@ -111,9 +111,6 @@ class App extends Component {
     this.setState({uploaded:false})
   }
 
-
-
-
   handleChange(e,value){
     this.setState({
       value:value
@@ -190,9 +187,7 @@ class App extends Component {
               <Loader />
             </div>
           </>
-       
         )
-        
     }
   }
   
@@ -209,7 +204,7 @@ class App extends Component {
                 this.state.uploaded === false ? (<>
                   <input style={{display:'none'}} type="file" name="inputFile" accept='.txt' id="fab-button" onChange={e=>this.handleLogin(e.target.files[0])}/>
                   <label htmlFor="fab-button">
-                    <Tooltip title="Login by uploading Kyc-Keys.txt file" placement="top" interactive>
+                    <Tooltip title="Login by uploading Kyc Key text File" placement="top" interactive>
                       <Fab color="secondary" aria-label="add" component="span">
                         <VpnKeyIcon />
                       </Fab>
