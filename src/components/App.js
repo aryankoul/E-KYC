@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
 import { providerUrl } from '../config/config'
+import { contractNetworkPort } from '../config/config'
 import kyc from '../abis/Kyc'
 import './App.css'
 
@@ -56,35 +57,44 @@ class App extends Component {
     this.loadBlockchainData();
   }
 
-  loadBlockchainData() {
+  async loadBlockchainData() {
     const web3 = new Web3(providerUrl)
-    window.ethereum.enable().catch((error)=>{
-      console.log(error);
-    });
-    const web32 = new Web3(window.ethereum)
-    return web32.eth.getAccounts().then((acc)=>{
-      console.log(acc);
-      this.setState({ accounts: acc })
-      localStorage.setItem("accounts", acc[0])
-      window.ethereum.on('accountsChanged', function(accounts){
-        if(localStorage.getItem("accounts") !== accounts[0]){
-            localStorage.clear();
-            localStorage.setItem("accounts", accounts[0])
-            window.location.reload()
-            console.log(accounts)
-        }
+    var flag=false;
+    if (typeof window.ethereum !== 'undefined'|| (typeof window.web3 !== 'undefined')) {
+      window.ethereum.enable().catch((error)=>{
+        console.log(error);
+      });
+      const web32 = new Web3(window.ethereum)
+      await web32.eth.getAccounts().then((acc)=>{
+        console.log(acc);
+        this.setState({ accounts: acc })
+        if(acc.length !== 0) flag=true
+        localStorage.setItem("accounts", acc[0])
+        window.ethereum.on('accountsChanged', function(accounts){
+          if(localStorage.getItem("accounts") !== accounts[0]){
+              localStorage.clear();
+              localStorage.setItem("accounts", accounts[0])
+              window.location.reload()
+              console.log(accounts)
+          }
+        })
       })
-      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address);
+    }
+      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[contractNetworkPort].address);
       this.setState({ kycContract })
+      console.log(kycContract)
 
-      if(acc.length === 0) this.setState({ type: 4 }) 
+      if(flag==false){
+        console.log("hi")
+        this.setState({ type: 4 })
+        localStorage.setItem("accounts","user")
+      }  
       else this.state.kycContract.methods.identifyAddress(this.state.accounts[0]).call({}, (err, type) => {
         console.log(type);
         this.setState({ type: type.toNumber() })
       })
       
       this.setState({ loaded:true })
-    })
   }
   
   handleFile = (e) => {

@@ -12,6 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 
 import SnackBarNotification from './SnackBarNotification';
+import { serverUrl } from '../config/config'
 const forge = require('node-forge');
 
 class UpdateUser extends Component{
@@ -54,7 +55,7 @@ class UpdateUser extends Component{
       method: 'POST',
       body: data
     }
-    fetch('http://localhost:8000/uploadDocument', requestOptions)
+    fetch(serverUrl+'uploadDocument', requestOptions)
     .then(res => res.json())
           .then(data  => {
         this.setState({

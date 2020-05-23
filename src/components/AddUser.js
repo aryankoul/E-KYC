@@ -10,9 +10,8 @@ import EmailIcon from '@material-ui/icons/Email';
 import HomeIcon from '@material-ui/icons/Home';
 
 import SnackBarNotification from './SnackBarNotification';
-
+import { serverUrl } from '../config/config'
 var forge = require('node-forge');
-const url = "http://localhost:8000/";
 
 
 
@@ -38,6 +37,7 @@ class AddUser extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleReject = this.handleReject.bind(this)
     this.textInput = React.createRef();
   } 
 
@@ -47,7 +47,7 @@ class AddUser extends Component {
 
   loadRequests(){
     const currentAddress = this.props.account[0]
-    fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
+    fetch(serverUrl+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
       return res.json()
     }).then(res=>{
       // console.log(res.requests);
@@ -77,7 +77,7 @@ class AddUser extends Component {
         'Content-Type': 'application/json'
      }
     };
-    fetch(url+"request/delete",requestOptions)
+    fetch(serverUrl+"request/delete",requestOptions)
     .then(res=>{return res.json()}).then(
       data => {
         console.log(data);
@@ -96,6 +96,33 @@ class AddUser extends Component {
         },x=>{this.loadRequests()})
       }
     )
+  }
+
+  handleReject(id, email){
+    console.log(id)
+      this.setState({ id: id },(x) => {
+    console.log(this.state.id)
+    this.removeUser()
+     const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        data: 'Your KYC request was rejected by bank. Please try again.'
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch(serverUrl+'sendMail',requestOptions)
+              .then(res => res.json())
+              .then(data => {
+                if(data.success === true){
+                   this.setState({snackbarOpen: true, snackbarMessage:'Kyc request rejected'})
+                }
+              })
+      })
+
   }
 
 
@@ -153,7 +180,7 @@ class AddUser extends Component {
   handleDownload(event,fileName){
     event.preventDefault();
     console.log(fileName);
-    window.open(url+'download/'+fileName, '_blank');
+    window.open(serverUrl+'download/'+fileName, '_blank');
   }
 
   handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId,address){
@@ -240,7 +267,7 @@ class AddUser extends Component {
           'Content-Type': 'application/json'
        }
       };
-      fetch(url+"mailQR",requestOptions)
+      fetch(serverUrl+"mailQR",requestOptions)
     .then(res => console.log(res.text()));
     }).then(x=>{
       const reqOptions= {
@@ -257,7 +284,7 @@ class AddUser extends Component {
       }};
       console.log(reqOptions)
 
-      fetch(url+"verify",reqOptions)
+      fetch(serverUrl+"verify",reqOptions)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -278,7 +305,7 @@ class AddUser extends Component {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }};
-        fetch(url+"updateKyc",options)
+        fetch(serverUrl+"updateKyc",options)
               .then(res => res.json())
               .then(data => {
                this.setState({
@@ -316,7 +343,8 @@ class AddUser extends Component {
                                   <h5><EmailIcon style={{marginRight:"7px"}}/>{request.email}</h5>
                                   <h5><HomeIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.address}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
-                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}}>Verify</Button>
+                                    <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}} style={{marginRight: "12px"}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleReject(request._id, request.email)}}>Reject</Button>
                                 </CardContent>
                               </Card>
                             )
