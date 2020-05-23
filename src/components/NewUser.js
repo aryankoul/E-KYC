@@ -7,7 +7,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Loader from './Loader.js'
 import SaveIcon from '@material-ui/icons/Save';
-
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Tooltip from '@material-ui/core/Tooltip';
+import Fab from '@material-ui/core/Fab';
 
 import SnackBarNotification from './SnackBarNotification';
 const forge = require('node-forge');
@@ -22,7 +24,8 @@ class NewUser extends Component{
       verifierAddress : '',
       loaded : false,
       snackbarMessage: '',
-      snackbarOpen: false
+      snackbarOpen: false,
+      displayDownload : false
     }
   }
 
@@ -74,7 +77,8 @@ class NewUser extends Component{
           .then(data  => {
         this.setState({
             snackbarMessage: data.message, 
-            snackbarOpen: true
+            snackbarOpen: true,
+            displayDownload:true,
         })
     });
     this.phoneNo.value='';
@@ -92,6 +96,34 @@ class NewUser extends Component{
 
     this.setState({
       [name]: value
+    })
+  }
+
+  handleDownload(event){
+    event.preventDefault();
+
+    const privateKey = localStorage.getItem("privateKeyUser")
+    const publicKey = localStorage.getItem("publicKeyUser")
+
+    const data = {
+        'privateKeyUser': privateKey,
+        'publicKeyUser': publicKey
+    }
+
+    const rawData = JSON.stringify(data)
+    console.log(rawData)
+    const element = document.createElement('a')
+    const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
+
+    element.href =  URL.createObjectURL(file)
+    element.download = "Kyc-Keys.txt"
+
+    document.body.append(element)
+    element.click()
+    element.parentNode.removeChild(element)
+
+    this.setState({
+      displayDownload:false
     })
   }
 
@@ -189,14 +221,22 @@ class NewUser extends Component{
           </div>
 
           <div>
-          <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="KYC DOCUMENT" id="contained-button-file"/>
-                    <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
-                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
-                       Upload
-                     </Button>
-                    </label>
+          
+          <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
+          <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
+          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload}>
+              Upload
+            </Button>
+          </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
+          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload}>Submit</Button>
+          <div hidden={!this.state.displayDownload}>
+            <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
+              <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
+                <GetAppIcon />
+              </Fab>
+            </Tooltip>
+          </div>
           </div>
         </FormControl>
         </div>

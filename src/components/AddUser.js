@@ -260,7 +260,8 @@ class AddUser extends Component {
           <div className='requests'>
             {
               this.state.loaded === true ? (
-                <div>
+                this.props.uploaded === true ? (
+                  <div>
                   {
                     this.state.requests.length > 0 ? (
                       <div style={{textAlign:"-webkit-center"}}>
@@ -279,9 +280,10 @@ class AddUser extends Component {
                             )
                           })
                         }
-                      </div>) : (<div>No pending first time user requets :)</div>)
+                      </div>) : (<div style={{textAlign:'center'}}>No pending first time user requets :)</div>)
                   }
                 </div>
+                ) : (<div style={{textAlign:'center'}}>Login to view pending requests</div>)
               ) : (<div>Not loaded</div>)
             }
           </div>
@@ -345,7 +347,7 @@ class AddUser extends Component {
             value = {this.state.docId}
             style={{marginBottom:"15px"}}
             />
-            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}}>Submit</Button>
+            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded}>Submit</Button>
           </FormControl>
   
           <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />

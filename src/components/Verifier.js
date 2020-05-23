@@ -42,18 +42,18 @@ class Verifier extends Component {
         </AppBar>
         <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",minHeight:"100vh",width:"100%"}}>
         <Grid container spacing={3} role="tabpanel" alignContent="center" justify="center" hidden={this.state.value !== 0}>
-        <AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} loadComponent={(val)=>this.setState({loadedAddUser:val})}/>
+        <AddUser kycContract = {this.props.kycContract} account = {this.props.accounts} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedAddUser:val})}/>
         </Grid>
         <br/>
         <div
           role="tabpanel"
           hidden={this.state.value !== 1}
-        ><div className="type2requets"><Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts} loadComponent={(val)=>this.setState({loadedType2User:val})}/> </div></div>
+        ><div className="type2requets"><Type2Requests kycContract = {this.props.kycContract} account = {this.props.accounts} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedType2User:val})}/> </div></div>
         <div
           role="tabpanel"
           hidden={this.state.value !== 2}
         >
-        <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts} loadComponent={(val)=>this.setState({loadedVerifiedUser:val})}/>  </div>
+        <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedVerifiedUser:val})}/>  </div>
         <br/></div>
       </div>
       <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.show()}>

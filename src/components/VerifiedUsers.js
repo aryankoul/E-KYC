@@ -62,30 +62,32 @@ class VerifiedUsers extends Component {
             <br/>
             {
                 this.state.loaded === true ? (
-                    <div>
-                        {
-                            this.state.users.length > 0 ? (
-                                
-                                        this.state.users.map((user,key)=>{
-                                            return(
-                                                <Card style={{marginBottom:"22px"}} key={key}>
-                                                    <CardContent>
-                                                        <Typography style={{fontSize:"1.1rem"}}><ContactsIcon style={{marginRight:"15px"}}/>{user.data.name}</Typography>
-                                                        <Typography style={{fontSize:"1.1rem"}}><PhoneIcon style={{marginRight:"15px"}}/>{user.data.phoneNumber}</Typography>
-                                                        <Typography style={{fontSize:"1.1rem"}}><EmailIcon style={{marginRight:"15px"}}/>{user.data.email}</Typography>
-                                                        <Typography style={{fontSize:"1.1rem"}}><AssignmentIndIcon style={{marginRight:"15px"}}/>{user.data.docId}</Typography>
-                                                        <Typography style={{fontSize:"1.1rem"}}><DescriptionIcon style={{marginRight:"15px"}}/>{user.data.docType}</Typography>
-                                                        <Typography style={{fontSize:"1.1rem"}}><PermIdentityIcon style={{marginRight:"15px"}}/>{user.userId}</Typography>
-                                                    </CardContent>
-                                                </Card>
-                                            )
-                                        })
+                    this.props.uploaded === true ? (
+                        <div>
+                            {
+                                this.state.users.length > 0 ? (
                                     
-                            ) : (
-                                <div>No User :)</div>
-                            )
-                        }
-                    </div>
+                                            this.state.users.map((user,key)=>{
+                                                return(
+                                                    <Card style={{marginBottom:"22px"}} key={key}>
+                                                        <CardContent>
+                                                            <Typography style={{fontSize:"1.1rem"}}><ContactsIcon style={{marginRight:"15px"}}/>{user.data.name}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><PhoneIcon style={{marginRight:"15px"}}/>{user.data.phoneNumber}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><EmailIcon style={{marginRight:"15px"}}/>{user.data.email}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><AssignmentIndIcon style={{marginRight:"15px"}}/>{user.data.docId}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><DescriptionIcon style={{marginRight:"15px"}}/>{user.data.docType}</Typography>
+                                                            <Typography style={{fontSize:"1.1rem"}}><PermIdentityIcon style={{marginRight:"15px"}}/>{user.userId}</Typography>
+                                                        </CardContent>
+                                                    </Card>
+                                                )
+                                            })
+                                        
+                                ) : (
+                                    <div style={{textAlign:'center'}}>No User :)</div>
+                                )
+                            }
+                        </div>
+                    ) : (<div style={{textAlign:'center'}}>Login to view the users</div>)
                 ) : (
                     <div>Not loaded</div>
                 )
