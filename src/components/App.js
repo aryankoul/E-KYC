@@ -30,7 +30,8 @@ class App extends Component {
       loadedExistingUser : false,
       loadedNewUser : false,
       loadedAdmin : false,
-      uploaded : false
+      uploaded : false,
+      accounts:[]
     }
     this.handleLogin.bind(this);
     this.handleFile.bind(this);
@@ -39,6 +40,7 @@ class App extends Component {
   componentDidMount() {
     this.loadBlockchainData();
   }
+
 
   loadBlockchainData() {
     const web3 = new Web3(providerUrl)
@@ -49,6 +51,14 @@ class App extends Component {
     return web32.eth.getAccounts().then((acc)=>{
       console.log(acc);
       this.setState({ accounts: acc })
+      localStorage.setItem("accounts", acc[0])
+      window.ethereum.on('accountsChanged', function(accounts){
+        if(localStorage.getItem("accounts") !== accounts[0]){
+            localStorage.setItem("accounts", accounts[0])
+            window.location.reload()
+            console.log(accounts)
+        }
+      })
       const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address);
       this.setState({ kycContract })
 
@@ -83,6 +93,8 @@ class App extends Component {
   }
 
 
+
+
   handleChange(e,value){
     this.setState({
       value:value
@@ -99,7 +111,7 @@ class App extends Component {
               <Tab label="Admin" />
             </Tabs>
           </AppBar>
-          <div style={{backgroundColor:"white",display:"flex",justifyContent:"center",height:"-webkit-fill-available",width:"100%"}}>
+          <div style={{backgroundColor:"white", display:"flex", justifyContent:"center", height:"-webkit-fill-available", width:"100%"}}>
           <div role="tabpanel">
             <Admin kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedAdmin:val})}}/></div>
           </div>
@@ -158,9 +170,8 @@ class App extends Component {
         
     }
   }
-
+  
   render() {
-    
     return (
       <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
         <Container style={{maxWidth:"190vh"}}>
