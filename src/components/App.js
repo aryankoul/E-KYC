@@ -65,7 +65,8 @@ class App extends Component {
       if(acc.length === 0) this.setState({ type: 4 }) 
       else this.state.kycContract.methods.identifyAddress(this.state.accounts[0]).call({}, (err, type) => {
         console.log(type);
-        this.setState({ type: type.toNumber() })} )
+        this.setState({ type: type.toNumber() })
+      })
       
       this.setState({ loaded:true })
     })
