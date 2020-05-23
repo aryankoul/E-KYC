@@ -10,6 +10,7 @@ import Admin from './Admin.js'
 import NewUser from './NewUser.js'
 import ExistingUser from './ExistingUser.js'
 import Loader from './Loader.js'
+import UpdateUser from './updateUser.js'
 
 import { Tab,Tabs,AppBar } from '@material-ui/core';
 import { Container } from '@material-ui/core';
@@ -163,7 +164,13 @@ class App extends Component {
             >
               <Grid container spacing={3} style={{margin: 4}}>
                 <Grid item xs = {4}>
+                  {
+                  this.state.uploaded === false?(
                   <NewUser kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedNewUser:val})}} uploaded={this.state.uploaded}/>
+                  ):(
+                    <UpdateUser kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedNewUser:val})}} uploaded={this.state.uploaded}/>
+                  )
+                  }
                 </Grid>
                 <Grid item xs = {8}>
                   <ExistingUser kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>this.setState({loadedExistingUser:val})} uploaded={this.state.uploaded}/>
