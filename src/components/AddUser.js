@@ -112,7 +112,7 @@ class AddUser extends Component {
         'Content-Type': 'application/json'
      }
     };
-    fetch(url+'sendMail',requestOptions)
+    fetch(serverUrl+'sendMail',requestOptions)
               .then(res => res.json())
               .then(data => {
                 if(data.success === true){
