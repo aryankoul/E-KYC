@@ -4,6 +4,9 @@ import { Button } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import SaveIcon from '@material-ui/icons/Save';
 import SnackBarNotification from './SnackBarNotification';
 
 const forge = require('node-forge');
@@ -18,7 +21,9 @@ class VerifierOnBoard extends Component {
       snackbarOpen: false,
       snackbarMessage: '',
       bankName: '',
-      displayDownload : false
+      displayDownload : false,
+      loading:false,
+      buttonLoaded:false
     }
   } 
 
@@ -86,7 +91,8 @@ class VerifierOnBoard extends Component {
     element.parentNode.removeChild(element)
 
     this.setState({
-      displayDownload:false
+      displayDownload:false,
+      buttonLoaded:false
     })
     window.location.reload();
 
@@ -95,6 +101,7 @@ class VerifierOnBoard extends Component {
 
   handleSubmit(event) {
     event.preventDefault()
+    this.setState({loading:true})
     const [bankName] = [this.state.bankName]
     const account = this.props.account[0];
     const publicKey = localStorage.getItem('publicKey'+account)
@@ -105,7 +112,9 @@ class VerifierOnBoard extends Component {
     this.setState({
         snackbarMessage: 'Verifier request Initiated',
         snackbarOpen: true,
-        displayDownload:true
+        displayDownload:true,
+        loading:false,
+        buttonLoaded:true
     })
     event.preventDefault()
     this.setState({name:this.state.bankName})
@@ -131,8 +140,15 @@ class VerifierOnBoard extends Component {
           />
           <br/>
           <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
-            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload} style={{ margin: "5%", width: "100%"}}>Submit</Button>
+          {
+            this.state.buttonLoaded ? (
+              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload || this.state.loading} style={{ margin: "5%", width: "100%",backgroundColor:"#02b205"}}>Submitted</Button>
+            ) : (
+              <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload || this.state.loading} style={{ margin: "5%", width: "100%"}}>Submit</Button>
+            )
+          }
           </Tooltip>
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '50%',top:"33%"}} />}
           <br/><div hidden={!this.state.displayDownload}>
             <Tooltip title="Download KycKeys file" placement="bottom" interactive>
               <Fab color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>

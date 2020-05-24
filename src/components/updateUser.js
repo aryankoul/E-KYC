@@ -7,9 +7,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Loader from './Loader.js'
 import SaveIcon from '@material-ui/icons/Save';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+
 
 import SnackBarNotification from './SnackBarNotification';
 import { serverUrl } from '../config/config'
@@ -26,7 +26,8 @@ class UpdateUser extends Component{
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-    //   displayDownload : false
+      loading:false,
+      buttonLoaded:false
     }
   }
 
@@ -38,6 +39,7 @@ class UpdateUser extends Component{
 
   handleSubmit(event) {
     event.preventDefault()
+    this.setState({loading:true})
     console.log(this.state.verifierAddress);
     console.log(this.doc.files[0])
     let data = new FormData();
@@ -61,6 +63,8 @@ class UpdateUser extends Component{
         this.setState({
             snackbarMessage: data.message, 
             snackbarOpen: true,
+            loading:false,
+            buttonLoaded:true
         })
     });
     this.phoneNo.value='';
@@ -210,14 +214,14 @@ class UpdateUser extends Component{
             </Button>
           </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
-          {/* <div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
-              <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
-                <GetAppIcon />
-              </Fab>
-            </Tooltip>
-          </div> */}
+          {
+            this.state.buttonLoaded ? (
+              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.state.loading}>Submitted</Button>
+            ) : (
+              <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.state.loading}>Submit</Button>
+            )
+          }
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '40%',marginTop:"3.5%"}} />}
           </div>
         </FormControl>
         </div>
