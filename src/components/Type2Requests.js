@@ -88,10 +88,13 @@ class Type2Requests extends Component {
                   }};
                   fetch(serverUrl+"initiateVerification",reqOptions)
                     .then(req => req.json())
-                    .then(data => this.setState({
-                        snackbarMessage: data.message,
-                        snackbarOpen: true
-                    }))
+                    .then(data => {
+                            this.setState({
+                                snackbarMessage: data.message,
+                                snackbarOpen: true
+                            })
+                            this.loadRequests()
+                        })
             })
         })
     }
