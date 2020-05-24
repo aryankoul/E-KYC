@@ -137,7 +137,7 @@ class App extends Component {
               <Tab label="Admin" />
             </Tabs>
           </AppBar>
-          <div style={{backgroundColor:"white", display:"flex", justifyContent:"center", height:"-webkit-fill-available", width:"100%"}}>
+          <div style={{backgroundColor:"white", display:"flex", justifyContent:"center", height:"100%",minHeight:"100vh", width:"100%"}}>
           <div role="tabpanel" style={{width:"inherit"}}>
             <Admin kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedAdmin:val})}}/></div>
           </div>
@@ -164,7 +164,7 @@ class App extends Component {
                 <Tab label="Verifier" disabled={this.state.accounts.length === 0}/>
               </Tabs>
             </AppBar>
-            <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", minHeight: "100vh", width:"100%"}}>
+            <div style={{backgroundColor:"white",display:"flex",justifyContent:"center", height: "100%", minHeight:"100vh", width:"100%"}}>
             <div
               role="tabpanel"
               hidden={this.state.value !== 0}
@@ -203,7 +203,7 @@ class App extends Component {
   
   render() {
     return (
-      <div className='app' style={{backgroundColor:"#2c387e",minHeight:"100vh",position:"fixed",width:"100%",overflow:"auto"}}>
+      <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
         <Container style={{maxWidth:"190vh"}}>
         {
           this.state.loaded ? 

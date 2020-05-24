@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import SnackBarNotification from './SnackBarNotification';
 import Loader from './Loader.js'
 
+import { serverUrl } from '../config/config'
 const forge = require('node-forge');
 
 class ExistingUSer extends Component{
@@ -69,7 +70,7 @@ class ExistingUSer extends Component{
           method: 'POST',
           body: formdata,
       };
-      fetch('http://localhost:8000/uploadDocument', requestOptions)
+      fetch(serverUrl+'uploadDocument', requestOptions)
       .then(res => res.json())
             .then(data => {
           this.setState({
@@ -117,6 +118,7 @@ class ExistingUSer extends Component{
 
     try{
       userData = privateKey.decrypt(userData)
+      console.log(userData)
     }catch(e){
         this.setState({
             snackbarMessage: 'error decrypting user data',
@@ -137,7 +139,7 @@ class ExistingUSer extends Component{
         'Content-Type': 'application/json'
      }
     };
-    fetch("http://localhost:8000/verifyOtp",requestOptions)
+    fetch(serverUrl+"verifyOtp",requestOptions)
     .then(res=> res.json()).then(
       data => {
           this.setState({
