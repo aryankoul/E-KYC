@@ -20,6 +20,7 @@ contract Kyc {
         bool verified;
         string bank;
         string publicKey;
+        string[] customers;
     }
 
     address[] unverified;
@@ -35,8 +36,20 @@ contract Kyc {
     mapping(string => User) Users;
 
 
+    function concat(string memory _a, string memory _b) public view returns (string memory){
+        bytes memory bytes_a = bytes(_a);
+        bytes memory bytes_b = bytes(_b);
+        string memory length_ab = new string(bytes_a.length + bytes_b.length);
+        bytes memory bytes_c = bytes(length_ab);
+        uint k = 0;
+        for (uint i = 0; i < bytes_a.length; i++) bytes_c[k++] = bytes_a[i];
+        for (uint j = 0; j < bytes_b.length; j++) bytes_c[k++] = bytes_b[j];
+        return string(bytes_c);
+    }
+
     //concen
     function costShare(string memory userId)  public payable {
+        Verifiers[msg.sender].customers.push(userId);
         Users[userId].vers.push(msg.sender);
         address payable[] memory v = Users[userId].vers;
         uint256 count = v.length;
@@ -52,6 +65,21 @@ contract Kyc {
         msg.sender.transfer(etherSent);
 
     }
+
+    function getCustomersList(address verifierAddress) public view returns(string memory){
+        require(Verifiers[verifierAddress].verified == true, "Unauthorized verifier");
+        string memory temp = "";
+        for(uint i = 0;i<Verifiers[verifierAddress].customers.length;i++){
+            if(i!=0){
+             temp = concat(temp,"#");
+             temp = concat(temp,Verifiers[verifierAddress].customers[i]);
+            }
+            else{
+             temp = concat(temp,Verifiers[verifierAddress].customers[i]);
+            }
+        }
+        return temp;
+    }
     
     //For User Data
 
@@ -62,7 +90,8 @@ contract Kyc {
     
     function pushVerifiers(address bankAddress, string memory bankName, string memory key) public returns (address[] memory){
         require(msg.sender == owner, "Unauthorized");
-        Verifiers[bankAddress] = Verifier(true, true, bankName, key);
+        string[] memory temp = new string[](0);
+        Verifiers[bankAddress] = Verifier(true, true, bankName, key, temp);
         verified.push(bankAddress);
     }
 
@@ -101,7 +130,8 @@ contract Kyc {
         // require(msg.sender == owner,"Unauthorized");
         require(Verifiers[verifierAddress].present == false, "Verifier already exists");
         unverified.push(verifierAddress);
-        Verifiers[verifierAddress] = Verifier(true, false, bankName, publicKey);
+        string[] memory temp = new string[](0);
+        Verifiers[verifierAddress] = Verifier(true, false, bankName, publicKey, temp);
     }
 
     function getPublicKey(address verifierAddress) public view returns(string memory){
@@ -120,6 +150,7 @@ contract Kyc {
         ver[0] = verifierAddress;
         Users[_id] = User(true, _signature, _emailHash, ver);
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
+        Verifiers[verifierAddress].customers.push(_id);
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
     }
 

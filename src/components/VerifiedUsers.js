@@ -30,30 +30,43 @@ class VerifiedUsers extends Component {
     }
 
     loadUsers(){
-        const currentAddress = this.props.account[0]
-        fetch(serverUrl+"kycData?verifierAddress="+currentAddress, {mode: 'cors'}).then(res => {
-            return res.json()
-        }).then(res=>{
-            console.log(res); 
-            return res.data;
-        })
-        .then(users => {
-            users = users.map((user,key)=>{
-                return(
-                    {
-                        ...user,
-                        data : JSON.parse(user.data)
-                    }
-                    
-                )
+        console.log(this.props.account[0])
+        this.props.kycContract.methods.getCustomersList(this.props.account[0]).call({}, (err, customersList) => {
+            console.log(customersList)
+            // var customerArray = customersList.split("#")
+            // console.log(customerArray)
+            const options= {
+                method: 'POST',
+                body: JSON.stringify({
+                  customerList: customersList,
+                }),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }};
+            fetch(serverUrl+"kycData2",options).then(res => {
+                return res.json()
+            }).then(res=>{
+                console.log(res); 
+                return res.data;
             })
-            this.setState({
-            users : users,
-            loaded : true
-            },x=>{console.log(this.state)})
-            this.props.loadComponent(true)
-        })
-    
+            .then(users => {
+                users = users.map((user,key)=>{
+                    return(
+                        {
+                            ...user,
+                            data : JSON.parse(user.data)
+                        }
+                        
+                    )
+                })
+                this.setState({
+                users : users,
+                loaded : true
+                },x=>{console.log(this.state)})
+                this.props.loadComponent(true)
+            })
+        });       
     }
 
     render(){
