@@ -142,7 +142,7 @@ class VerifierOnBoard extends Component {
           <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
           {
             this.state.buttonLoaded ? (
-              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload || this.state.loading} style={{ margin: "5%", width: "100%",backgroundColor:"#02b205"}}>Submitted</Button>
+              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload || this.state.loading} style={{ margin: "5%", width: "100%",backgroundColor:"#02b205"}}>{this.state.snackbarMessage}</Button>
             ) : (
               <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={this.state.displayDownload || this.state.loading} style={{ margin: "5%", width: "100%"}}>Submit</Button>
             )
@@ -156,7 +156,7 @@ class VerifierOnBoard extends Component {
               </Fab>
             </Tooltip>
           </div>
-         <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+         <SnackBarNotification open={this.state.snackbarOpen} message={"Please download the Kyc Key File"} toggle={(val) => this.setState({snackbarOpen: val})} />
       </form>
       </div>
     );

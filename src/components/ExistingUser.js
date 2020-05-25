@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckIcon from '@material-ui/icons/Check';
 import SnackBarNotification from './SnackBarNotification';
 import Loader from './Loader.js'
+import ClearIcon from '@material-ui/icons/Clear';
 
 import { serverUrl } from '../config/config'
 const forge = require('node-forge');
@@ -33,7 +34,8 @@ class ExistingUSer extends Component{
           loading:false,
           buttonLoaded:false,
           loadingOtp:false,
-          buttonLoadedOtp:false
+          buttonLoadedOtp:false,
+          verified:false
         }
     }
 
@@ -84,7 +86,8 @@ class ExistingUSer extends Component{
               snackbarMessage: data.message,
               snackbarOpen: true,
               loading:false,
-              buttonLoaded:true
+              buttonLoaded:true,
+              uploadMessage : data.message
           })
       });
       this.setState({userId: '', verifierAddress: ''})
@@ -122,7 +125,8 @@ class ExistingUSer extends Component{
           snackbarMessage: 'error decrypting otp',
           snackbarOpen: true,
           loadingOtp:false,
-          buttonLoadedOtp:false
+          buttonLoadedOtp:false,
+          otpMessage : 'error decrypting otp'
       })
       console.log("error decrypting otp")
       return
@@ -136,7 +140,8 @@ class ExistingUSer extends Component{
             snackbarMessage: 'error decrypting user data',
             snackbarOpen: true,
             loadingOtp:false,
-            buttonLoadedOtp:false
+            buttonLoadedOtp:false,
+            otpMessage: 'error decrypting user data'
         })
       console.log("error decrypting user data")
       return
@@ -160,8 +165,9 @@ class ExistingUSer extends Component{
               snackbarMessage: data.message, 
               snackbarOpen: true,
               loadingOtp:false,
-              buttonLoadedOtp:true
-          
+              buttonLoadedOtp:true,
+              otpMessage:data.message,
+              verified:true
           })
         console.log(data);
         this.setState({
@@ -228,7 +234,7 @@ class ExistingUSer extends Component{
                       startIcon={<CheckIcon />}
                       onClick= {(event) => this.handleSubmit(event)}
                       disabled={!this.props.uploaded || this.state.loading}>
-                      Submitted
+                      {this.state.uploadMessage}
                       </Button>
                       ) : (
                       <Button
@@ -256,15 +262,28 @@ class ExistingUSer extends Component{
                     <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.userData} name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
                     {
                       this.state.buttonLoadedOtp ? (
-                        <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<CheckIcon/>}
-                        onClick= {(event) => this.verifyOtp(event)}
-                        style={{margin: "2%", width: "80%",backgroundColor:"#02b205"}}
-                        disabled={!this.props.uploaded || this.state.loadingOtp}>
-                          Verified
-                        </Button>
+                        this.state.verified ? (
+                          <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<CheckIcon/>}
+                          onClick= {(event) => this.verifyOtp(event)}
+                          style={{margin: "2%", width: "80%",backgroundColor:"#02b205"}}
+                          disabled={!this.props.uploaded || this.state.loadingOtp}>
+                            {this.state.otpMessage}
+                          </Button>
+                        ) : (
+                          <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<ClearIcon/>}
+                          onClick= {(event) => this.verifyOtp(event)}
+                          style={{margin: "2%", width: "80%",backgroundColor:"#d50000"}}
+                          disabled={!this.props.uploaded || this.state.loadingOtp}>
+                            {this.state.otpMessage}
+                          </Button>
+                        )
+                        
                       ) : (
                         <Button
                         variant="contained"
@@ -280,7 +299,7 @@ class ExistingUSer extends Component{
                     {this.state.loadingOtp && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '78%',marginTop:"1%"}} />}
                     
                   </form>
-                  <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
+                  {/* <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} /> */}
                 </Grid>
               </Grid>
 

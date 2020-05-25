@@ -14,8 +14,8 @@ import SaveIcon from '@material-ui/icons/Save';
 
 import SnackBarNotification from './SnackBarNotification';
 import { serverUrl } from '../config/config'
-var forge = require('node-forge');
 
+var forge = require('node-forge');
 
 
 class AddUser extends Component {
@@ -68,8 +68,7 @@ class AddUser extends Component {
   }
 
   removeUser(){
-    // var formBody = new FormData();
-    // formBody.set("_id",this.state.id)
+
     console.log(this.state.id);
 
     const requestOptions = {
@@ -149,10 +148,6 @@ class AddUser extends Component {
 
   signUserData(address, rawData){ 
     console.log(rawData)
-      // var foo = localStorage.getItem('foo');
-      // foo=JSON.parse(foo);
-      // const pkeyPem = localStorage.getItem('privateKey');
-      // var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
       var priKey = localStorage.getItem('privateKey' + address[0]);
       var privateKey = forge.pki.privateKeyFromPem(priKey);
       console.log(privateKey)
@@ -169,17 +164,6 @@ class AddUser extends Component {
     var timestamp =  date.getTime();
     const userId = this.calculateHash(rawData+timestamp).toHex();
     return userId;
-  }
-
-  init(){
-
-    var rsa = forge.pki.rsa;
-    var keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
-    var foo = JSON.stringify({
-      publicKeyPem: forge.pki.publicKeyToPem(keypair.publicKey),
-      privateKeyPem: forge.pki.privateKeyToPem(keypair.privateKey)
-    });
-    localStorage.setItem('foo',foo)
   }
 
   handleDownload(event,fileName){
@@ -217,8 +201,6 @@ class AddUser extends Component {
       "docId" : this.state.docId,
       "address" : this.state.address
     }
-
-
 
     const rawData = JSON.stringify(data); 
     console.log(rawData)
@@ -439,7 +421,7 @@ class AddUser extends Component {
             />
             {
               this.state.buttonLoaded ? (
-                <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{backgroundColor:"#02b205"}} disabled={!this.props.uploaded || this.state.loading}>Submitted</Button>
+                <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{backgroundColor:"#02b205"}} disabled={!this.props.uploaded || this.state.loading}>{this.state.snackbarMessage}</Button>
               ) : (
                 <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded || this.state.loading}>Submit</Button>
               )
@@ -447,7 +429,11 @@ class AddUser extends Component {
           {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '50%',top:"93.5%"}} />}
           </FormControl>
   
+          {
+            this.state.buttonLoaded ? (<></>) : (
           <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
+            )
+          }
         </Grid>
       ]
     );

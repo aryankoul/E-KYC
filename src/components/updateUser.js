@@ -216,7 +216,7 @@ class UpdateUser extends Component{
           <br/>
           {
             this.state.buttonLoaded ? (
-              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.state.loading}>Submitted</Button>
+              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.state.loading}>{this.state.snackbarMessage}</Button>
             ) : (
               <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.state.loading}>Submit</Button>
             )
@@ -231,7 +231,7 @@ class UpdateUser extends Component{
           </div>
           )
       }
-          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+          {/* <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} /> */}
       </div>
       
     );

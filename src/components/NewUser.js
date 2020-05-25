@@ -255,7 +255,7 @@ class NewUser extends Component{
           <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
           {
             this.state.buttonLoaded ? (
-            <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}>Submitted</Button>
+            <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}>{this.state.snackbarMessage}</Button>
             ) :  (
             <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}>Submit</Button>
             )
@@ -278,7 +278,7 @@ class NewUser extends Component{
           </div>
           )
       }
-          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+          <SnackBarNotification open={this.state.snackbarOpen} message={"Please download the kyc key file"} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>
       
     );
