@@ -12,6 +12,7 @@ contract Kyc {
         bool present;
         string signature;
         string emailHash;
+        address payable[] vers;
     }
 
     struct Verifier{
@@ -30,8 +31,37 @@ contract Kyc {
     //From User's unique ID -> Verifier address
     mapping(string => string) linkedVerifiers;
 
-    //For User Data
+
     mapping(string => User) Users;
+
+
+    //concen
+    function concensusAlgorithm(string memory userId)  public payable {
+        address payable[] memory v = Users[userId].vers;
+        uint256 count = v.length;
+        uint256 etherSent = msg.value;
+        uint256 totalEth = msg.value/count;
+        uint256 transferAmt = totalEth/(count-1);
+        for(uint i = 0; i<v.length; i++){
+            if(v[i] != msg.sender) {
+                v[i].transfer(transferAmt);
+                etherSent = etherSent-transferAmt;
+            }
+        }
+        msg.sender.transfer(etherSent);
+
+    }
+
+  
+
+    function verifierAdd(string memory userId, address payable verifier) public {
+        Users[userId].vers.push(verifier);
+    }
+
+    
+
+
+    //For User Data
 
     function getUnverifiedVerifiers() public view returns (address[] memory) {
         require(msg.sender == owner, "Unauthorized");
@@ -89,13 +119,14 @@ contract Kyc {
     function addUser(string memory _id,
                     string memory _signature,
                     string memory _emailHash,
-                    address verifierAddress) public {
+                    address payable verifierAddress) public {
         // require(
         //     Users[_id].present == false,
         //     "User already exist"
         //  );
-
-        Users[_id] = User(true, _signature, _emailHash);
+        address payable[] memory ver = new address payable[](1);
+        ver[0] = verifierAddress;
+        Users[_id] = User(true, _signature, _emailHash, ver);
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
     }
