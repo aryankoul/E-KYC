@@ -87,10 +87,12 @@ class ExistingUSer extends Component{
               snackbarOpen: true,
               loading:false,
               buttonLoaded:true,
-              uploadMessage : data.message
+              uploadMessage : data.message,
+              userId: '', 
+              verifierAddress: '',
           })
       });
-      this.setState({userId: '', verifierAddress: ''})
+      this.setState({})
     }
 
     onFileChange = event => {
@@ -125,7 +127,7 @@ class ExistingUSer extends Component{
           snackbarMessage: 'error decrypting otp',
           snackbarOpen: true,
           loadingOtp:false,
-          buttonLoadedOtp:false,
+          buttonLoadedOtp:true,
           otpMessage : 'error decrypting otp'
       })
       console.log("error decrypting otp")
@@ -140,7 +142,7 @@ class ExistingUSer extends Component{
             snackbarMessage: 'error decrypting user data',
             snackbarOpen: true,
             loadingOtp:false,
-            buttonLoadedOtp:false,
+            buttonLoadedOtp:true,
             otpMessage: 'error decrypting user data'
         })
       console.log("error decrypting user data")

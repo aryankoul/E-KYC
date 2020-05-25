@@ -66,15 +66,16 @@ class UpdateUser extends Component{
             loading:false,
             buttonLoaded:true
         })
+        this.phoneNo.value='';
+        this.email.value='';
+        this.name.value='';
+        this.docType.value='';
+        this.setState({verifierAddress:''});
+        this.doc.files=null;
+        this.kycId.value='';
+        this.address.value='';
     });
-    this.phoneNo.value='';
-    this.email.value='';
-    this.name.value='';
-    this.docType.value='';
-    this.setState({verifierAddress:''});
-    this.doc.files=null;
-    this.kycId.value='';
-    this.address.value=''
+    
   }
 
   handleChange(event) {

@@ -182,7 +182,8 @@ class AddUser extends Component {
       publicKey:publicKey,
       docType:docType,
       kycId: kycId,
-      address:address
+      address:address,
+      buttonLoaded:false,
     })
   }
 

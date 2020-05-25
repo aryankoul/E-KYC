@@ -89,14 +89,15 @@ class NewUser extends Component{
             loading:false,
             buttonLoaded:true
         })
+        this.phoneNo.value='';
+        this.email.value='';
+        this.docType.value='';
+        this.setState({verifierAddress:'',userName:this.name.value});
+        this.doc.files=null;
+        this.name.value='';
+        this.address.value=''
     });
-    this.phoneNo.value='';
-    this.email.value='';
-    this.docType.value='';
-    this.setState({verifierAddress:'',userName:this.name.value});
-    this.doc.files=null;
-    this.name.value='';
-    this.address.value=''
+    
   }
 
   handleChange(event) {

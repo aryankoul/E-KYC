@@ -114,11 +114,11 @@ class VerifierOnBoard extends Component {
         snackbarOpen: true,
         displayDownload:true,
         loading:false,
-        buttonLoaded:true
+        buttonLoaded:true,
+        bankName: ''
     })
     event.preventDefault()
     this.setState({name:this.state.bankName})
-    this.setState({bankName: ''})
   }
 
   render() {
