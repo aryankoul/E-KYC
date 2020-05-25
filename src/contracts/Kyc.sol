@@ -36,7 +36,8 @@ contract Kyc {
 
 
     //concen
-    function concensusAlgorithm(string memory userId)  public payable {
+    function costShare(string memory userId)  public payable {
+        Users[userId].vers.push(msg.sender);
         address payable[] memory v = Users[userId].vers;
         uint256 count = v.length;
         uint256 etherSent = msg.value;
@@ -51,16 +52,7 @@ contract Kyc {
         msg.sender.transfer(etherSent);
 
     }
-
-  
-
-    function verifierAdd(string memory userId, address payable verifier) public {
-        Users[userId].vers.push(verifier);
-    }
-
     
-
-
     //For User Data
 
     function getUnverifiedVerifiers() public view returns (address[] memory) {

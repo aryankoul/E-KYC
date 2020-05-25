@@ -21,6 +21,7 @@ import Fab from '@material-ui/core/Fab';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import LockIcon from '@material-ui/icons/Lock';
 import Tooltip from '@material-ui/core/Tooltip';
+import { serverUrl } from '../config/config'
 
 class App extends Component {
 
@@ -55,8 +56,43 @@ class App extends Component {
 
   componentDidMount() {
     this.loadBlockchainData();
+    this.handleBalances();
   }
 
+  handleBalances(){
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        verifierAddress: this.state.accounts[0]
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch(serverUrl+'completedKyc', requestOptions)
+    .then((res) => res.json())
+    .then((data) => {
+      data.data.forEach(element => {
+        this.state.kycContract.costShare(element.userId).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
+          if(!err){
+            const requestOptions = {
+              method: 'POST',
+              body: JSON.stringify({
+                _id: element._id
+              }),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+             }
+            };
+            fetch(serverUrl+'completedKyc/delete', requestOptions);
+          }
+        });
+      });
+    })
+    
+  }
   async loadBlockchainData() {
     const web3 = new Web3(providerUrl)
     var flag=false;
