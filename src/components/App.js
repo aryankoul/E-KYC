@@ -56,14 +56,15 @@ class App extends Component {
 
   componentDidMount() {
     this.loadBlockchainData();
-    this.handleBalances();
   }
 
-  handleBalances(){
+  handleBalances(account,kycContract){
+    console.log(account)
+     console.log(kycContract)
     const requestOptions = {
       method: 'POST',
       body: JSON.stringify({
-        verifierAddress: this.state.accounts[0]
+        verifierAddress: account
       }),
       headers: {
         'Accept': 'application/json',
@@ -74,8 +75,10 @@ class App extends Component {
     .then((res) => res.json())
     .then((data) => {
       data.data.forEach(element => {
-        this.state.kycContract.costShare(element.userId).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
+        console.log(data)
+        kycContract.methods.costShare(element.userId).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
           if(!err){
+            console.log("delete wala")
             const requestOptions = {
               method: 'POST',
               body: JSON.stringify({
@@ -95,6 +98,9 @@ class App extends Component {
   }
   async loadBlockchainData() {
     const web3 = new Web3(providerUrl)
+    const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[contractNetworkPort].address);
+      this.setState({ kycContract })
+      console.log(kycContract)
     var flag=false;
     if (typeof window.ethereum !== 'undefined'|| (typeof window.web3 !== 'undefined')) {
       window.ethereum.enable().catch((error)=>{
@@ -104,6 +110,9 @@ class App extends Component {
       await web32.eth.getAccounts().then((acc)=>{
         console.log(acc);
         this.setState({ accounts: acc })
+        console.log(acc[0])
+        console.log(kycContract)
+        this.handleBalances(acc[0],kycContract);
         if(acc.length !== 0) flag=true
         localStorage.setItem("accounts", acc[0])
         window.ethereum.on('accountsChanged', function(accounts){
@@ -116,9 +125,8 @@ class App extends Component {
         })
       })
     }
-      const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[contractNetworkPort].address);
-      this.setState({ kycContract })
-      console.log(kycContract)
+      
+
 
       if(flag==false){
         console.log("hi")
