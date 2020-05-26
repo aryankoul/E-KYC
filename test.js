@@ -10,57 +10,49 @@ const kycContract = new web3.eth.Contract(kyc.abi,kyc.networks[5777].address);
 
 async.waterfall([
     function(cb){
-        kycContract.methods.pushVerifiers("0x2c59Ed0e25653d92D08F1E638fa98173FD46E95f","aa","aa").send({from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195},(err, res) => {
-            if(err) cb(err)
+        kycContract.methods.pushVerifiers("0x150495cF7Aae53567E54d1e3A370BAbc52F114F1","aa","aa").send({from: "0xCe9732F09cF2EEf0Bcc75561D3dcB7e0FE0168EE", gas: 672195},(err, res) => {
+            if(err) cb(err,null)
             else cb(null);
         })
     },
     function(cb){
-        kycContract.methods.pushVerifiers("0x91c6641a0800331f797B034F50378C048bE9EDf0","aa","aa").send({from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195}, (err, res) => {
-            if(err) cb(err)
+        kycContract.methods.pushVerifiers("0x523A3E0fed88CF7B8819e4C878094318648Ef6D9","aa","aa").send({from: "0xCe9732F09cF2EEf0Bcc75561D3dcB7e0FE0168EE", gas: 672195}, (err, res) => {
+            if(err) cb(err,null)
             else cb(null);
         })
     },
     function(cb){
-        kycContract.methods.pushVerifiers("0x5c4c852F8F65F9C7c6E677790EE4e4Ff0bfccD82","aa","aa").send({from: "0x0aFa784aD96F813906BBCc8B0f00a1C22577Ff7e", gas: 672195}, (err, res) => {
-            if(err) cb(err)
+        kycContract.methods.pushVerifiers("0xd3D349A00cA58A76dc4A564a0321cF2d84c4A299","aa","aa").send({from: "0xCe9732F09cF2EEf0Bcc75561D3dcB7e0FE0168EE", gas: 672195}, (err, res) => {
+            if(err) cb(err,null)
             else cb(null);
         })
     },
     function(cb){
-        kycContract.methods.addUser("aa", "aa", "aa","0x2c59Ed0e25653d92D08F1E638fa98173FD46E95f").send({from: "0x2c59Ed0e25653d92D08F1E638fa98173FD46E95f", gas: 672195}, (err, res) => {
-            if(err) cb(err)
+        kycContract.methods.addUser("aa", "aa", "aa","ecid","0x150495cF7Aae53567E54d1e3A370BAbc52F114F1","0x150495cF7Aae53567E54d1e3A370BAbc52F114F1").send({from: "0x150495cF7Aae53567E54d1e3A370BAbc52F114F1", gas: 672195}, (err, res) => {
+            if(err) cb(err,null)
             else cb(null);
         })
     },
     function(cb) {
-        kycContract.methods.verifierAdd("aa", "0x91c6641a0800331f797B034F50378C048bE9EDf0").send({from: "0x91c6641a0800331f797B034F50378C048bE9EDf0", gas: 672195}, (err, res) => {
-            if(err) cb(err)
+        kycContract.methods.costShare("aa","ecid2","0x523A3E0fed88CF7B8819e4C878094318648Ef6D9").send({from: "0x523A3E0fed88CF7B8819e4C878094318648Ef6D9", gas: 672195, value: 6000000000000000000}, (err, res) => {
+            if(err) cb(err,null);
             else cb(null);
-        })
-    }, 
-    function(cb) {
-        kycContract.methods.concensusAlgorithm("aa").send({from: "0x91c6641a0800331f797B034F50378C048bE9EDf0", gas: 672195, value: 6000000000000000000}, (err, res) => {
-            if(err) cb(err);
-            cb(null);
     }) 
     },
     function(cb) {
-        kycContract.methods.verifierAdd("aa", "0x5c4c852F8F65F9C7c6E677790EE4e4Ff0bfccD82").send({from: "0x5c4c852F8F65F9C7c6E677790EE4e4Ff0bfccD82", gas: 672195}, (err, res) => {
-            if(err) cb(err)
+        kycContract.methods.costShare("aa","ecid2","0xd3D349A00cA58A76dc4A564a0321cF2d84c4A299").send({from: "0xd3D349A00cA58A76dc4A564a0321cF2d84c4A299", gas: 672195}, (err, res) => {
+            if(err) cb(err, null)
             else cb(null);
         })
     }, 
     function(cb) {
-        kycContract.methods.concensusAlgorithm("aa").send({from: "0x5c4c852F8F65F9C7c6E677790EE4e4Ff0bfccD82", gas: 672195, value: 6000000000000000000}, (err, res) => {
+        kycContract.methods.getCustomerList("aa","0x150495cF7Aae53567E54d1e3A370BAbc52F114F1").call({}, (err, res) => {
             if(err) cb(err);
-            cb(null);
+            else cb(null,res);
     }) 
     }
 
 ],function(err, res){
     if(err) console.log(err);
-    else console.log("success");
+    else console.log(res);
 });
-
-

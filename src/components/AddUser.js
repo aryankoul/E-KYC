@@ -16,6 +16,7 @@ const IPFS = require('ipfs')
 
 
 
+
 class AddUser extends Component {
 
   constructor(props) {
@@ -229,10 +230,11 @@ class AddUser extends Component {
     console.log(rawData)
     var cid = await this.main(rawData);
     console.log(cid)
-    var userId="",flag=false
+    var userId="",flag=false,mode=1;
     if(this.state.kycId!=="" && this.state.kycId!=null){
       userId=this.state.kycId
       flag=true
+      mode=3;
     }
     else{
       userId = this.makeUserId(rawData)
@@ -255,7 +257,10 @@ class AddUser extends Component {
       var plaintextBytesCid = forge.util.encodeUtf8(cid);
       var encryptedCid = pkey.encrypt(plaintextBytesCid)
       encryptedCid = forge.util.encode64(encryptedCid)
-      this.props.kycContract.methods.addUser(userId, signature, hash, encryptedCid, this.props.account[0]).send({ from: this.props.account[0], gas: 6721975})
+      var verifierPublicKey = forge.pki.publicKeyFromPem(key)
+      var encCid = verifierPublicKey.encrypt(cid)
+      encCid=forge.util.encode64(encCid)
+      this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode).send({ from: this.props.account[0], gas: 6721975})
       var plaintextBytes = forge.util.encodeUtf8(rawData);
       var encrypted = pkey.encrypt(plaintextBytes)
       encrypted = forge.util.encode64(encrypted)
@@ -328,6 +333,38 @@ class AddUser extends Component {
                this.props.loadComponent(false)
               })
         console.log(x);
+            this.props.kycContract.methods.getVerifiersList(userId).call({},(err, res)=>{
+                var verifiers = res;
+                console.log(verifiers)
+              var verifiersArray = verifiers.split("#")
+              const options= {
+                method: 'POST',
+                body: JSON.stringify({
+                  verifiersList: verifiers,
+                }),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }};
+            fetch(serverUrl+"publicKeyArray",options)
+            .then((res) => res.json())
+            .then((res)=>{
+              console.log(res)
+                var eCid=[]
+                var data = res.data;
+              for(var i=0;i<data.length;i++){
+                var pkey=forge.pki.publicKeyFromPem(data[i].publicKey)
+                var encCid = pkey.encrypt(cid)
+                encCid = forge.util.encode64(encCid)
+                eCid.push(encCid);
+              }
+              console.log(encCid)
+              for(var i=0;i<eCid.length;i++){
+                this.props.kycContract.methods.updateCid(verifiersArray[i],userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+              }
+            })
+            })
+          
       }
       
         console.log(x);

@@ -67,6 +67,7 @@ class Type2Requests extends Component {
 
     handleClick(e,id,userPubKey,email,_id, encryptedData){
         e.preventDefault();
+        console.log(id)
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
             this.props.kycContract.methods.getVerifierPublicKeyForUser(id).call().then(key=>{

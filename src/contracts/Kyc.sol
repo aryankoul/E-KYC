@@ -13,6 +13,7 @@ contract Kyc {
         string signature;
         string emailHash;
         address payable[] vers;
+        string[] verAddress;
     }
 
     struct Verifier{
@@ -30,8 +31,10 @@ contract Kyc {
     //To store verifier data with key : publickey
     mapping(address => Verifier) Verifiers;
 
-    //From User's unique ID -> Verifier address
+    //From User's unique ID -> Verifier public key
     mapping(string => string) linkedVerifiers;
+
+    mapping(string => address) homeVerifier;
 
 
     mapping(string => User) Users;
@@ -49,10 +52,19 @@ contract Kyc {
     }
 
     //concen
-    function costShare(string memory userId, string memory cid)  public payable {
-        Verifiers[msg.sender].customers.push(userId);
+    function costShare(string memory userId, string memory cid, string memory vAddress)  public payable {
+        bool flag = false;
+        for(uint i = 0;i<Verifiers[msg.sender].customers.length;i++){
+            if(keccak256(bytes(Verifiers[msg.sender].customers[i])) == keccak256(bytes(userId))){
+                flag = true;
+            }
+        }
+        if(flag==false){
+            Verifiers[msg.sender].customers.push(userId);
+            Users[userId].vers.push(msg.sender);
+            Users[userId].verAddress.push(vAddress);
+        }
         Verifiers[msg.sender].encryptedCid[userId] = cid;
-        Users[userId].vers.push(msg.sender);
         address payable[] memory v = Users[userId].vers;
         uint256 count = v.length;
         uint256 etherSent = msg.value;
@@ -66,6 +78,17 @@ contract Kyc {
         }
         msg.sender.transfer(etherSent);
 
+    }
+
+
+
+    function updateCid(address newVerifierAddress, string memory userId, string  memory newEncryptedCid) public {
+        address homeVerifierAddress = homeVerifier[userId];
+        require(msg.sender == homeVerifierAddress,"Unauthorized update");
+        Verifiers[newVerifierAddress].encryptedCid[userId] = newEncryptedCid;
+        // for(uint i = 0;i<newVerifierAddress.length;i++){
+        //     Verifiers[newVerifierAddress[i]].encryptedCid[userId] = newEncryptedCid[i];
+        // }
     }
 
     function getCustomersList(address verifierAddress) public view returns(string memory){
@@ -83,9 +106,25 @@ contract Kyc {
         return temp;
     }
 
+    function getVerifiersList(string memory userId) public view returns(string memory){
+        // require(homeVerifier[userId] == verifierAddress, "Unauthorized verifier");
+        string memory temp = "";
+        for(uint i = 0;i<Users[userId].verAddress.length;i++){
+            if(i!=0){
+             temp = concat(temp,"#");
+             temp = concat(temp,Users[userId].verAddress[i]);
+            }
+            else{
+             temp = concat(temp,Users[userId].verAddress[i]);
+            }
+        }
+        return temp;
+        // return Users[userId].verAddress;
+    }
+
     function getCidForUser(string memory userId, address verifierAddress) public view returns(string memory){
         require(Users[userId].present==true,"User does not exists");
-        return Verifiers[verifierAddress].encryptedCid[userId];;
+        return Verifiers[verifierAddress].encryptedCid[userId];
     }
     
     //For User Data
@@ -149,18 +188,39 @@ contract Kyc {
                     string memory _signature,
                     string memory _emailHash,
                     string memory encryptedCid,
-                    address payable verifierAddress) public {
-        // require(
-        //     Users[_id].present == false,
-        //     "User already exist"
-        //  );
-        address payable[] memory ver = new address payable[](1);
-        ver[0] = verifierAddress;
-        Users[_id] = User(true, _signature, _emailHash, ver);
+                    address payable verifierAddress,
+                    string memory vAddress,
+                    uint mode) public {
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
-        Verifiers[verifierAddress].customers.push(_id);
-        Verifiers[verifierAddress].encryptedCid[_id] = encryptedCid;
+        if(mode==1){
+            require(
+            Users[_id].present == false,
+            "User already exist");
+            address payable[] memory ver = new address payable[](1);
+            string[] memory verAddress = new string[](1);
+            ver[0] = verifierAddress;
+            verAddress[0] = vAddress;
+            Users[_id] = User(true, _signature, _emailHash, ver, verAddress);
+        }
+        bool flag = false;
+        for(uint i = 0;i<Verifiers[verifierAddress].customers.length;i++){
+            if(keccak256(bytes(Verifiers[verifierAddress].customers[i])) == keccak256(bytes(_id)))
+                flag = true;
+        }
+        if(flag==false){
+            Verifiers[verifierAddress].customers.push(_id);
+        }
+        if(mode==3){
+            Users[_id].signature = _signature;
+            Users[_id].emailHash = _emailHash;
+            if(flag==false){
+                Users[_id].vers.push(verifierAddress);
+                Users[_id].verAddress.push(vAddress);
+            }
+        }
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
+        homeVerifier[_id] = verifierAddress;
+        Verifiers[verifierAddress].encryptedCid[_id] = encryptedCid;
     }
 
     function getUserCid(string memory userId, address verifierAddress) public returns(string memory) {

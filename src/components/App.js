@@ -76,7 +76,7 @@ class App extends Component {
     .then((data) => {
       data.data.forEach(element => {
         console.log(data)
-        kycContract.methods.costShare(element.userId,element.encryptedCid).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
+        kycContract.methods.costShare(element.userId,element.encryptedCid,account).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
           if(!err){
             console.log("delete wala")
             const requestOptions = {
