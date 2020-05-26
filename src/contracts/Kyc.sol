@@ -21,6 +21,7 @@ contract Kyc {
         string bank;
         string publicKey;
         string[] customers;
+        mapping(string => string) encryptedCid;
     }
 
     address[] unverified;
@@ -48,8 +49,9 @@ contract Kyc {
     }
 
     //concen
-    function costShare(string memory userId)  public payable {
+    function costShare(string memory userId, string memory cid)  public payable {
         Verifiers[msg.sender].customers.push(userId);
+        Verifiers[msg.sender].encryptedCid[userId] = cid;
         Users[userId].vers.push(msg.sender);
         address payable[] memory v = Users[userId].vers;
         uint256 count = v.length;
@@ -79,6 +81,11 @@ contract Kyc {
             }
         }
         return temp;
+    }
+
+    function getCidForUser(string memory userId, address verifierAddress) public view returns(string memory){
+        require(Users[userId].present==true,"User does not exists");
+        return Verifiers[verifierAddress].encryptedCid[userId];;
     }
     
     //For User Data
@@ -141,6 +148,7 @@ contract Kyc {
     function addUser(string memory _id,
                     string memory _signature,
                     string memory _emailHash,
+                    string memory encryptedCid,
                     address payable verifierAddress) public {
         // require(
         //     Users[_id].present == false,
@@ -151,7 +159,13 @@ contract Kyc {
         Users[_id] = User(true, _signature, _emailHash, ver);
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
         Verifiers[verifierAddress].customers.push(_id);
+        Verifiers[verifierAddress].encryptedCid[_id] = encryptedCid;
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
+    }
+
+    function getUserCid(string memory userId, address verifierAddress) public returns(string memory) {
+        require(Verifiers[verifierAddress].verified==true,"Unauthorized");
+        return Verifiers[verifierAddress].encryptedCid[userId];
     }
 
     function getUserSignature(string memory _id) public view returns (string memory) {

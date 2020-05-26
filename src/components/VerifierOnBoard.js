@@ -5,6 +5,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 import SnackBarNotification from './SnackBarNotification';
+import {serverUrl} from '../config/config'
 
 const forge = require('node-forge');
 
@@ -107,6 +108,18 @@ class VerifierOnBoard extends Component {
         snackbarOpen: true,
         displayDownload:true
     })
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        verifierAddress: account,
+        publicKey:publicKey
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch(serverUrl+'publicKey', requestOptions);
     event.preventDefault()
     this.setState({name:this.state.bankName})
     this.setState({bankName: ''})

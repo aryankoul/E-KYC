@@ -12,6 +12,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import SnackBarNotification from './SnackBarNotification';
 import { serverUrl } from '../config/config'
 var forge = require('node-forge');
+const IPFS = require('ipfs')
 
 
 
@@ -197,7 +198,16 @@ class AddUser extends Component {
     })
   }
 
-  handleSubmit(event) {
+  async  main (rawData) {
+    const node = await IPFS.create({silent: true});
+    const results = node.add(rawData)
+    for await (const { cid } of results) {
+      console.log(cid.toString());
+      return cid.toString();
+    }
+  }
+
+  async handleSubmit (event) {
 
     event.preventDefault();
 
@@ -217,9 +227,9 @@ class AddUser extends Component {
 
     const rawData = JSON.stringify(data); 
     console.log(rawData)
-    
+    var cid = await this.main(rawData);
+    console.log(cid)
     var userId="",flag=false
-
     if(this.state.kycId!=="" && this.state.kycId!=null){
       userId=this.state.kycId
       flag=true
@@ -232,7 +242,7 @@ class AddUser extends Component {
     const hash = emailHash
     console.log(hash)
     
-    const signature = this.signUserData(this.props.account,rawData);
+    const signature = this.signUserData(this.props.account,cid);
     console.log(signature)
     console.log(this.props.account[0])
     console.log(this.textInput.current)
@@ -241,13 +251,16 @@ class AddUser extends Component {
     this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
     .then((key)=>{
       console.log(this.state.publicKey);
-      this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
       var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
+      var plaintextBytesCid = forge.util.encodeUtf8(cid);
+      var encryptedCid = pkey.encrypt(plaintextBytesCid)
+      encryptedCid = forge.util.encode64(encryptedCid)
+      this.props.kycContract.methods.addUser(userId, signature, hash, encryptedCid, this.props.account[0]).send({ from: this.props.account[0], gas: 6721975})
       var plaintextBytes = forge.util.encodeUtf8(rawData);
       var encrypted = pkey.encrypt(plaintextBytes)
       encrypted = forge.util.encode64(encrypted)
       var qrData={
-        encryptedData:encrypted,
+        encryptedData:encryptedCid,
         publicKey:this.state.publicKey,
         userId:userId,
         email:this.state.email
