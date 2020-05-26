@@ -11,8 +11,8 @@ import HomeIcon from '@material-ui/icons/Home';
 
 import SnackBarNotification from './SnackBarNotification';
 import { serverUrl } from '../config/config'
+import {ipfsPublish} from '../config/config'
 var forge = require('node-forge');
-const IPFS = require('ipfs')
 
 
 
@@ -199,13 +199,23 @@ class AddUser extends Component {
     })
   }
 
-  async  main (rawData) {
-    const node = await IPFS.create({silent: true});
-    const results = node.add(rawData)
-    for await (const { cid } of results) {
-      console.log(cid.toString());
-      return cid.toString();
+  async uploadFile (rawData) {
+    const blob = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
+    var fileOfBlob = new File([blob], 'aFileName.txt');
+    let data = new FormData();
+    data.append('file', fileOfBlob);
+    const requestOptions = {
+      method: 'POST',
+      body: data
     }
+    let response = await fetch(ipfsPublish, requestOptions);
+    let res = await response.json();
+    return res.Hash;
+    // .then(res => res.json())
+    //       .then(data  => {
+    //         console.log(data)
+    //       return data.Hash;
+    // });
   }
 
   async handleSubmit (event) {
@@ -228,7 +238,7 @@ class AddUser extends Component {
 
     const rawData = JSON.stringify(data); 
     console.log(rawData)
-    var cid = await this.main(rawData);
+    var cid = await this.uploadFile(rawData);
     console.log(cid)
     var userId="",flag=false,mode=1;
     if(this.state.kycId!=="" && this.state.kycId!=null){
@@ -309,7 +319,9 @@ class AddUser extends Component {
           snackbarMessage: data.message,
           snackbarOpen: true,
           name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
-        },x=>{this.removeUser()})
+        },x=>{
+          this.removeUser()
+        })
       })
 
       if(flag==true){
