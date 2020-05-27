@@ -52,6 +52,7 @@ class Verifier extends Component {
         <div
           role="tabpanel"
           hidden={this.state.value !== 2}
+          style={{width:"100%"}}
         >
         <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedVerifiedUser:val})}/>  </div>
         <br/></div>

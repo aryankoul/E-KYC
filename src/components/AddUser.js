@@ -312,17 +312,17 @@ class AddUser extends Component {
       }};
       console.log(reqOptions)
 
-      fetch(serverUrl+"verify",reqOptions)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          snackbarMessage: data.message,
-          snackbarOpen: true,
-          name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
-        },x=>{
-          this.removeUser()
-        })
-      })
+      // fetch(serverUrl+"verify",reqOptions)
+      // .then(res => res.json())
+      // .then(data => {
+      //   this.setState({
+      //     snackbarMessage: data.message,
+      //     snackbarOpen: true,
+      //     name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
+      //   },x=>{
+      //     this.removeUser()
+      //   })
+      // })
 
       if(flag==true){
         const options= {
