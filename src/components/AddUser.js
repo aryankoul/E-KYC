@@ -8,12 +8,16 @@ import CardContent from '@material-ui/core/CardContent';
 import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
 import HomeIcon from '@material-ui/icons/Home';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import SaveIcon from '@material-ui/icons/Save';
 
 import SnackBarNotification from './SnackBarNotification';
 import { serverUrl } from '../config/config'
 import {ipfsPublish} from '../config/config'
 var forge = require('node-forge');
 
+var forge = require('node-forge');
 
 
 
@@ -35,7 +39,9 @@ class AddUser extends Component {
       snackbarMessage: '',
       snackbarOpen: false,
       kycId: "",
-      address:""
+      address:"",
+      loading:false,
+      buttonLoaded:false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -65,8 +71,7 @@ class AddUser extends Component {
   }
 
   removeUser(){
-    // var formBody = new FormData();
-    // formBody.set("_id",this.state.id)
+
     console.log(this.state.id);
 
     const requestOptions = {
@@ -146,10 +151,6 @@ class AddUser extends Component {
 
   signUserData(address, rawData){ 
     console.log(rawData)
-      // var foo = localStorage.getItem('foo');
-      // foo=JSON.parse(foo);
-      // const pkeyPem = localStorage.getItem('privateKey');
-      // var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
       var priKey = localStorage.getItem('privateKey' + address[0]);
       var privateKey = forge.pki.privateKeyFromPem(priKey);
       console.log(privateKey)
@@ -168,17 +169,6 @@ class AddUser extends Component {
     return userId;
   }
 
-  init(){
-
-    var rsa = forge.pki.rsa;
-    var keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
-    var foo = JSON.stringify({
-      publicKeyPem: forge.pki.publicKeyToPem(keypair.publicKey),
-      privateKeyPem: forge.pki.privateKeyToPem(keypair.privateKey)
-    });
-    localStorage.setItem('foo',foo)
-  }
-
   handleDownload(event,fileName){
     event.preventDefault();
     console.log(fileName);
@@ -195,7 +185,8 @@ class AddUser extends Component {
       publicKey:publicKey,
       docType:docType,
       kycId: kycId,
-      address:address
+      address:address,
+      buttonLoaded:false,
     })
   }
 
@@ -221,7 +212,7 @@ class AddUser extends Component {
   async handleSubmit (event) {
 
     event.preventDefault();
-
+    this.setState({loading:true})
     var emailHash = this.calculateHash(this.state.email).toHex();
     console.log(emailHash)
    
@@ -233,8 +224,6 @@ class AddUser extends Component {
       "docId" : this.state.docId,
       "address" : this.state.address
     }
-
-
 
     const rawData = JSON.stringify(data); 
     console.log(rawData)
@@ -312,17 +301,17 @@ class AddUser extends Component {
       }};
       console.log(reqOptions)
 
-      // fetch(serverUrl+"verify",reqOptions)
-      // .then(res => res.json())
-      // .then(data => {
-      //   this.setState({
-      //     snackbarMessage: data.message,
-      //     snackbarOpen: true,
-      //     name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
-      //   },x=>{
-      //     this.removeUser()
-      //   })
-      // })
+      fetch(serverUrl+"verify",reqOptions)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          snackbarMessage: data.message,
+          snackbarOpen: true,
+          loading:false,
+          buttonLoaded:true,
+          name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
+        },x=>{this.removeUser()})
+      })
 
       if(flag==true){
         const options= {
@@ -340,7 +329,9 @@ class AddUser extends Component {
               .then(data => {
                this.setState({
                   snackbarMessage: data.message,
-                  snackbarOpen: true
+                  snackbarOpen: true,
+                  loading:false,
+                  buttonLoaded:true
                })
                this.props.loadComponent(false)
               })
@@ -405,7 +396,7 @@ class AddUser extends Component {
                                   <h5><EmailIcon style={{marginRight:"7px"}}/>{request.email}</h5>
                                   <h5><HomeIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.address}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
-                                    <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}} style={{marginRight: "12px"}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}} style={{marginRight: "12px"}}>Verify</Button>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleReject(request._id, request.email)}}>Reject</Button>
                                 </CardContent>
                               </Card>
@@ -490,10 +481,21 @@ class AddUser extends Component {
             value = {this.state.docId}
             style={{marginBottom:"15px"}}
             />
-            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded}>Submit</Button>
+            {
+              this.state.buttonLoaded ? (
+                <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{backgroundColor:"#02b205"}} disabled={!this.props.uploaded || this.state.loading}>{this.state.snackbarMessage}</Button>
+              ) : (
+                <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded || this.state.loading}>Submit</Button>
+              )
+            }
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '50%',top:"93.5%"}} />}
           </FormControl>
   
+          {
+            this.state.buttonLoaded ? (<></>) : (
           <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
+            )
+          }
         </Grid>
       ]
     );
