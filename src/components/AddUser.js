@@ -241,129 +241,135 @@ class AddUser extends Component {
     console.log(this.props.account[0])
     console.log(this.textInput.current)
     this.textInput.current.value = ""
+    var bank = ''
+    const address = this.props.account[0];
+    this.props.kycContract.methods.getVerifier(address).call().then((bankName) => {
+      this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
+      .then((key)=>{
+        console.log(this.state.publicKey);
+        var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
+        var plaintextBytesCid = forge.util.encodeUtf8(cid);
+        var encryptedCid = pkey.encrypt(plaintextBytesCid)
+        encryptedCid = forge.util.encode64(encryptedCid)
+        var verifierPublicKey = forge.pki.publicKeyFromPem(key)
+        var encCid = verifierPublicKey.encrypt(cid)
+        encCid=forge.util.encode64(encCid)
+        this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode).send({ from: this.props.account[0], gas: 6721975})
+        var plaintextBytes = forge.util.encodeUtf8(rawData);
+        var encrypted = pkey.encrypt(plaintextBytes)
+        encrypted = forge.util.encode64(encrypted)
 
-    this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
-    .then((key)=>{
-      console.log(this.state.publicKey);
-      var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
-      var plaintextBytesCid = forge.util.encodeUtf8(cid);
-      var encryptedCid = pkey.encrypt(plaintextBytesCid)
-      encryptedCid = forge.util.encode64(encryptedCid)
-      var verifierPublicKey = forge.pki.publicKeyFromPem(key)
-      var encCid = verifierPublicKey.encrypt(cid)
-      encCid=forge.util.encode64(encCid)
-      this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode).send({ from: this.props.account[0], gas: 6721975})
-      var plaintextBytes = forge.util.encodeUtf8(rawData);
-      var encrypted = pkey.encrypt(plaintextBytes)
-      encrypted = forge.util.encode64(encrypted)
-      var qrData={
-        encryptedData:encryptedCid,
-        publicKey:this.state.publicKey,
-        userId:userId,
-        email:this.state.email
-      }
-      qrData=JSON.stringify(qrData);
-      console.log(qrData)
-      console.log(this.state)
-      const requestOptions = {
-        method: 'POST',
-        body: JSON.stringify({
-          email: this.state.email,
-          data:qrData,
-          userId:userId
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-       }
-      };
-      fetch(serverUrl+"mailQR",requestOptions)
-    .then(res => console.log(res.text()));
-    }).then(x=>{
-      const reqOptions= {
-        method: 'POST',
-        body: JSON.stringify({
-          originalData: rawData,
-          verifierAddress:this.props.account[0],
+        var qrData={
+          encryptedData:encryptedCid,
+          publicKey:this.state.publicKey,
           userId:userId,
-          userPublicKey:this.state.publicKey
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-      }};
-      console.log(reqOptions)
-
-      fetch(serverUrl+"verify",reqOptions)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          snackbarMessage: data.message,
-          snackbarOpen: true,
-          loading:false,
-          buttonLoaded:true,
-          name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
-        },x=>{this.removeUser()})
-      })
-
-      if(flag==true){
-        const options= {
+          email:this.state.email,
+        }
+        qrData=JSON.stringify(qrData);
+        console.log(qrData)
+        console.log(this.state)
+        const requestOptions = {
           method: 'POST',
           body: JSON.stringify({
-            newData: rawData,
+            email: this.state.email,
+            data:qrData,
             userId:userId,
+            bankName: bankName,
+            name: this.state.name
+          }),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        };
+        fetch(serverUrl+"mailQR",requestOptions)
+      .then(res => console.log(res.text()));
+      }).then(x=>{
+        const reqOptions= {
+          method: 'POST',
+          body: JSON.stringify({
+            originalData: rawData,
+            verifierAddress:this.props.account[0],
+            userId:userId,
+            userPublicKey:this.state.publicKey
           }),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }};
-        fetch(serverUrl+"updateKyc",options)
-              .then(res => res.json())
-              .then(data => {
-               this.setState({
-                  snackbarMessage: data.message,
-                  snackbarOpen: true,
-                  loading:false,
-                  buttonLoaded:true
-               })
-               this.props.loadComponent(false)
+        console.log(reqOptions)
+
+        fetch(serverUrl+"verify",reqOptions)
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            snackbarMessage: data.message,
+            snackbarOpen: true,
+            loading:false,
+            buttonLoaded:true,
+            name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
+          },x=>{this.removeUser()})
+        })
+
+        if(flag==true){
+          const options= {
+            method: 'POST',
+            body: JSON.stringify({
+              newData: rawData,
+              userId:userId,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          }};
+          fetch(serverUrl+"updateKyc",options)
+                .then(res => res.json())
+                .then(data => {
+                this.setState({
+                    snackbarMessage: data.message,
+                    snackbarOpen: true,
+                    loading:false,
+                    buttonLoaded:true
+                })
+                this.props.loadComponent(false)
+                })
+          console.log(x);
+              this.props.kycContract.methods.getVerifiersList(userId).call({},(err, res)=>{
+                  var verifiers = res;
+                  console.log(verifiers)
+                var verifiersArray = verifiers.split("#")
+                const options= {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    verifiersList: verifiers,
+                  }),
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }};
+              fetch(serverUrl+"publicKeyArray",options)
+              .then((res) => res.json())
+              .then((res)=>{
+                console.log(res)
+                  var eCid=[]
+                  var data = res.data;
+                for(var i=0;i<data.length;i++){
+                  var pkey=forge.pki.publicKeyFromPem(data[i].publicKey)
+                  var encCid = pkey.encrypt(cid)
+                  encCid = forge.util.encode64(encCid)
+                  eCid.push(encCid);
+                }
+                console.log(encCid)
+                for(var i=0;i<eCid.length;i++){
+                  this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+                }
               })
-        console.log(x);
-            this.props.kycContract.methods.getVerifiersList(userId).call({},(err, res)=>{
-                var verifiers = res;
-                console.log(verifiers)
-              var verifiersArray = verifiers.split("#")
-              const options= {
-                method: 'POST',
-                body: JSON.stringify({
-                  verifiersList: verifiers,
-                }),
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-              }};
-            fetch(serverUrl+"publicKeyArray",options)
-            .then((res) => res.json())
-            .then((res)=>{
-              console.log(res)
-                var eCid=[]
-                var data = res.data;
-              for(var i=0;i<data.length;i++){
-                var pkey=forge.pki.publicKeyFromPem(data[i].publicKey)
-                var encCid = pkey.encrypt(cid)
-                encCid = forge.util.encode64(encCid)
-                eCid.push(encCid);
-              }
-              console.log(encCid)
-              for(var i=0;i<eCid.length;i++){
-                this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
-              }
-            })
-            })
-          
-      }
-      
-        console.log(x);
+              })
+            
+        }
+        
+          console.log(x);
+      });
     });
   }
 

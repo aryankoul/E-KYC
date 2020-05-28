@@ -55,10 +55,10 @@ class ExistingUSer extends Component{
               this.props.loadComponent(true)
           });
           })
-      }else{
-        this.props.loadComponent(true)
-        this.setState({loaded:true})
-      }
+          }else{
+            this.props.loadComponent(true)
+            this.setState({loaded:true})
+          }
     }) 
   }
 
@@ -137,6 +137,8 @@ class ExistingUSer extends Component{
     try{
       userData = privateKey.decrypt(userData)
       console.log(userData)
+      // const email = userData.JSON().email;
+      // console.log(email);
     }catch(e){
         this.setState({
             snackbarMessage: 'error decrypting user data',

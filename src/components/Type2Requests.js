@@ -6,8 +6,6 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import EmailIcon from '@material-ui/icons/Email';
 
 import SnackBarNotification from './SnackBarNotification';
-
-
 import { serverUrl } from '../config/config'
 
 
@@ -77,25 +75,27 @@ class Type2Requests extends Component {
                 var verifierAddress = this.props.account[0];
                 var userId = id;
                 var userPublicKey = userPubKey;
-                console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
-                const reqOptions= {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData
-                    }),
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }};
-                  fetch(serverUrl+"initiateVerification",reqOptions)
+                this.props.kycContract.methods.getVerifier(verifierAddress).call().then((bankName) => {
+                    console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
+                    const reqOptions= {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData, bankName
+                        }),
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json'
+                      }};
+                      fetch(serverUrl+"initiateVerification",reqOptions)
                     .then(req => req.json())
                     .then(data => {
-                            this.setState({
-                                snackbarMessage: data.message,
-                                snackbarOpen: true
-                            })
-                            this.loadRequests()
+                        this.setState({
+                            snackbarMessage: data.message,
+                            snackbarOpen: true
                         })
+                        this.loadRequests()
+                    })
+                })
             })
         })
     }
