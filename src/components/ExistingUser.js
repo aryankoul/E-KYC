@@ -6,8 +6,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
 import SnackBarNotification from './SnackBarNotification';
 import Loader from './Loader.js'
+import ClearIcon from '@material-ui/icons/Clear';
 
 import { serverUrl } from '../config/config'
 const forge = require('node-forge');
@@ -27,7 +30,12 @@ class ExistingUSer extends Component{
           userId: '',
           requestId: '',
           otp: '',
-          userData: ''
+          userData: '',
+          loading:false,
+          buttonLoaded:false,
+          loadingOtp:false,
+          buttonLoadedOtp:false,
+          verified:false
         }
     }
 
@@ -56,6 +64,7 @@ class ExistingUSer extends Component{
 
     handleSubmit(event) {
       event.preventDefault()
+      this.setState({loading:true})
       console.log(this.state.verifierAddress);
       console.log(this.state);
       
@@ -75,10 +84,15 @@ class ExistingUSer extends Component{
             .then(data => {
           this.setState({
               snackbarMessage: data.message,
-              snackbarOpen: true
+              snackbarOpen: true,
+              loading:false,
+              buttonLoaded:true,
+              uploadMessage : data.message,
+              userId: '', 
+              verifierAddress: '',
           })
       });
-      this.setState({userId: '', verifierAddress: ''})
+      this.setState({})
     }
 
     onFileChange = event => {
@@ -99,6 +113,7 @@ class ExistingUSer extends Component{
 
   verifyOtp(event){
     event.preventDefault();
+    this.setState({loadingOtp:true})
     var { requestId, otp, userData } = this.state;
     const decodedOtp = forge.util.decode64(otp);
     userData = forge.util.decode64(userData);
@@ -110,7 +125,10 @@ class ExistingUSer extends Component{
     }catch(e){
       this.setState({
           snackbarMessage: 'error decrypting otp',
-          snackbarOpen: true
+          snackbarOpen: true,
+          loadingOtp:false,
+          buttonLoadedOtp:true,
+          otpMessage : 'error decrypting otp'
       })
       console.log("error decrypting otp")
       return
@@ -122,7 +140,10 @@ class ExistingUSer extends Component{
     }catch(e){
         this.setState({
             snackbarMessage: 'error decrypting user data',
-            snackbarOpen: true
+            snackbarOpen: true,
+            loadingOtp:false,
+            buttonLoadedOtp:true,
+            otpMessage: 'error decrypting user data'
         })
       console.log("error decrypting user data")
       return
@@ -144,8 +165,11 @@ class ExistingUSer extends Component{
       data => {
           this.setState({
               snackbarMessage: data.message, 
-              snackbarOpen: true
-          
+              snackbarOpen: true,
+              loadingOtp:false,
+              buttonLoadedOtp:true,
+              otpMessage:data.message,
+              verified:true
           })
         console.log(data);
         this.setState({
@@ -203,15 +227,30 @@ class ExistingUSer extends Component{
                     </Button>
                     </label>
                     <br/>
-                    <Button
-                    style={{ margin: "2%", width: "80%"}}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveIcon />}
-                    onClick= {(event) => this.handleSubmit(event)}
-                    disabled={!this.props.uploaded}>
-                    Submit
-                    </Button>
+                    {
+                      this.state.buttonLoaded ? (
+                        <Button
+                      style={{ margin: "2%", width: "80%",backgroundColor:"#02b205"}}
+                      variant="contained"
+                      color="primary"
+                      startIcon={<CheckIcon />}
+                      onClick= {(event) => this.handleSubmit(event)}
+                      disabled={!this.props.uploaded || this.state.loading}>
+                      {this.state.uploadMessage}
+                      </Button>
+                      ) : (
+                      <Button
+                      style={{ margin: "2%", width: "80%"}}
+                      variant="contained"
+                      color="primary"
+                      startIcon={<SaveIcon />}
+                      onClick= {(event) => this.handleSubmit(event)}
+                      disabled={!this.props.uploaded || this.state.loading}>
+                      Submit
+                      </Button>
+                      )
+                    }
+                    {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '48%',marginTop:"1%"}} />}
                   
                   </form>
                 </Grid>
@@ -223,18 +262,46 @@ class ExistingUSer extends Component{
                     <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.requestId} name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
                     <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.otp} name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
                     <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.userData} name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
-                    <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Icon>send</Icon>}
-                    onClick= {(event) => this.verifyOtp(event)}
-                    style={{margin: "2%", width: "80%"}}
-                    disabled={!this.props.uploaded}>
-                      Verify
-                    </Button>
+                    {
+                      this.state.buttonLoadedOtp ? (
+                        this.state.verified ? (
+                          <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<CheckIcon/>}
+                          onClick= {(event) => this.verifyOtp(event)}
+                          style={{margin: "2%", width: "80%",backgroundColor:"#02b205"}}
+                          disabled={!this.props.uploaded || this.state.loadingOtp}>
+                            {this.state.otpMessage}
+                          </Button>
+                        ) : (
+                          <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<ClearIcon/>}
+                          onClick= {(event) => this.verifyOtp(event)}
+                          style={{margin: "2%", width: "80%",backgroundColor:"#d50000"}}
+                          disabled={!this.props.uploaded || this.state.loadingOtp}>
+                            {this.state.otpMessage}
+                          </Button>
+                        )
+                        
+                      ) : (
+                        <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<Icon>send</Icon>}
+                        onClick= {(event) => this.verifyOtp(event)}
+                        style={{margin: "2%", width: "80%"}}
+                        disabled={!this.props.uploaded || this.state.loadingOtp}>
+                          Verify
+                        </Button>
+                      )
+                    }
+                    {this.state.loadingOtp && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '78%',marginTop:"1%"}} />}
                     
                   </form>
-                  <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
+                  {/* <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} /> */}
                 </Grid>
               </Grid>
 

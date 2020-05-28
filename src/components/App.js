@@ -150,7 +150,9 @@ class App extends Component {
       localStorage.setItem(key,keys[key]);
       localStorage.setItem("lastStoredKey"+i,keys[key])
     }
-    this.setState({uploaded:true})
+    this.setState({uploaded:true},()=>{
+      window.location.reload();
+    })
   }
   
   handleLogin = (file) => {
@@ -248,9 +250,9 @@ class App extends Component {
   render() {
     return (
       <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
-        <Container style={{maxWidth:"170vh"}}>
+        <Container style={{maxWidth:"92.5%"}}>
         {
-          this.state.loaded ? 
+          this.state.loaded ?
           (
             <>
               <div style={{position:"fixed",bottom:"4%",right:"5%"}} hidden={this.state.type===0 || this.state.type==1 || this.state.type==3}>
