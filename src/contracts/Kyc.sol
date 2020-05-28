@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.6.0;
+pragma experimental ABIEncoderV2;
 
 contract Kyc {
 
@@ -14,6 +15,8 @@ contract Kyc {
         string emailHash;
         address payable[] vers;
         string[] verAddress;
+        uint totalCost;
+        mapping(address payable => uint) currentShare;
     }
 
     struct Verifier{
@@ -53,18 +56,33 @@ contract Kyc {
 
     //concen
     function costShare(string memory userId, string memory cid, string memory vAddress)  public payable {
+        Verifiers[msg.sender].encryptedCid[userId] = cid;
         bool flag = false;
         for(uint i = 0;i<Verifiers[msg.sender].customers.length;i++){
             if(keccak256(bytes(Verifiers[msg.sender].customers[i])) == keccak256(bytes(userId))){
                 flag = true;
             }
         }
-        if(flag==false){
+        if(flag==false){//new verifier
+            //push customer in verifier and vice versa
             Verifiers[msg.sender].customers.push(userId);
             Users[userId].vers.push(msg.sender);
             Users[userId].verAddress.push(vAddress);
+            address payable[] memory v = Users[userId].vers;
+            uint256 count = v.length;
+            uint256 etherSent = msg.value;
+            uint256 totalShare = Users[userId].totalCost/count;
+            uint256 myShare = totalShare - Users[userId].currentShare[verifierAddress];
+            if(myShare<0){
+                msg.sender.transfer(etherSent);
+            }
+            else{
+                
+            }
         }
-        Verifiers[msg.sender].encryptedCid[userId] = cid;
+        else{
+
+        }
         address payable[] memory v = Users[userId].vers;
         uint256 count = v.length;
         uint256 etherSent = msg.value;
@@ -190,7 +208,8 @@ contract Kyc {
                     string memory encryptedCid,
                     address payable verifierAddress,
                     string memory vAddress,
-                    uint mode) public {
+                    uint mode,
+                    uint costOccured) public {
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
         if(mode==1){
             require(
@@ -200,7 +219,8 @@ contract Kyc {
             string[] memory verAddress = new string[](1);
             ver[0] = verifierAddress;
             verAddress[0] = vAddress;
-            Users[_id] = User(true, _signature, _emailHash, ver, verAddress);
+            Users[_id] = User(true, _signature, _emailHash, ver, verAddress, totalCost);
+            Users[_id].currentShare[verifierAddress] = costOccured;
         }
         bool flag = false;
         for(uint i = 0;i<Verifiers[verifierAddress].customers.length;i++){
@@ -213,9 +233,14 @@ contract Kyc {
         if(mode==3){
             Users[_id].signature = _signature;
             Users[_id].emailHash = _emailHash;
+            Users[_id].totalCost = Users[_id].totalCost + costOccured;
             if(flag==false){
                 Users[_id].vers.push(verifierAddress);
                 Users[_id].verAddress.push(vAddress);
+                Users[_id].currentShare[verifierAddress] = costOccured;
+            }
+            else{
+                Users[_id].currentShare[verifierAddress] = Users[_id].currentShare[verifierAddress]+costOccured;
             }
         }
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
