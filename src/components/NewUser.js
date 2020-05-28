@@ -249,7 +249,7 @@ class NewUser extends Component{
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
           <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
           <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload}>
-            Upload
+            Upload Doccument
           </Button>
           </label>
           <br/>

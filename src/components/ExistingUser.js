@@ -73,7 +73,7 @@ class ExistingUSer extends Component{
       console.log(files.files[0])
       formdata.append('verifierAddress',this.state.verifierAddress);
       formdata.append('type',2);
-      formdata.append('userId', this.state.userId);
+      // formdata.append('userId', this.state.userId);
       formdata.append('doc', files.files[0]);
       var requestOptions = {
           method: 'POST',
@@ -219,11 +219,11 @@ class ExistingUSer extends Component{
 
                     <br/>
                   
-                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" value={this.state.userId} variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/>
+                    {/* <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" value={this.state.userId} variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/> */}
                     <input style={{display: 'none', margin: "2%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
                     <label htmlFor="contained-button-qr" style={{ margin: "2%", width: "80%"}}>
                     <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}} disabled={!this.props.uploaded}>
-                      Upload
+                      Upload QR Code
                     </Button>
                     </label>
                     <br/>
