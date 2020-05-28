@@ -363,7 +363,7 @@ class AddUser extends Component {
               }
               console.log(encCid)
               for(var i=0;i<eCid.length;i++){
-                this.props.kycContract.methods.updateCid(verifiersArray[i],userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+                this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
               }
             })
             })
