@@ -36,7 +36,8 @@ class App extends Component {
         loadedNewUser : false,
         loadedAdmin : false,
         uploaded : true,
-        accounts:[]
+        accounts:[],
+        verifierLoaded:false
       }
     }
     else{
@@ -74,6 +75,10 @@ class App extends Component {
     fetch(serverUrl+'completedKyc', requestOptions)
     .then((res) => res.json())
     .then((data) => {
+      let i = 0;
+      let len = data.data.length;
+      if(len===0)
+        this.setState({verifierLoaded:true})
       data.data.forEach(element => {
         console.log(data)
         kycContract.methods.costShare(element.userId,element.encryptedCid,account).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
@@ -89,7 +94,13 @@ class App extends Component {
                 'Content-Type': 'application/json'
              }
             };
-            fetch(serverUrl+'completedKyc/delete', requestOptions);
+            fetch(serverUrl+'completedKyc/delete', requestOptions).then(()=>{
+              i=i+1;
+              if(i===len)
+              {
+                this.setState({verifierLoaded:true})
+              }
+            });
           }
         });
       });
@@ -194,9 +205,16 @@ class App extends Component {
         </>)
       case 2:
         return (
-        <div>
-          <Verifier kycContract = {this.state.kycContract} accounts = {this.state.accounts} uploaded={this.state.uploaded}/>
-        </div>)
+          this.state.verifierLoaded ? (
+            <div>
+              <Verifier kycContract = {this.state.kycContract} accounts = {this.state.accounts} uploaded={this.state.uploaded}/>
+            </div>
+          ) : (
+            <div style={{position:"fixed",top:"40%",left:"50%"}}>
+              <Loader />
+            </div>
+          )
+        )
       case 3:
         return (
           <h1 style={{textAlign:"center",color:"white",marginTop:"10%"}}>Please wait while the Admin verifies you :)</h1>
