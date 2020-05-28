@@ -17,9 +17,6 @@ import { serverUrl } from '../config/config'
 import {ipfsPublish} from '../config/config'
 var forge = require('node-forge');
 
-var forge = require('node-forge');
-
-
 
 class AddUser extends Component {
 
@@ -88,6 +85,7 @@ class AddUser extends Component {
     .then(res=>{return res.json()}).then(
       data => {
         console.log(data);
+        this.props.loadComponent(false)
         this.setState({
           requests : [],
           name : "",
@@ -202,11 +200,6 @@ class AddUser extends Component {
     let response = await fetch(ipfsPublish, requestOptions);
     let res = await response.json();
     return res.Hash;
-    // .then(res => res.json())
-    //       .then(data  => {
-    //         console.log(data)
-    //       return data.Hash;
-    // });
   }
 
   async handleSubmit (event) {

@@ -250,7 +250,7 @@ class App extends Component {
   render() {
     return (
       <div className='app' style={{backgroundColor:"#2c387e",height:"100%",position:"fixed",width:"100%",overflow:"auto"}}>
-        <Container style={{maxWidth:"92.5%"}}>
+        <Container style={{maxWidth:"90%"}}>
         {
           this.state.loaded ?
           (

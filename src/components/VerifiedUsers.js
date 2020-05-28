@@ -40,26 +40,38 @@ class VerifiedUsers extends Component {
     componentDidMount(){
         this.loadUsers();
     }
+
+    componentDidUpdate(prevProps){
+        if(this.props.loadedAddUser !== prevProps.loadedAddUser)
+            this.loadUsers();
+    }
     
     
     loadUsers(){
         console.log(this.props.account[0])
         this.props.kycContract.methods.getCustomersList(this.props.account[0]).call({}, (err, customersList) => {
             // console.log(customersList)
-            const customerArray = customersList.split("#")
-            const users = customerArray.map((user,key)=>{
-                return(
-                    {
-                        id : user,
-                        loaded : false
-                    }
-                    )
-                });
-                this.setState({
-                    users : users,
-                    loaded : true
-                },x=>{console.log(this.state)})
+            if(customersList!=="")
+            {
+                const customerArray = customersList.split("#")
+                const users = customerArray.map((user,key)=>{
+                    return(
+                        {
+                            id : user,
+                            loaded : false
+                        }
+                        )
+                    });
+                    this.setState({
+                        users : users,
+                        loaded : true
+                    },x=>{console.log(this.state)})
+                    this.props.loadComponent(true)
+            }
+            else{
+                this.setState({loaded:true})
                 this.props.loadComponent(true)
+            }
         });      
     }
     

@@ -54,7 +54,7 @@ class Verifier extends Component {
           hidden={this.state.value !== 2}
           style={{width:"100%"}}
         >
-        <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedVerifiedUser:val})}/>  </div>
+        <VerfiedUsers kycContract = {this.props.kycContract} account = {this.props.accounts} loadedAddUser={this.state.loadedAddUser} uploaded={this.props.uploaded} loadComponent={(val)=>this.setState({loadedVerifiedUser:val})}/>  </div>
         <br/></div>
       </div>
       <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.show()}>
