@@ -7,12 +7,15 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import PhoneIcon from '@material-ui/icons/Phone';
 import EmailIcon from '@material-ui/icons/Email';
+import HomeIcon from '@material-ui/icons/Home';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import SaveIcon from '@material-ui/icons/Save';
 
 import SnackBarNotification from './SnackBarNotification';
-
+import { serverUrl } from '../config/config'
+import {ipfsPublish} from '../config/config'
 var forge = require('node-forge');
-const url = "http://localhost:8000/";
-
 
 
 class AddUser extends Component {
@@ -32,10 +35,14 @@ class AddUser extends Component {
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-      kycId: ""
+      kycId: "",
+      address:"",
+      loading:false,
+      buttonLoaded:false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleReject = this.handleReject.bind(this)
     this.textInput = React.createRef();
   } 
 
@@ -45,7 +52,7 @@ class AddUser extends Component {
 
   loadRequests(){
     const currentAddress = this.props.account[0]
-    fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
+    fetch(serverUrl+"getPendingRequest?verifierAddress="+currentAddress+"&type=13", {mode: 'cors'}).then(res => {
       return res.json()
     }).then(res=>{
       // console.log(res.requests);
@@ -61,8 +68,7 @@ class AddUser extends Component {
   }
 
   removeUser(){
-    // var formBody = new FormData();
-    // formBody.set("_id",this.state.id)
+
     console.log(this.state.id);
 
     const requestOptions = {
@@ -75,10 +81,11 @@ class AddUser extends Component {
         'Content-Type': 'application/json'
      }
     };
-    fetch(url+"request/delete",requestOptions)
+    fetch(serverUrl+"request/delete",requestOptions)
     .then(res=>{return res.json()}).then(
       data => {
         console.log(data);
+        this.props.loadComponent(false)
         this.setState({
           requests : [],
           name : "",
@@ -89,11 +96,38 @@ class AddUser extends Component {
           id:"",
           docId : "",
           loaded : false,
-          kycId: ""
-        })
-        this.loadRequests();
+          kycId: "",
+          address:""
+        },x=>{this.loadRequests()})
       }
     )
+  }
+
+  handleReject(id, email){
+    console.log(id)
+      this.setState({ id: id },(x) => {
+    console.log(this.state.id)
+    this.removeUser()
+     const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        data: 'Your KYC request was rejected by bank. Please try again.'
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+     }
+    };
+    fetch(serverUrl+'sendMail',requestOptions)
+              .then(res => res.json())
+              .then(data => {
+                if(data.success === true){
+                   this.setState({snackbarOpen: true, snackbarMessage:'Kyc request rejected'})
+                }
+              })
+      })
+
   }
 
 
@@ -115,10 +149,6 @@ class AddUser extends Component {
 
   signUserData(address, rawData){ 
     console.log(rawData)
-      // var foo = localStorage.getItem('foo');
-      // foo=JSON.parse(foo);
-      // const pkeyPem = localStorage.getItem('privateKey');
-      // var privateKey = forge.pki.privateKeyFromPem(foo.privateKeyPem);
       var priKey = localStorage.getItem('privateKey' + address[0]);
       var privateKey = forge.pki.privateKeyFromPem(priKey);
       console.log(privateKey)
@@ -137,24 +167,13 @@ class AddUser extends Component {
     return userId;
   }
 
-  init(){
-
-    var rsa = forge.pki.rsa;
-    var keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
-    var foo = JSON.stringify({
-      publicKeyPem: forge.pki.publicKeyToPem(keypair.publicKey),
-      privateKeyPem: forge.pki.privateKeyToPem(keypair.privateKey)
-    });
-    localStorage.setItem('foo',foo)
-  }
-
   handleDownload(event,fileName){
     event.preventDefault();
     console.log(fileName);
-    window.open(url+'download/'+fileName, '_blank');
+    window.open(serverUrl+'download/'+fileName, '_blank');
   }
 
-  handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId){
+  handleVerify(event,name,phoneNumber,email,publicKey,id,docType, kycId,address){
     event.preventDefault();
     this.setState({
       name:name,
@@ -163,14 +182,30 @@ class AddUser extends Component {
       id:id,
       publicKey:publicKey,
       docType:docType,
-      kycId: kycId
+      kycId: kycId,
+      address:address,
+      buttonLoaded:false,
     })
   }
 
-  handleSubmit(event) {
+  async uploadFile (rawData) {
+    const blob = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
+    var fileOfBlob = new File([blob], 'aFileName.txt');
+    let data = new FormData();
+    data.append('file', fileOfBlob);
+    const requestOptions = {
+      method: 'POST',
+      body: data
+    }
+    let response = await fetch(ipfsPublish, requestOptions);
+    let res = await response.json();
+    return res.Hash;
+  }
+
+  async handleSubmit (event) {
 
     event.preventDefault();
-
+    this.setState({loading:true})
     var emailHash = this.calculateHash(this.state.email).toHex();
     console.log(emailHash)
    
@@ -179,19 +214,19 @@ class AddUser extends Component {
       "phoneNumber": this.state.phoneNumber,
       "email": this.state.email,
       "docType": this.state.docType,
-      "docId" : this.state.docId
+      "docId" : this.state.docId,
+      "address" : this.state.address
     }
-
-
 
     const rawData = JSON.stringify(data); 
     console.log(rawData)
-    
-    var userId="",flag=false
-
+    var cid = await this.uploadFile(rawData);
+    console.log(cid)
+    var userId="",flag=false,mode=1;
     if(this.state.kycId!=="" && this.state.kycId!=null){
       userId=this.state.kycId
       flag=true
+      mode=3;
     }
     else{
       userId = this.makeUserId(rawData)
@@ -201,94 +236,159 @@ class AddUser extends Component {
     const hash = emailHash
     console.log(hash)
     
-    const signature = this.signUserData(this.props.account,rawData);
+    const signature = this.signUserData(this.props.account,cid);
     console.log(signature)
     console.log(this.props.account[0])
     console.log(this.textInput.current)
     this.textInput.current.value = ""
+    const address = this.props.account[0];
+    this.props.kycContract.methods.getVerifier(address).call().then((bankName) => {
+      this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
+      .then((key)=>{
+        console.log(this.state.publicKey);
+        var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
+        var plaintextBytesCid = forge.util.encodeUtf8(cid);
+        var encryptedCid = pkey.encrypt(plaintextBytesCid)
+        encryptedCid = forge.util.encode64(encryptedCid)
+        var verifierPublicKey = forge.pki.publicKeyFromPem(key)
+        var encCid = verifierPublicKey.encrypt(cid)
+        encCid=forge.util.encode64(encCid)
+        this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode,6).send({ from: this.props.account[0], gas: 6721975})
+        var plaintextBytes = forge.util.encodeUtf8(rawData);
+        var encrypted = pkey.encrypt(plaintextBytes)
+        encrypted = forge.util.encode64(encrypted)
 
-    this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
-    .then((key)=>{
-      console.log(this.state.publicKey);
-      this.props.kycContract.methods.addUser(userId, signature, hash, this.props.account[0]).send({ from: this.props.account[0], gas: 972195 })
-      var pkey = forge.pki.publicKeyFromPem(this.state.publicKey)
-      var plaintextBytes = forge.util.encodeUtf8(rawData);
-      var encrypted = pkey.encrypt(plaintextBytes)
-      encrypted = forge.util.encode64(encrypted)
-      var qrData={
-        encryptedData:encrypted,
-        publicKey:this.state.publicKey,
-        userId:userId,
-        email:this.state.email
-      }
-      qrData=JSON.stringify(qrData);
-      console.log(qrData)
-      console.log(this.state)
-      const requestOptions = {
-        method: 'POST',
-        body: JSON.stringify({
-          email: this.state.email,
-          data:qrData,
-          userId:userId
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-       }
-      };
-      fetch(url+"mailQR",requestOptions)
-    .then(res => console.log(res.text()));
-    }).then(x=>{
-      const reqOptions= {
-        method: 'POST',
-        body: JSON.stringify({
-          originalData: rawData,
-          verifierAddress:this.props.account[0],
+        var qrData={
+          encryptedData:encryptedCid,
+          publicKey:this.state.publicKey,
           userId:userId,
-          userPublicKey:this.state.publicKey
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-      }};
-      console.log(reqOptions)
-
-      fetch(url+"verify",reqOptions)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          snackbarMessage: data.message,
-          snackbarOpen: true
-        })
-        // this.props.loadComponent(false)
-        this.removeUser();
-        this.setState({name:'', phoneNumber:'', email:'', docType:'', docId:''})
-      })
-
-      if(flag==true){
-        const options= {
+          email:this.state.email,
+        }
+        qrData=JSON.stringify(qrData);
+        console.log(qrData)
+        console.log(this.state)
+        const requestOptions = {
           method: 'POST',
           body: JSON.stringify({
-            newData: rawData,
+            email: this.state.email,
+            data:qrData,
             userId:userId,
+            bankName: bankName,
+            name: this.state.name
+          }),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        };
+        fetch(serverUrl+"mailQR",requestOptions)
+      .then(res => console.log(res.text()));
+      }).then(x=>{
+        const reqOptions= {
+          method: 'POST',
+          body: JSON.stringify({
+            originalData: rawData,
+            verifierAddress:this.props.account[0],
+            userId:userId,
+            userPublicKey:this.state.publicKey
           }),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }};
-        fetch(url+"updateKyc",options)
-              .then(res => res.json())
-              .then(data => {
-               this.setState({
-                  snackbarMessage: data.message,
-                  snackbarOpen: true
-               })
-               this.props.loadComponent(false)
+        console.log(reqOptions)
+
+        fetch(serverUrl+"verify",reqOptions)
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            snackbarMessage: data.message,
+            snackbarOpen: true,
+            loading:false,
+            buttonLoaded:true,
+            name:'', phoneNumber:'', email:'', docType:'', docId:'',address:""
+          },x=>{this.removeUser()})
+        })
+
+        if(flag===true){
+          const options= {
+            method: 'POST',
+            body: JSON.stringify({
+              newData: rawData,
+              userId:userId,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          }};
+          fetch(serverUrl+"updateKyc",options)
+                .then(res => res.json())
+                .then(data => {
+                this.setState({
+                    snackbarMessage: data.message,
+                    snackbarOpen: true,
+                    loading:false,
+                    buttonLoaded:true
+                })
+                this.props.loadComponent(false)
+                })
+          console.log(x);
+              this.props.kycContract.methods.getVerifiersList(userId).call({},(err, res)=>{
+                  var verifiers = res;
+                  console.log(verifiers)
+                const options= {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    verifiersList: verifiers,
+                  }),
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }};
+              fetch(serverUrl+"publicKeyArray",options)
+              .then((res) => res.json())
+              .then((res)=>{
+                console.log(res)
+                  var eCid=[]
+                  var data = res.data;
+                for(var i=0;i<data.length;i++){
+                  var pkey=forge.pki.publicKeyFromPem(data[i].publicKey)
+                  var encCid = pkey.encrypt(cid)
+                  encCid = forge.util.encode64(encCid)
+                  eCid.push(encCid);
+                }
+                console.log(encCid)
+              var completedKyc =[];
+              for(var i=0;i<eCid.length;i++){
+                var temp = {
+                  verifierAddress:data[i].verifierAddress,
+                  encryptedCid : eCid[i],
+                  mode:3,
+                  userId:userId
+                }
+                if(data[i].verifierAddress != this.props.account[0]){
+                  completedKyc.push(temp)
+                }
+              }
+              // this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+              console.log(completedKyc)
+              const rOptions= {
+                method: 'POST',
+                body: JSON.stringify({
+                  completedKyc: completedKyc,
+                }),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }};
+              fetch(serverUrl+'pushCompletedKyc',rOptions)
               })
-        console.log(x);
-      }
-      
-        console.log(x);
+              })
+            
+        }
+        
+          console.log(x);
+      });
     });
   }
 
@@ -311,9 +411,11 @@ class AddUser extends Component {
                                 <CardContent>
                                   <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>
-                                  <h5><EmailIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.email}</h5>
+                                  <h5><EmailIcon style={{marginRight:"7px"}}/>{request.email}</h5>
+                                  <h5><HomeIcon style={{marginRight:"7px",marginBottom:"15px"}}/>{request.address}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
-                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId)}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}} style={{marginRight: "12px"}}>Verify</Button>
+                                  <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleReject(request._id, request.email)}}>Reject</Button>
                                 </CardContent>
                               </Card>
                             )
@@ -339,6 +441,8 @@ class AddUser extends Component {
             placeholder = "name"
             value = {this.state.name}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -350,6 +454,8 @@ class AddUser extends Component {
             placeholder = "Phone number"
             value = {this.state.phoneNumber}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -361,6 +467,21 @@ class AddUser extends Component {
             placeholder = "email"
             value = {this.state.email}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+            />
+            <TextField
+            required
+            id="outlined-required"
+            variant="outlined"
+            label="Address"
+            name="address"
+            type="text"
+            placeholder = "Address"
+            value = {this.state.address}
+            style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -372,6 +493,8 @@ class AddUser extends Component {
             placeholder = "document Type"
             value = {this.state.docType}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -385,11 +508,24 @@ class AddUser extends Component {
             ref = {this.textInput} 
             value = {this.state.docId}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
-            <Button variant="contained" color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded}>Submit</Button>
+            {
+              this.state.buttonLoaded ? (
+                <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{backgroundColor:"#02b205"}} disabled={!this.props.uploaded || this.state.loading}>{this.state.snackbarMessage}</Button>
+              ) : (
+                <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} disabled={!this.props.uploaded || this.state.loading}>Submit</Button>
+              )
+            }
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '50%',top:"93.5%"}} />}
           </FormControl>
   
+          {
+            this.state.buttonLoaded ? (<></>) : (
           <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
+            )
+          }
         </Grid>
       ]
     );

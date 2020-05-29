@@ -6,8 +6,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import EmailIcon from '@material-ui/icons/Email';
 
 import SnackBarNotification from './SnackBarNotification';
-
-const url = "http://localhost:8000/";
+import { serverUrl } from '../config/config'
 
 
 class Type2Requests extends Component {
@@ -40,7 +39,7 @@ class Type2Requests extends Component {
 
     loadRequests(){
         const currentAddress = this.props.account[0]
-        fetch(url+"getPendingRequest?verifierAddress="+currentAddress+"&type=2", {mode: 'cors'}).then(res => {
+        fetch(serverUrl+"getPendingRequest?verifierAddress="+currentAddress+"&type=2", {mode: 'cors'}).then(res => {
             return res.json()
         }).then(res=>{
             console.log(res.requests);
@@ -66,6 +65,7 @@ class Type2Requests extends Component {
 
     handleClick(e,id,userPubKey,email,_id, encryptedData){
         e.preventDefault();
+        console.log(id)
         this.props.kycContract.methods.getUserSignature(id).call().then(signature => {
             this.setState({signature:signature})
             this.props.kycContract.methods.getVerifierPublicKeyForUser(id).call().then(key=>{
@@ -75,22 +75,27 @@ class Type2Requests extends Component {
                 var verifierAddress = this.props.account[0];
                 var userId = id;
                 var userPublicKey = userPubKey;
-                console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
-                const reqOptions= {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData
-                    }),
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }};
-                  fetch(url+"initiateVerification",reqOptions)
+                this.props.kycContract.methods.getVerifier(verifierAddress).call().then((bankName) => {
+                    console.log(otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email);
+                    const reqOptions= {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            otp, verifierAddress, userId, userPublicKey, verifierPublicKey, signature, email, _id, encryptedData, bankName
+                        }),
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json'
+                      }};
+                      fetch(serverUrl+"initiateVerification",reqOptions)
                     .then(req => req.json())
-                    .then(data => this.setState({
-                        snackbarMessage: data.message,
-                        snackbarOpen: true
-                    }))
+                    .then(data => {
+                        this.setState({
+                            snackbarMessage: data.message,
+                            snackbarOpen: true
+                        })
+                        this.loadRequests()
+                    })
+                })
             })
         })
     }

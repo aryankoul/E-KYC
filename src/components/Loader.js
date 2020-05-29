@@ -28,7 +28,7 @@ class Loader extends Component {
     render(){
         return(
             <div>
-                <CircularProgress variant="determinate" value={this.state.progress} color="secondary" style={{height:"60px",width:"60px"}}/>
+                <CircularProgress variant="determinate" value={this.state.progress} color="secondary" size={100}/>
             </div>
         )
     }

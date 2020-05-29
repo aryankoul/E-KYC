@@ -10,8 +10,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
-
 import SnackBarNotification from './SnackBarNotification';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import { serverUrl } from '../config/config'
+
 const forge = require('node-forge');
 
 class NewUser extends Component{
@@ -25,7 +28,9 @@ class NewUser extends Component{
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-      displayDownload : false
+      displayDownload : false,
+      loading:false,
+      buttonLoaded:false
     }
   }
 
@@ -57,10 +62,12 @@ class NewUser extends Component{
 
   handleSubmit(event) {
     event.preventDefault()
+    this.setState({loading:true})
     console.log(this.state.verifierAddress);
     console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
+    data.append('address',this.address.value)
     data.append('email', this.email.value);
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
@@ -72,21 +79,25 @@ class NewUser extends Component{
       method: 'POST',
       body: data
     }
-    fetch('http://localhost:8000/uploadDocument', requestOptions)
+    fetch(serverUrl+'uploadDocument', requestOptions)
     .then(res => res.json())
           .then(data  => {
         this.setState({
             snackbarMessage: data.message, 
             snackbarOpen: true,
             displayDownload:true,
+            loading:false,
+            buttonLoaded:true
         })
+        this.phoneNo.value='';
+        this.email.value='';
+        this.docType.value='';
+        this.setState({verifierAddress:'',userName:this.name.value});
+        this.doc.files=null;
+        this.name.value='';
+        this.address.value=''
     });
-    this.phoneNo.value='';
-    this.email.value='';
-    this.name.value='';
-    this.docType.value='';
-    this.setState({verifierAddress:''});
-    this.doc.files=null;
+    
   }
 
   handleChange(event) {
@@ -104,7 +115,6 @@ class NewUser extends Component{
 
     const privateKey = localStorage.getItem("privateKeyUser")
     const publicKey = localStorage.getItem("publicKeyUser")
-
     const data = {
         'privateKeyUser': privateKey,
         'publicKeyUser': publicKey
@@ -116,15 +126,18 @@ class NewUser extends Component{
     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
 
     element.href =  URL.createObjectURL(file)
-    element.download = "Kyc-Keys.txt"
-
+    const name = this.state.userName.replace(/ /g, "")
+    element.download = `KycKeys-${name}.txt`
     document.body.append(element)
     element.click()
     element.parentNode.removeChild(element)
 
     this.setState({
-      displayDownload:false
+      displayDownload:false,
+      buttonLoaded:false
     })
+    localStorage.clear()
+
   }
 
   getVerfiers(){
@@ -153,7 +166,10 @@ class NewUser extends Component{
         <h3  style={{margin: "2%"}}>New User</h3>
         <br/>
         <FormControl>
-          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
+          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          >
             <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
             <Select
             native
@@ -185,6 +201,8 @@ class NewUser extends Component{
           inputRef = {(name) => this.name = name} 
           variant="outlined"
           style={{ margin: "2%", width: "80%" }}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -195,6 +213,8 @@ class NewUser extends Component{
           inputRef = {(email) => this.email = email} 
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -208,6 +228,20 @@ class NewUser extends Component{
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "address"
+          type = "text"
+          label="Address"
+          inputRef = {(address) => this.address = address}  
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -218,6 +252,8 @@ class NewUser extends Component{
           inputRef = {(docType) => this.docType = docType}   
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -225,14 +261,25 @@ class NewUser extends Component{
           
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
           <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
-          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload}>
-              Upload
-            </Button>
+          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          >
+            Upload Doccument
+          </Button>
           </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload}>Submit</Button>
+          <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
+          {
+            this.state.buttonLoaded ? (
+            <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}>{this.state.snackbarMessage}</Button>
+            ) :  (
+            <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}>Submit</Button>
+            )
+          }
+          </Tooltip>
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '40%',marginTop:"3.5%"}} />}
           <div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
+            <Tooltip title="Download KycKeys-User.txt" placement="top" interactive>
               <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
                 <GetAppIcon />
               </Fab>
@@ -242,12 +289,12 @@ class NewUser extends Component{
         </FormControl>
         </div>
         ) : (
-          <div style={{position:"fixed",top:"40%",left:"50%"}}>
+          <div style={{position:"fixed",top:"40%",left:"45%"}}>
             <Loader />
           </div>
           )
       }
-          <SnackBarNotification open={this.state.snackbarOpen} message={this.state.snackbarMessage} toggle={(val) => this.setState({snackbarOpen: val})} />
+          <SnackBarNotification open={this.state.snackbarOpen} message={"Please download the kyc key file"} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>
       
     );

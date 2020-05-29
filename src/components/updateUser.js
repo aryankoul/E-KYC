@@ -7,12 +7,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Loader from './Loader.js'
 import SaveIcon from '@material-ui/icons/Save';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+
 
 import SnackBarNotification from './SnackBarNotification';
-const forge = require('node-forge');
+import { serverUrl } from '../config/config'
 
 class UpdateUser extends Component{
 
@@ -25,7 +25,8 @@ class UpdateUser extends Component{
       loaded : false,
       snackbarMessage: '',
       snackbarOpen: false,
-    //   displayDownload : false
+      loading:false,
+      buttonLoaded:false
     }
   }
 
@@ -34,33 +35,15 @@ class UpdateUser extends Component{
     // this.generateKeys();
   }
 
-//   generateKeys(){
-//     const pubKey = localStorage.getItem("publicKeyUser");
-//     const priKey = localStorage.getItem("privateKeyUser");
-//     if((pubKey === null || pubKey === "") && (priKey === null || priKey === "")){
-//       forge.pki.rsa.generateKeyPair({bits: 2048, workers: 2}, function(err, keypair) {
-//         // keypair.privateKey, keypair.publicKey
-//         const publicKey = keypair.publicKey;
-//         const privateKey = keypair.privateKey;
-//         console.log(publicKey);
-//         console.log(privateKey);
-
-//         const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
-//         const privateKeyPem = forge.pki.privateKeyToPem(privateKey);
-
-//         localStorage.setItem("publicKeyUser",publicKeyPem);
-//         localStorage.setItem("privateKeyUser",privateKeyPem);
-
-//     });
-//     }
-//   }
 
   handleSubmit(event) {
     event.preventDefault()
+    this.setState({loading:true})
     console.log(this.state.verifierAddress);
     console.log(this.doc.files[0])
     let data = new FormData();
     data.append('phoneNumber', this.phoneNo.value);
+    data.append('address', this.address.value);
     data.append('email', this.email.value);
     data.append('name', this.name.value);
     data.append('docType', this.docType.value);
@@ -73,21 +56,25 @@ class UpdateUser extends Component{
       method: 'POST',
       body: data
     }
-    fetch('http://localhost:8000/uploadDocument', requestOptions)
+    fetch(serverUrl+'uploadDocument', requestOptions)
     .then(res => res.json())
           .then(data  => {
         this.setState({
             snackbarMessage: data.message, 
             snackbarOpen: true,
+            loading:false,
+            buttonLoaded:true
         })
+        this.phoneNo.value='';
+        this.email.value='';
+        this.name.value='';
+        this.docType.value='';
+        this.setState({verifierAddress:''});
+        this.doc.files=null;
+        this.kycId.value='';
+        this.address.value='';
     });
-    this.phoneNo.value='';
-    this.email.value='';
-    this.name.value='';
-    this.docType.value='';
-    this.setState({verifierAddress:''});
-    this.doc.files=null;
-    this.kycId.value='';
+    
   }
 
   handleChange(event) {
@@ -99,34 +86,6 @@ class UpdateUser extends Component{
       [name]: value
     })
   }
-
-//   handleDownload(event){
-//     event.preventDefault();
-
-//     const privateKey = localStorage.getItem("privateKeyUser")
-//     const publicKey = localStorage.getItem("publicKeyUser")
-
-//     const data = {
-//         'privateKeyUser': privateKey,
-//         'publicKeyUser': publicKey
-//     }
-
-//     const rawData = JSON.stringify(data)
-//     console.log(rawData)
-//     const element = document.createElement('a')
-//     const file = new Blob([rawData], {type: 'text/plain;charset=utf-8'})
-
-//     element.href =  URL.createObjectURL(file)
-//     element.download = "Kyc-Keys.txt"
-
-//     document.body.append(element)
-//     element.click()
-//     element.parentNode.removeChild(element)
-
-//     this.setState({
-//       displayDownload:false
-//     })
-//   }
 
   getVerfiers(){
     this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
@@ -154,7 +113,10 @@ class UpdateUser extends Component{
         <h3  style={{margin: "2%"}}>Update Deatils</h3>
         <br/>
         <FormControl>
-          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
+          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          >
             <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
             <Select
             native
@@ -186,6 +148,8 @@ class UpdateUser extends Component{
           inputRef = {(name) => this.name = name} 
           variant="outlined"
           style={{ margin: "2%", width: "80%" }}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
           <div>
@@ -198,6 +162,8 @@ class UpdateUser extends Component{
           inputRef = {(kycId) => this.kycId = kycId}   
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
           <div>
@@ -210,6 +176,8 @@ class UpdateUser extends Component{
           inputRef = {(email) => this.email = email} 
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -223,6 +191,20 @@ class UpdateUser extends Component{
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          />
+          <TextField
+          required
+          id="outlined-required"
+          name = "address"
+          type = "text"
+          label="Address"
+          inputRef = {(address) => this.address = address}  
+          variant="outlined"
+          style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -233,6 +215,8 @@ class UpdateUser extends Component{
           inputRef = {(docType) => this.docType = docType}   
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -240,24 +224,26 @@ class UpdateUser extends Component{
           
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
           <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
-          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}>
+          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}>
               Upload New Doc
             </Button>
           </label>
           <br/>
-          <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}}>Submit</Button>
-          {/* <div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download Kyc-Keys.txt" placement="top" interactive>
-              <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
-                <GetAppIcon />
-              </Fab>
-            </Tooltip>
-          </div> */}
+          {
+            this.state.buttonLoaded ? (
+              <Button variant="contained" startIcon={<CheckIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%",backgroundColor:"#02b205"}} disabled={this.state.loading}>{this.state.snackbarMessage}</Button>
+            ) : (
+              <Button variant="contained" startIcon={<SaveIcon />} color="primary" component="span" onClick = {(event)=>{this.handleSubmit(event)}} style={{ margin: "2%", width:"80%"}} disabled={this.state.loading}>Submit</Button>
+            )
+          }
+          {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '40%',marginTop:"3.5%"}} />}
           </div>
         </FormControl>
         </div>
         ) : (
-          <div style={{position:"fixed",top:"40%",left:"50%"}}>
+          <div style={{position:"fixed",top:"40%",left:"45%"}}>
             <Loader />
           </div>
           )
