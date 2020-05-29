@@ -241,7 +241,6 @@ class AddUser extends Component {
     console.log(this.props.account[0])
     console.log(this.textInput.current)
     this.textInput.current.value = ""
-    var bank = ''
     const address = this.props.account[0];
     this.props.kycContract.methods.getVerifier(address).call().then((bankName) => {
       this.props.kycContract.methods.getPublicKey(this.props.account[0]).call()
@@ -311,7 +310,7 @@ class AddUser extends Component {
           },x=>{this.removeUser()})
         })
 
-        if(flag==true){
+        if(flag===true){
           const options= {
             method: 'POST',
             body: JSON.stringify({
@@ -337,7 +336,6 @@ class AddUser extends Component {
               this.props.kycContract.methods.getVerifiersList(userId).call({},(err, res)=>{
                   var verifiers = res;
                   console.log(verifiers)
-                var verifiersArray = verifiers.split("#")
                 const options= {
                   method: 'POST',
                   body: JSON.stringify({
@@ -393,7 +391,7 @@ class AddUser extends Component {
                                   <h2  style={{marginBottom:"10px"}}>{request.name}</h2>
                                   <h5><PhoneIcon style={{marginRight:"7px"}}/>{request.phoneNumber}</h5>
                                   <h5><EmailIcon style={{marginRight:"7px"}}/>{request.email}</h5>
-                                  <h5><HomeIcon style={{marginRight:"7px",marginBottom:"12px"}}/>{request.address}</h5>
+                                  <h5><HomeIcon style={{marginRight:"7px",marginBottom:"15px"}}/>{request.address}</h5>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleDownload(event,request.fileName)}}  style={{marginRight:"12px"}}>Download File</Button>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleVerify(event,request.name,request.phoneNumber,request.email,request.publicKey,request._id, request.docType, request.userId,request.address)}} style={{marginRight: "12px"}}>Verify</Button>
                                   <Button variant="contained" color="primary" component="span" onClick={(event)=>{this.handleReject(request._id, request.email)}}>Reject</Button>
@@ -422,6 +420,8 @@ class AddUser extends Component {
             placeholder = "name"
             value = {this.state.name}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -433,6 +433,8 @@ class AddUser extends Component {
             placeholder = "Phone number"
             value = {this.state.phoneNumber}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -444,6 +446,8 @@ class AddUser extends Component {
             placeholder = "email"
             value = {this.state.email}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -455,6 +459,8 @@ class AddUser extends Component {
             placeholder = "Address"
             value = {this.state.address}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -466,6 +472,8 @@ class AddUser extends Component {
             placeholder = "document Type"
             value = {this.state.docType}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             <TextField
             required
@@ -479,6 +487,8 @@ class AddUser extends Component {
             ref = {this.textInput} 
             value = {this.state.docId}
             style={{marginBottom:"15px"}}
+            disabled={this.state.loading}
+            onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
             />
             {
               this.state.buttonLoaded ? (

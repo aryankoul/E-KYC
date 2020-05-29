@@ -139,7 +139,7 @@ class App extends Component {
       
 
 
-      if(flag==false){
+      if(flag===false){
         console.log("hi")
         this.setState({ type: 4 })
         localStorage.setItem("accounts","user")
@@ -199,7 +199,7 @@ class App extends Component {
             <Admin kycContract = {this.state.kycContract} account = {this.state.accounts} loadComponent={(val)=>{this.setState({loadedAdmin:val})}}/></div>
           </div>
         </div>
-        <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.state.loadedAdmin}>
+        <div style={{position:"fixed",top:"40%",left:"45%"}} hidden={this.state.loadedAdmin}>
           <Loader />
         </div>
         </>)
@@ -210,7 +210,7 @@ class App extends Component {
               <Verifier kycContract = {this.state.kycContract} accounts = {this.state.accounts} uploaded={this.state.uploaded}/>
             </div>
           ) : (
-            <div style={{position:"fixed",top:"40%",left:"50%"}}>
+            <div style={{position:"fixed",top:"40%",left:"45%"}}>
               <Loader />
             </div>
           )
@@ -257,7 +257,7 @@ class App extends Component {
             </div>
           </div>
           
-            <div style={{position:"fixed",top:"40%",left:"50%"}} hidden={this.state.loadedExistingUser === true && this.state.loadedNewUser === true}>
+            <div style={{position:"fixed",top:"40%",left:"45%"}} hidden={this.state.loadedExistingUser === true && this.state.loadedNewUser === true}>
               <Loader />
             </div>
           </>
@@ -273,7 +273,7 @@ class App extends Component {
           this.state.loaded ?
           (
             <>
-              <div style={{position:"fixed",bottom:"4%",right:"5%"}} hidden={this.state.type===0 || this.state.type==1 || this.state.type==3}>
+              <div style={{position:"fixed",bottom:"4%",right:"5%"}} hidden={this.state.type===0 || this.state.type===1 || this.state.type===3}>
               {
                 this.state.uploaded === false ? (<>
                   <input style={{display:'none'}} type="file" name="inputFile" accept='.txt' id="fab-button" onChange={e=>this.handleLogin(e.target.files[0])}/>
@@ -300,7 +300,7 @@ class App extends Component {
             </>
           ) : 
           (
-            <div style={{position:"fixed",top:"40%",left:"50%"}}>
+            <div style={{position:"fixed",top:"40%",left:"45%"}}>
               <Loader />
             </div>
           )

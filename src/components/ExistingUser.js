@@ -196,7 +196,9 @@ class ExistingUSer extends Component{
                   <h3 style={{margin: "2%"}}>Existing User</h3>
                   <br/>
                   <form>
-                    <FormControl variant="outlined" style={{ margin: "2%",  width: "80%"}}>
+                    <FormControl variant="outlined" style={{ margin: "2%",  width: "80%"}}
+                    disabled={this.state.loading} onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+                    >
                       <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
                       <Select
                       native
@@ -220,11 +222,12 @@ class ExistingUSer extends Component{
                     </FormControl>
 
                     <br/>
-                  
-                    {/* <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" value={this.state.userId} variant="outlined" type="text" name="userId" label="Kyc ID" onChange={(event)=>this.handleChange(event)}/> */}
+  
                     <input style={{display: 'none', margin: "2%"}} type="file" name="upload QR code" ref = {(doc) => this.doc = doc} onChange={this.onFileChange} placeholder="QR code" id="contained-button-qr"/>
                     <label htmlFor="contained-button-qr" style={{ margin: "2%", width: "80%"}}>
-                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}} disabled={!this.props.uploaded}>
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{ width: "100%"}} disabled={!this.props.uploaded || this.state.loading}
+                    onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+                    >
                       Upload QR Code
                     </Button>
                     </label>
@@ -261,9 +264,12 @@ class ExistingUSer extends Component{
                   <h3 style={{margin: "2%"}}>OTP Verification</h3><br/>
                   
                   <form>
-                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.requestId} name="requestId" label="request Id" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.otp} name="otp" label="OTP" onChange={(event) => this.handleChange(event)} />
-                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.userData} name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} />
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.requestId} name="requestId" label="Request Id" onChange={(event) => this.handleChange(event)} 
+                    disabled={this.state.loadingOtp} onClick={(event)=>{this.state.buttonLoadedOtp ? (this.setState({buttonLoadedOtp:false})) : (console.log("click"))}}/>
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.otp} name="otp" label="OTP" onChange={(event) => this.handleChange(event)} 
+                    disabled={this.state.loadingOtp} onClick={(event)=>{this.state.buttonLoadedOtp ? (this.setState({buttonLoadedOtp:false})) : (console.log("click"))}}/>
+                    <TextField style={{ margin: "2%",  width: "80%"}} required id="outlined-required" variant="outlined" value = {this.state.userData} name="userData" label="Data of user" onChange={(event) => this.handleChange(event)} 
+                    disabled={this.state.loadingOtp} onClick={(event)=>{this.state.buttonLoadedOtp ? (this.setState({buttonLoadedOtp:false})) : (console.log("click"))}}/>
                     {
                       this.state.buttonLoadedOtp ? (
                         this.state.verified ? (
@@ -303,12 +309,12 @@ class ExistingUSer extends Component{
                     {this.state.loadingOtp && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '78%',marginTop:"1%"}} />}
                     
                   </form>
-                  {/* <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} /> */}
+                  <SnackBarNotification message={this.state.snackbarMessage} open={this.state.snackbarOpen} toggle = {(val) => this.setState({snackbarOpen: val})} />
                 </Grid>
               </Grid>
 
                 ) : (
-                  <div style={{position:"fixed",top:"40%",left:"50%"}}>
+                  <div style={{position:"fixed",top:"40%",left:"45%"}}>
                     <Loader />
                   </div>
                 )

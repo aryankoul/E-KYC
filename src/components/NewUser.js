@@ -166,7 +166,10 @@ class NewUser extends Component{
         <h3  style={{margin: "2%"}}>New User</h3>
         <br/>
         <FormControl>
-          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}>
+          <FormControl variant="outlined" style={{ margin: "2%", width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          >
             <InputLabel htmlFor="filled-age-native-simple">Select Bank</InputLabel>
             <Select
             native
@@ -198,6 +201,8 @@ class NewUser extends Component{
           inputRef = {(name) => this.name = name} 
           variant="outlined"
           style={{ margin: "2%", width: "80%" }}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -208,6 +213,8 @@ class NewUser extends Component{
           inputRef = {(email) => this.email = email} 
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -221,6 +228,8 @@ class NewUser extends Component{
           inputRef = {(phoneNo) => this.phoneNo = phoneNo}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -231,6 +240,8 @@ class NewUser extends Component{
           inputRef = {(address) => this.address = address}  
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <TextField
           required
@@ -241,6 +252,8 @@ class NewUser extends Component{
           inputRef = {(docType) => this.docType = docType}   
           variant="outlined"
           style={{ margin: "2%",  width: "80%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           </div>
 
@@ -248,7 +261,9 @@ class NewUser extends Component{
           
           <input style={{display: 'none'}} type="file" name="doc" ref = {(doc) => this.doc = doc} placeholder="KYC DOCUMENT" id="contained-button-file"/>
           <label htmlFor="contained-button-file" style={{ margin: "2%", width: "80%"}}>
-          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload}>
+          <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />} style={{width: "100%"}} disabled={this.props.uploaded || this.state.displayDownload || this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
+          >
             Upload Doccument
           </Button>
           </label>
@@ -274,7 +289,7 @@ class NewUser extends Component{
         </FormControl>
         </div>
         ) : (
-          <div style={{position:"fixed",top:"40%",left:"50%"}}>
+          <div style={{position:"fixed",top:"40%",left:"45%"}}>
             <Loader />
           </div>
           )

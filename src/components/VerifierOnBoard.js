@@ -147,9 +147,10 @@ class VerifierOnBoard extends Component {
           label="Bank Name"
           onChange={(event)=>{this.handleChange(event)}}  
           variant="outlined"
-          style = {{margin: '10px'}}
           value = {this.state.bankName}
           style={{ margin: "5%", width: "100%"}}
+          disabled={this.state.loading}
+          onClick={(event)=>{this.state.buttonLoaded ? (this.setState({buttonLoaded:false})) : (console.log("click"))}}
           />
           <br/>
           <Tooltip title="Please download the Kyc Key file after submitting this form" placement="bottom" interactive>
