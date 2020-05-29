@@ -59,7 +59,7 @@ class App extends Component {
     this.loadBlockchainData();
   }
 
-  handleBalances(account,kycContract){
+  async handleBalances(account,kycContract){
     console.log(account)
      console.log(kycContract)
     const requestOptions = {
@@ -72,40 +72,45 @@ class App extends Component {
         'Content-Type': 'application/json'
      }
     };
-    fetch(serverUrl+'completedKyc', requestOptions)
-    .then((res) => res.json())
-    .then((data) => {
-      let i = 0;
-      let len = data.data.length;
+    let response = await fetch(serverUrl+'completedKyc', requestOptions)
+      let res = await response.json();
+      console.log(res.data[0])
+      var array = res.data;
+      let j = 0;
+      let len = array.length;
+      if(array==undefined || array==null || array=="") len=0
       if(len===0)
         this.setState({verifierLoaded:true})
-      data.data.forEach(element => {
-        console.log(data)
-        kycContract.methods.costShare(element.userId,element.encryptedCid,account).send({from: this.state.accounts[0], gas: 672195, value: 6000000000000000000},(err)=>{
-          if(!err){
-            console.log("delete wala")
-            const requestOptions = {
-              method: 'POST',
-              body: JSON.stringify({
-                _id: element._id
-              }),
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-             }
-            };
-            fetch(serverUrl+'completedKyc/delete', requestOptions).then(()=>{
-              i=i+1;
-              if(i===len)
-              {
-                this.setState({verifierLoaded:true})
-              }
-            });
-          }
-        });
-      });
-    })
-    
+      for(var i=0;i<array.length;i++){
+        var element = array[0];
+        kycContract.methods.calculateShare(element.userId).call({},(err, res) => {
+          var share = parseInt(res.toString());
+          console.log(share)
+          kycContract.methods.costShare(element.userId,element.encryptedCid,account, element.mode).send({from: this.state.accounts[0], gas: 6721975, value: share},(err)=>{
+            console.log(err)
+            if(!err){
+              console.log("delete")
+              const requestOptions = {
+                method: 'POST',
+                body: JSON.stringify({
+                  _id: element._id
+                }),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
+              };
+              fetch(serverUrl+'completedKyc/delete', requestOptions).then(()=>{
+                j=j+1;
+                if(j===len)
+                {
+                  this.setState({verifierLoaded:true})
+                }
+              });
+            }
+          });
+        })
+      }   
   }
   async loadBlockchainData() {
     const web3 = new Web3(providerUrl)

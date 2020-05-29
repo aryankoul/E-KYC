@@ -253,7 +253,7 @@ class AddUser extends Component {
         var verifierPublicKey = forge.pki.publicKeyFromPem(key)
         var encCid = verifierPublicKey.encrypt(cid)
         encCid=forge.util.encode64(encCid)
-        this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode).send({ from: this.props.account[0], gas: 6721975})
+        this.props.kycContract.methods.addUser(userId, signature, hash, encCid, this.props.account[0],this.props.account[0],mode,6).send({ from: this.props.account[0], gas: 6721975})
         var plaintextBytes = forge.util.encodeUtf8(rawData);
         var encrypted = pkey.encrypt(plaintextBytes)
         encrypted = forge.util.encode64(encrypted)
@@ -358,9 +358,30 @@ class AddUser extends Component {
                   eCid.push(encCid);
                 }
                 console.log(encCid)
-                for(var i=0;i<eCid.length;i++){
-                  this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+              var completedKyc =[];
+              for(var i=0;i<eCid.length;i++){
+                var temp = {
+                  verifierAddress:data[i].verifierAddress,
+                  encryptedCid : eCid[i],
+                  mode:3,
+                  userId:userId
                 }
+                if(data[i].verifierAddress != this.props.account[0]){
+                  completedKyc.push(temp)
+                }
+              }
+              // this.props.kycContract.methods.updateCid(data[i].verifierAddress,userId,eCid[i]).send({from:this.props.account[0],gas:6721975})
+              console.log(completedKyc)
+              const rOptions= {
+                method: 'POST',
+                body: JSON.stringify({
+                  completedKyc: completedKyc,
+                }),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }};
+              fetch(serverUrl+'pushCompletedKyc',rOptions)
               })
               })
             

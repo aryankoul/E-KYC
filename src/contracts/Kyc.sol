@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.6.0;
+pragma experimental ABIEncoderV2;
 
 contract Kyc {
 
@@ -14,6 +15,8 @@ contract Kyc {
         string emailHash;
         address payable[] vers;
         string[] verAddress;
+        uint256 totalCost;
+        mapping(address => uint256) currentShare;
     }
 
     struct Verifier{
@@ -51,33 +54,78 @@ contract Kyc {
         return string(bytes_c);
     }
 
-    //concen
-    function costShare(string memory userId, string memory cid, string memory vAddress)  public payable {
+    function calculateShare(string memory userId) public view returns(uint256){
+        uint256 totalCost = Users[userId].totalCost;
+        uint count = Users[userId].vers.length;
+        return totalCost/count;
+    }
+
+    function minm(uint256 a, uint256 b) public view returns(uint256){
+        if(a<b)
+            return a;
+        else return b;
+    }
+
+    function costShare(string memory userId, string memory cid, string memory vAddress, uint mode) public payable {
+        Verifiers[msg.sender].encryptedCid[userId] = cid;
         bool flag = false;
         for(uint i = 0;i<Verifiers[msg.sender].customers.length;i++){
             if(keccak256(bytes(Verifiers[msg.sender].customers[i])) == keccak256(bytes(userId))){
                 flag = true;
             }
         }
-        if(flag==false){
+        if(flag==false){//new verifier
+            //push customer in verifier and vice versa
             Verifiers[msg.sender].customers.push(userId);
             Users[userId].vers.push(msg.sender);
             Users[userId].verAddress.push(vAddress);
         }
-        Verifiers[msg.sender].encryptedCid[userId] = cid;
-        address payable[] memory v = Users[userId].vers;
-        uint256 count = v.length;
-        uint256 etherSent = msg.value;
-        uint256 totalEth = msg.value/count;
-        uint256 transferAmt = totalEth/(count-1);
-        for(uint i = 0; i<v.length; i++){
-            if(v[i] != msg.sender) {
-                v[i].transfer(transferAmt);
-                etherSent = etherSent-transferAmt;
+        if(mode==2){
+            if(flag==true){
+                msg.sender.transfer(msg.value);
+            }
+            else{
+                address payable[] memory v = Users[userId].vers;
+                uint256 count = v.length;
+                uint256 etherSent = msg.value;
+                uint256 share = calculateShare(userId);
+                uint256 transferAmt = share/(count-1);
+                uint256 spent = 0;
+                for(uint i = 0; i<v.length; i++){
+                    if(v[i] != msg.sender) {
+                        v[i].transfer(transferAmt);
+                        Users[userId].currentShare[v[i]] = Users[userId].currentShare[v[i]] - transferAmt;
+                        etherSent = etherSent-transferAmt;
+                        spent = spent+transferAmt;
+                    }
+                }
+                Users[userId].currentShare[msg.sender] = spent;
+                msg.sender.transfer(etherSent);
             }
         }
-        msg.sender.transfer(etherSent);
-
+        else{
+            address payable[] memory v = Users[userId].vers;
+            uint256 count = v.length;
+            uint256 etherSent = msg.value;
+            uint256 share = calculateShare(userId);
+            uint256 spent = 0;
+            if(share>=Users[userId].currentShare[msg.sender]){
+                uint256 divide = share - Users[userId].currentShare[msg.sender];
+                for(uint i = 0;( i<count && divide>0);i++){
+                    if(v[i]!=msg.sender){
+                        if(Users[userId].currentShare[v[i]]>=share){
+                            uint256 diff = Users[userId].currentShare[v[i]] - share;
+                            uint256 minmm = minm(divide,diff);
+                            v[i].transfer(minmm);
+                            Users[userId].currentShare[v[i]] = Users[userId].currentShare[v[i]] - minmm;
+                            spent = spent + minmm;
+                        }
+                    }
+                }
+                Users[userId].currentShare[msg.sender] = Users[userId].currentShare[msg.sender] + spent;
+                msg.sender.transfer(etherSent-spent);
+            }
+        }
     }
 
 
@@ -190,7 +238,8 @@ contract Kyc {
                     string memory encryptedCid,
                     address payable verifierAddress,
                     string memory vAddress,
-                    uint mode) public {
+                    uint mode,
+                    uint256 costOccured) public {
         require(Verifiers[verifierAddress].present == true, "Unauthorized verifier");
         if(mode==1){
             require(
@@ -200,7 +249,8 @@ contract Kyc {
             string[] memory verAddress = new string[](1);
             ver[0] = verifierAddress;
             verAddress[0] = vAddress;
-            Users[_id] = User(true, _signature, _emailHash, ver, verAddress);
+            Users[_id] = User(true, _signature, _emailHash, ver, verAddress, costOccured*(1 ether));
+            Users[_id].currentShare[verifierAddress] = costOccured*(1 ether);
         }
         bool flag = false;
         for(uint i = 0;i<Verifiers[verifierAddress].customers.length;i++){
@@ -213,9 +263,14 @@ contract Kyc {
         if(mode==3){
             Users[_id].signature = _signature;
             Users[_id].emailHash = _emailHash;
+            Users[_id].totalCost = Users[_id].totalCost + costOccured*(1 ether);
             if(flag==false){
                 Users[_id].vers.push(verifierAddress);
                 Users[_id].verAddress.push(vAddress);
+                Users[_id].currentShare[verifierAddress] = costOccured*(1 ether);
+            }
+            else{
+                Users[_id].currentShare[verifierAddress] = Users[_id].currentShare[verifierAddress]+costOccured*(1 ether);
             }
         }
         linkedVerifiers[_id] = getPublicKey(verifierAddress);
