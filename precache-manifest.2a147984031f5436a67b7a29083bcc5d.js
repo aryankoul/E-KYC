@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "5df95b93cb40821c1fab",
+    "revision": "2cd9d0565e2f3edaa463",
     "url": "/E-KYC/static/css/main.662b4c25.chunk.css"
   },
   {
-    "revision": "5df95b93cb40821c1fab",
-    "url": "/E-KYC/static/js/main.5df95b93.chunk.js"
+    "revision": "2cd9d0565e2f3edaa463",
+    "url": "/E-KYC/static/js/main.2cd9d056.chunk.js"
   },
   {
     "revision": "e0b5bfa26f08e512a0c5",
@@ -20,7 +20,7 @@ self.__precacheManifest = [
     "url": "/E-KYC/static/js/runtime~main.ebb69eef.js"
   },
   {
-    "revision": "081e37fec543dfb125590aafca5f50e0",
+    "revision": "40bed5418cc8f4960f49e497367b7081",
     "url": "/E-KYC/index.html"
   }
 ];
