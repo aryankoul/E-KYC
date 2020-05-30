@@ -366,7 +366,7 @@ class AddUser extends Component {
                   mode:3,
                   userId:userId
                 }
-                if(data[i].verifierAddress != this.props.account[0]){
+                if(data[i].verifierAddress !== this.props.account[0]){
                   completedKyc.push(temp)
                 }
               }

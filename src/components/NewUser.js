@@ -13,6 +13,15 @@ import Fab from '@material-ui/core/Fab';
 import SnackBarNotification from './SnackBarNotification';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckIcon from '@material-ui/icons/Check';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { serverUrl } from '../config/config'
 
 const forge = require('node-forge');
@@ -30,7 +39,12 @@ class NewUser extends Component{
       snackbarOpen: false,
       displayDownload : false,
       loading:false,
-      buttonLoaded:false
+      buttonLoaded:false,
+      password:"",
+      confirmPassword:"",
+      open:false,
+      showPassword:false,
+      showConfirmPassword:false
     }
   }
 
@@ -134,7 +148,8 @@ class NewUser extends Component{
 
     this.setState({
       displayDownload:false,
-      buttonLoaded:false
+      buttonLoaded:false,
+      open:false
     })
     localStorage.clear()
 
@@ -278,15 +293,91 @@ class NewUser extends Component{
           }
           </Tooltip>
           {this.state.loading && <CircularProgress size={24} style={{color:"#02b205",position: 'absolute',left: '40%',marginTop:"3.5%"}} />}
-          <div hidden={!this.state.displayDownload}>
-            <Tooltip title="Download KycKeys-User.txt" placement="top" interactive>
-              <Fab size="medium" color="secondary" aria-label="add" onClick={e=>{this.handleDownload(e)}}>
+          <div hidden={!this.state.displayDownload} style={{position:"fixed",bottom:"4%",right:"10%"}}>
+            <Tooltip title="Set up password and download KycKeys file" placement="top" interactive>
+              <Fab color="secondary" aria-label="add" onClick={e=>{this.setState({open:true})}}>
                 <GetAppIcon />
               </Fab>
             </Tooltip>
           </div>
           </div>
         </FormControl>
+        <Modal
+          disableBackdropClick
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          style={{display:"flex",alignItems:"center",justifyContent:"center"}}
+          open={this.state.open}
+          onClose={()=>{this.setState({open:false})}}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={this.state.open}>
+            <Paper style={{border:"3px solid #3f51b5",padding:"5%",borderRadius:"10px",textAlign:"center"}}>
+              <h2  style={{marginBottom: "5%"}}>Please setup a password for the file</h2>
+              <FormControl variant="outlined" style={{marginBottom:"5%",width:"100%"}}>
+                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <Tooltip title="password must be atleast 8 characters" placement="bottom" interactive>
+                <OutlinedInput
+                  required
+                  id="outlined-adornment-password"
+                  type={this.state.showPassword ? 'text' : 'password'}
+                  value={this.state.password}
+                  onChange={(e)=>{this.setState({password:e.target.value})}}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={(e)=>{this.setState({showPassword:!this.state.showPassword})}}
+                        onMouseDown={(e)=>{e.preventDefault()}}
+                        edge="end"
+                      >
+                        {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={70}
+                />
+                </Tooltip>
+              </FormControl>
+              <FormControl variant="outlined" style={{marginBottom:"5%",width:"100%"}}>
+                <InputLabel htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
+                <Tooltip title="Must be same as above" placement="bottom" interactive>
+                <OutlinedInput
+                  required
+                  id="outlined-adornment-password"
+                  type={this.state.showConfirmPassword ? 'text' : 'password'}
+                  value={this.state.confirmPassword}
+                  onChange={(e)=>{this.setState({confirmPassword:e.target.value})}}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={(e)=>{this.setState({showConfirmPassword:!this.state.showConfirmPassword})}}
+                        onMouseDown={(e)=>{e.preventDefault()}}
+                        edge="end"
+                      >
+                        {this.state.showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={70}
+                />
+                </Tooltip>
+              </FormControl>
+              <br/>
+              <Tooltip title="password must be atleast 8 characters long and same in both input boxes" placement="bottom" interactive>
+                <Button variant="contained" startIcon={<GetAppIcon />} color="primary" component="span"
+                onClick={(e)=>{this.handleDownload(e)}}
+                disabled={this.state.password === "" || this.state.confirmPassword === "" || this.state.password !== this.state.confirmPassword || this.state.password.length<=7} 
+                style={{width:"100%"}}>Download File</Button>
+              </Tooltip>
+            </Paper>
+          </Fade>
+        </Modal>
         </div>
         ) : (
           <div style={{position:"fixed",top:"40%",left:"45%"}}>

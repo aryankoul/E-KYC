@@ -16,6 +16,19 @@ import UpdateUser from './updateUser.js'
 import { Tab,Tabs,AppBar } from '@material-ui/core';
 import { Container } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormControl from '@material-ui/core/FormControl';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { Button } from '@material-ui/core';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import Fab from '@material-ui/core/Fab';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
@@ -37,7 +50,11 @@ class App extends Component {
         loadedAdmin : false,
         uploaded : true,
         accounts:[],
-        verifierLoaded:false
+        verifierLoaded:false,
+        open:false,
+        showPassword:false,
+        password:"",
+        fileUploaded:false
       }
     }
     else{
@@ -48,7 +65,12 @@ class App extends Component {
       loadedNewUser : false,
       loadedAdmin : false,
       uploaded : false,
-      accounts:[]
+      accounts:[],
+      verifierLoaded:false,
+      open:false,
+      showPassword:false,
+      password:"",
+      fileUploaded:false
     }
   }
     this.handleLogin.bind(this);
@@ -74,14 +96,16 @@ class App extends Component {
     };
     let response = await fetch(serverUrl+'completedKyc', requestOptions)
       let res = await response.json();
-      console.log(res.data[0])
+      // console.log(res.data[0])
       var array = res.data;
       let j = 0;
-      let len = array.length;
-      if(array==undefined || array==null || array=="") len=0
+      let len=0;
+      if(array===undefined || array===null || array==="") len=0
+      else
+        len = array.length;
       if(len===0)
         this.setState({verifierLoaded:true})
-      for(var i=0;i<array.length;i++){
+      for(var i=0;i<len;i++){
         var element = array[0];
         kycContract.methods.calculateShare(element.userId).call({},(err, res) => {
           var share = parseInt(res.toString());
@@ -166,16 +190,14 @@ class App extends Component {
       localStorage.setItem(key,keys[key]);
       localStorage.setItem("lastStoredKey"+i,keys[key])
     }
-    this.setState({uploaded:true},()=>{
-      window.location.reload();
-    })
+    this.setState({fileUploaded:true})
   }
   
   handleLogin = (file) => {
     console.log("hi")
     let fileData = new FileReader();
-    fileData.onloadend = this.handleFile;
     fileData.readAsText(file);
+    fileData.onloadend = this.handleFile;
   }
 
   handleLogout(){
@@ -278,18 +300,66 @@ class App extends Component {
           this.state.loaded ?
           (
             <>
-              <div style={{position:"fixed",bottom:"4%",right:"5%"}} hidden={this.state.type===0 || this.state.type===1 || this.state.type===3}>
-              {
-                this.state.uploaded === false ? (<>
-                  <input style={{display:'none'}} type="file" name="inputFile" accept='.txt' id="fab-button" onChange={e=>this.handleLogin(e.target.files[0])}/>
-                  <label htmlFor="fab-button">
-                    <Tooltip title="Login by uploading Kyc Key text File" placement="top" interactive>
-                      <Fab color="secondary" aria-label="add" component="span">
-                        <VpnKeyIcon />
-                      </Fab>
-                    </Tooltip>
+              <Modal
+              disableBackdropClick
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              style={{display:"flex",alignItems:"center",justifyContent:"center"}}
+              open={this.state.open}
+              onClose={()=>{this.setState({open:false})}}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+            >
+              <Fade in={this.state.open}>
+                <Paper style={{border:"3px solid #3f51b5",padding:"5%",borderRadius:"10px",textAlign:"center"}}>
+                  <FormControl variant="outlined" style={{marginBottom:"5%",width:"100%"}}>
+                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                    <OutlinedInput
+                      required
+                      id="outlined-adornment-password"
+                      type={this.state.showPassword ? 'text' : 'password'}
+                      value={this.state.password}
+                      onChange={(e)=>{this.setState({password:e.target.value})}}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={(e)=>{this.setState({showPassword:!this.state.showPassword})}}
+                            onMouseDown={(e)=>{e.preventDefault()}}
+                            edge="end"
+                          >
+                            {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      labelWidth={70}
+                    />
+                  </FormControl>
+                  <br/>
+                  <input style={{display:'none'}} type="file" id="file" name="inputFile" accept='.txt' onChange={e=>{console.log("hello");this.handleLogin(e.target.files[0])}}/>
+                  <label htmlFor="file" style={{width:"100%"}}>
+                    <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />}  disabled={this.state.password === ""} style={{width:"100%",marginBottom:"2%"}}>
+                      Upload
+                    </Button>
                   </label>
-                  </>
+                  <br/>
+                  <Button variant="contained" startIcon={<VpnKeyIcon />} color="primary" component="span"
+                  onClick={(e)=>{this.setState({open:false,uploaded:true},()=>{window.location.reload()})}}
+                  disabled={!this.state.fileUploaded} style={{width:"100%"}}>Login</Button>
+                </Paper>
+              </Fade>
+            </Modal>
+            <div style={{position:"fixed",bottom:"4%",right:"5%"}} hidden={this.state.type===0 || this.state.type===1 || this.state.type===3}>
+              {
+                this.state.uploaded === false ? (
+                  <Tooltip title="Login by uploading Kyc Key text File and password" placement="top" interactive>
+                    <Fab color="secondary" aria-label="add" component="span" onClick={(e)=>this.setState({open:true})}>
+                      <VpnKeyIcon />
+                    </Fab>
+                  </Tooltip>
                 ) : (
                   <Tooltip title="Logout" placement="top" interactive>
                     <Fab color="secondary" aria-label="add" onClick={(e)=>this.handleLogout(e)}>
