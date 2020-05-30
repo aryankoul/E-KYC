@@ -1,15 +1,15 @@
 {
   "main.css": "/E-KYC/static/css/main.662b4c25.chunk.css",
-  "main.js": "/E-KYC/static/js/main.f249b84d.chunk.js",
-  "main.js.map": "/E-KYC/static/js/main.f249b84d.chunk.js.map",
+  "main.js": "/E-KYC/static/js/main.485f3003.chunk.js",
+  "main.js.map": "/E-KYC/static/js/main.485f3003.chunk.js.map",
   "static/css/1.7b09487b.chunk.css": "/E-KYC/static/css/1.7b09487b.chunk.css",
-  "static/js/1.8d2fa8bb.chunk.js": "/E-KYC/static/js/1.8d2fa8bb.chunk.js",
-  "static/js/1.8d2fa8bb.chunk.js.map": "/E-KYC/static/js/1.8d2fa8bb.chunk.js.map",
+  "static/js/1.d99a28c3.chunk.js": "/E-KYC/static/js/1.d99a28c3.chunk.js",
+  "static/js/1.d99a28c3.chunk.js.map": "/E-KYC/static/js/1.d99a28c3.chunk.js.map",
   "runtime~main.js": "/E-KYC/static/js/runtime~main.ebb69eef.js",
   "runtime~main.js.map": "/E-KYC/static/js/runtime~main.ebb69eef.js.map",
   "static/css/main.662b4c25.chunk.css.map": "/E-KYC/static/css/main.662b4c25.chunk.css.map",
   "static/css/1.7b09487b.chunk.css.map": "/E-KYC/static/css/1.7b09487b.chunk.css.map",
   "index.html": "/E-KYC/index.html",
-  "precache-manifest.7dea4cafd47133c6d964a4c4969e2911.js": "/E-KYC/precache-manifest.7dea4cafd47133c6d964a4c4969e2911.js",
+  "precache-manifest.0b676b5e33ead905c0582d24b585948d.js": "/E-KYC/precache-manifest.0b676b5e33ead905c0582d24b585948d.js",
   "service-worker.js": "/E-KYC/service-worker.js"
 }
