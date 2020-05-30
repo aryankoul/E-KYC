@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/E-KYC/precache-manifest.2a147984031f5436a67b7a29083bcc5d.js"
+  "/E-KYC/precache-manifest.ca91527912b645e5a0ffc1a8ddc298c7.js"
 );
 
 workbox.clientsClaim();
