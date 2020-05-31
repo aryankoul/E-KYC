@@ -80,6 +80,7 @@ class NewUser extends Component{
     console.log(this.state.verifierAddress);
     console.log(this.doc.files[0])
     let data = new FormData();
+
     data.append('phoneNumber', this.phoneNo.value);
     data.append('address',this.address.value)
     data.append('email', this.email.value);
@@ -89,6 +90,7 @@ class NewUser extends Component{
     data.append('publicKey', localStorage.getItem("publicKeyUser"));
     data.append('type',"1");
     data.append('doc', this.doc.files[0]);
+
     const requestOptions = {
       method: 'POST',
       body: data
@@ -124,16 +126,51 @@ class NewUser extends Component{
     })
   }
 
+  encrypt(input, password) {
+    // var input = fs.readFileSync(input, {encoding: 'binary'});
+    // console.log(password)
+    var keySize = 24;
+    var ivSize = 8;
+
+    var salt = forge.random.getBytesSync(8);
+    var derivedBytes = forge.pbe.opensslDeriveBytes(
+                  password, salt, keySize + ivSize/*, md*/);
+    var buffer = forge.util.createBuffer(derivedBytes);
+    var key = buffer.getBytes(keySize);
+    var iv = buffer.getBytes(ivSize);
+
+    var cipher = forge.cipher.createCipher('3DES-CBC', key);
+    cipher.start({iv: iv});
+    cipher.update(forge.util.createBuffer(input, 'binary'));
+    cipher.finish();
+
+    var output = forge.util.createBuffer();
+
+    if(salt !== null) {
+      output.putBytes('Salted__'); 
+      output.putBytes(salt);
+    }
+    output.putBuffer(cipher.output);
+
+    return output; 
+  }
+
+
   handleDownload(event){
     event.preventDefault();
 
-    const privateKey = localStorage.getItem("privateKeyUser")
-    const publicKey = localStorage.getItem("publicKeyUser")
+    var password = this.state.password
+    var privateKey = localStorage.getItem("privateKeyUser")
+    var publicKey = localStorage.getItem("publicKeyUser")
+
+    privateKey = this.encrypt(privateKey, password)
+    publicKey = this.encrypt(publicKey, password)
+
     const data = {
         'privateKeyUser': privateKey,
         'publicKeyUser': publicKey
     }
-
+    
     const rawData = JSON.stringify(data)
     console.log(rawData)
     const element = document.createElement('a')
@@ -149,7 +186,8 @@ class NewUser extends Component{
     this.setState({
       displayDownload:false,
       buttonLoaded:false,
-      open:false
+      open:false,
+      password: ''
     })
     localStorage.clear()
 

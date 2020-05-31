@@ -40,12 +40,51 @@ class VerifierOnBoard extends Component {
       confirmPassword:"",
       open:false,
       showPassword:false,
-      showConfirmPassword:false
+      showConfirmPassword:false,  
     }
   } 
 
   componentDidMount(){
     this.generateKeys();
+  }
+
+  encrypt(input, password) {
+    // var input = fs.readFileSync(input, {encoding: 'binary'});
+    // console.log(password)
+    var keySize = 24;
+    var ivSize = 8;
+
+    var salt = forge.random.getBytesSync(8);
+    var derivedBytes = forge.pbe.opensslDeriveBytes(
+                  password, salt, keySize + ivSize/*, md*/);
+    var buffer = forge.util.createBuffer(derivedBytes);
+    var key = buffer.getBytes(keySize);
+    var iv = buffer.getBytes(ivSize);
+
+    var cipher = forge.cipher.createCipher('3DES-CBC', key);
+    cipher.start({iv: iv});
+    cipher.update(forge.util.createBuffer(input, 'binary'));
+    cipher.finish();
+
+    var output = forge.util.createBuffer();
+
+    if(salt !== null) {
+      output.putBytes('Salted__'); 
+      output.putBytes(salt);
+    }
+    output.putBuffer(cipher.output);
+
+    return output; 
+  }
+
+  generatePassword() {
+    var letters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    let password = ''
+    const len = letters.length
+    for(let i = 0; i < 8; i++) {
+    password += letters[Math.floor(Math.random() * len)]
+    }
+    return password
   }
 
   handleChange(event) {
@@ -84,9 +123,13 @@ class VerifierOnBoard extends Component {
   handleDownload(event){
     event.preventDefault();
 
+    var password = this.state.password
     const address = this.props.account[0];
-    const privateKey = localStorage.getItem("privateKey"+address)
-    const publicKey = localStorage.getItem("publicKey"+address)
+    var privateKey = localStorage.getItem("privateKey"+address)
+    var publicKey = localStorage.getItem("publicKey"+address)
+
+    publicKey = this.encrypt(publicKey, password)
+    privateKey = this.encrypt(privateKey, password)
 
     const pri = "privateKey"+address;
     const pub = "publicKey"+address;
@@ -110,14 +153,16 @@ class VerifierOnBoard extends Component {
     this.setState({
       displayDownload:false,
       buttonLoaded:false,
-      open:false
+      open:false,
+      password: ''
     },()=>{window.location.reload();})
-
+    
   }
 
 
   handleSubmit(event) {
     event.preventDefault()
+
     this.setState({loading:true})
     const [bankName] = [this.state.bankName]
     const account = this.props.account[0];
@@ -132,13 +177,13 @@ class VerifierOnBoard extends Component {
         displayDownload:true,
         loading:false,
         buttonLoaded:true,
-        bankName: ''
+        bankName: '',
     })
     const requestOptions = {
       method: 'POST',
       body: JSON.stringify({
         verifierAddress: account,
-        publicKey:publicKey
+        publicKey:publicKey,
       }),
       headers: {
         'Accept': 'application/json',

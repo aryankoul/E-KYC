@@ -79,6 +79,7 @@ class ExistingUSer extends Component{
           method: 'POST',
           body: formdata,
       };
+      console.log(formdata)
       fetch(serverUrl+'uploadDocument', requestOptions)
       .then(res => res.json())
             .then(data => {

@@ -110,6 +110,7 @@ class App extends Component {
         kycContract.methods.calculateShare(element.userId).call({},(err, res) => {
           var share = parseInt(res.toString());
           console.log(share)
+          console.log(element)
           kycContract.methods.costShare(element.userId,element.encryptedCid,account, element.mode).send({from: this.state.accounts[0], gas: 6721975, value: share},(err)=>{
             console.log(err)
             if(!err){
@@ -181,14 +182,38 @@ class App extends Component {
       this.setState({ loaded:true })
   }
   
+  decrypt(input, password) {
+    var forge = require('node-forge');
+    input = forge.util.createBuffer(input, 'binary');
+    input.getBytes('Salted__'.length);
+    var salt = input.getBytes(8);
+    var keySize = 24;
+    var ivSize = 8;
+   
+    var derivedBytes = forge.pbe.opensslDeriveBytes(
+      password, salt, keySize + ivSize);
+    var buffer = forge.util.createBuffer(derivedBytes);
+    var key = buffer.getBytes(keySize);
+    var iv = buffer.getBytes(ivSize);
+   
+    var decipher = forge.cipher.createDecipher('3DES-CBC', key);
+    decipher.start({iv: iv});
+    decipher.update(input);
+    var result = decipher.finish();
+    console.log(decipher.output.getBytes());
+    return decipher.output.getBytes();
+  }
+
   handleFile = (e) => {
     const content = e.target.result;
-    var keys= JSON.parse(content)
+    var keys= JSON.parse(content);
     var i=0;
+    var password = this.state.password;
     for(var key in keys){
-      i+=1
-      localStorage.setItem(key,keys[key]);
-      localStorage.setItem("lastStoredKey"+i,keys[key])
+      i+=1;
+      var k = this.decrypt(keys[key], password);
+      localStorage.setItem(key, k);
+      localStorage.setItem("lastStoredKey"+i, k)
     }
     this.setState({fileUploaded:true})
   }
