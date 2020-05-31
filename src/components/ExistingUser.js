@@ -17,91 +17,91 @@ const forge = require('node-forge');
 
 class ExistingUSer extends Component{
 
-    constructor(props){
-        super(props)
-        console.log(props);
-        this.state = {
-          verifiedVerifiers : [],
-          verifierAddress : '',
-          loaded : false,
-          selectedFile: null,
-          snackbarMeassage: '',
-          snackbarOpen: false,
-          userId: '',
-          requestId: '',
-          otp: '',
-          userData: '',
-          loading:false,
-          buttonLoaded:false,
-          loadingOtp:false,
-          buttonLoadedOtp:false,
-          verified:false
-        }
-    }
-
-    componentDidMount() {
-      this.getVerifiers()
-    }
-
-    getVerifiers(){
-      this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
-          console.log(verifiedVerifiers);
-          if (verifiedVerifiers !== null && verifiedVerifiers.length !== 0){
-          verifiedVerifiers.map((verifiedVerifier, key) => {
-          this.props.kycContract.methods.getVerifier(verifiedVerifier).call({}, (err,verifierDetails) => {
-              const verifier = {bankName: verifierDetails, address: verifiedVerifier}
-              this.setState({verifiedVerifiers:[...this.state.verifiedVerifiers,verifier]})
-              this.setState({loaded:true})
-              this.props.loadComponent(true)
-          });
-          })
-          }else{
-            this.props.loadComponent(true)
-            this.setState({loaded:true})
-          }
-    }) 
+  constructor(props){
+      super(props)
+      console.log(props);
+      this.state = {
+        verifiedVerifiers : [],
+        verifierAddress : '',
+        loaded : false,
+        selectedFile: null,
+        snackbarMeassage: '',
+        snackbarOpen: false,
+        userId: '',
+        requestId: '',
+        otp: '',
+        userData: '',
+        loading:false,
+        buttonLoaded:false,
+        loadingOtp:false,
+        buttonLoadedOtp:false,
+        verified:false
+      }
   }
 
-    handleSubmit(event) {
-      event.preventDefault()
-      this.setState({loading:true})
-      console.log(this.state.verifierAddress);
-      console.log(this.state);
-      
-	    var formdata = new FormData();
-      var files = this.doc;
-      console.log(files.files[0])
-      formdata.append('verifierAddress',this.state.verifierAddress);
-      formdata.append('type',2);
-      // formdata.append('userId', this.state.userId);
-      formdata.append('doc', files.files[0]);
-      var requestOptions = {
-          method: 'POST',
-          body: formdata,
-      };
-      console.log(formdata)
-      fetch(serverUrl+'uploadDocument', requestOptions)
-      .then(res => res.json())
-            .then(data => {
-          this.setState({
-              snackbarMessage: data.message,
-              snackbarOpen: true,
-              loading:false,
-              buttonLoaded:true,
-              uploadMessage : data.message,
-              userId: '', 
-              verifierAddress: '',
-          })
-      });
-      this.setState({})
-    }
+  componentDidMount() {
+    this.getVerifiers()
+  }
 
-    onFileChange = event => {
-        console.log(event.target.files[0])
-        this.setState({ selectedFile: event.target.files[0] }); 
-    }; 
+  getVerifiers(){
+    this.props.kycContract.methods.getVerifiedVerifiers().call({}, (err, verifiedVerifiers) => {
+        console.log(verifiedVerifiers);
+        if (verifiedVerifiers !== null && verifiedVerifiers.length !== 0){
+        verifiedVerifiers.map((verifiedVerifier, key) => {
+        this.props.kycContract.methods.getVerifier(verifiedVerifier).call({}, (err,verifierDetails) => {
+            const verifier = {bankName: verifierDetails, address: verifiedVerifier}
+            this.setState({verifiedVerifiers:[...this.state.verifiedVerifiers,verifier]})
+            this.setState({loaded:true})
+            this.props.loadComponent(true)
+        });
+        })
+        }else{
+          this.props.loadComponent(true)
+          this.setState({loaded:true})
+        }
+  }) 
+  }
 
-    handleChange(event) {
+  handleSubmit(event) {
+    event.preventDefault()
+    this.setState({loading:true})
+    console.log(this.state.verifierAddress);
+    console.log(this.state);
+    
+    var formdata = new FormData();
+    var files = this.doc;
+    console.log(files.files[0])
+    formdata.append('verifierAddress',this.state.verifierAddress);
+    formdata.append('type',2);
+    // formdata.append('userId', this.state.userId);
+    formdata.append('doc', files.files[0]);
+    var requestOptions = {
+        method: 'POST',
+        body: formdata,
+    };
+    console.log(formdata)
+    fetch(serverUrl+'uploadDocument', requestOptions)
+    .then(res => res.json())
+          .then(data => {
+        this.setState({
+            snackbarMessage: data.message,
+            snackbarOpen: true,
+            loading:false,
+            buttonLoaded:true,
+            uploadMessage : data.message,
+            userId: '', 
+            verifierAddress: '',
+        })
+    });
+    this.setState({})
+  }
+
+  onFileChange = event => {
+      console.log(event.target.files[0])
+      this.setState({ selectedFile: event.target.files[0] }); 
+  }; 
+
+  handleChange(event) {
     const target = event.target
     const value = target.value
     const name = target.name
@@ -119,6 +119,7 @@ class ExistingUSer extends Component{
     const decodedOtp = forge.util.decode64(otp);
     userData = forge.util.decode64(userData);
     let privateKey = localStorage.getItem('privateKeyUser');
+    console.log(privateKey)
     privateKey = forge.pki.privateKeyFromPem(privateKey);
     var finalOtp =''
     try{

@@ -200,20 +200,23 @@ class App extends Component {
     decipher.start({iv: iv});
     decipher.update(input);
     var result = decipher.finish();
-    console.log(decipher.output.getBytes());
-    return decipher.output.getBytes();
+    var k = decipher.output.getBytes();
+    console.log(k)
+    return k;
   }
 
-  handleFile = (e) => {
+  handleFile = async (e) => {
     const content = e.target.result;
     var keys= JSON.parse(content);
     var i=0;
     var password = this.state.password;
+    console.log(password)
     for(var key in keys){
       i+=1;
-      var k = this.decrypt(keys[key], password);
+      var k = await this.decrypt(keys[key], password);
+      console.log(k)
       localStorage.setItem(key, k);
-      localStorage.setItem("lastStoredKey"+i, k)
+      localStorage.setItem("lastStoredKey"+i, k);
     }
     this.setState({fileUploaded:true})
   }
