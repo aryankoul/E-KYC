@@ -29,7 +29,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Button } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-
+import SnackBarNotification from './SnackBarNotification';
 import Fab from '@material-ui/core/Fab';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import LockIcon from '@material-ui/icons/Lock';
@@ -54,7 +54,10 @@ class App extends Component {
         open:false,
         showPassword:false,
         password:"",
-        fileUploaded:false
+        fileUploaded:false,
+        correct:false,
+        deciphered:false,
+        snackbarOpen:false
       }
     }
     else{
@@ -70,7 +73,10 @@ class App extends Component {
       open:false,
       showPassword:false,
       password:"",
-      fileUploaded:false
+      fileUploaded:false,
+      correct:false,
+      deciphered:false,
+      snackbarOpen:false
     }
   }
     this.handleLogin.bind(this);
@@ -199,10 +205,18 @@ class App extends Component {
     var decipher = forge.cipher.createDecipher('3DES-CBC', key);
     decipher.start({iv: iv});
     decipher.update(input);
-    var result = decipher.finish();
-    var k = decipher.output.getBytes();
-    console.log(k)
-    return k;
+    this.setState({deciphered:true})
+    if(decipher.finish()===true){
+      this.setState({correct:true})
+      var k = decipher.output.getBytes();
+      return k;
+    }
+    else{
+      this.setState({snackbarOpen:true,password:"",deciphered:false});
+      console.log(this.doc.files);
+      this.doc.value="";
+      return null;
+    }
   }
 
   handleFile = async (e) => {
@@ -214,18 +228,23 @@ class App extends Component {
     for(var key in keys){
       i+=1;
       var k = await this.decrypt(keys[key], password);
-      console.log(k)
-      localStorage.setItem(key, k);
-      localStorage.setItem("lastStoredKey"+i, k);
+      // console.log(k)
+      if(k!==null){
+        localStorage.setItem(key, k);
+        localStorage.setItem("lastStoredKey"+i, k);
+      }
     }
     this.setState({fileUploaded:true})
   }
   
-  handleLogin = (file) => {
-    console.log("hi")
+  handleLogin = (e,file) => {
+    console.log(e.target.value);
+    if(e.target.value!==""){
+    console.log("handlelogin")
     let fileData = new FileReader();
     fileData.readAsText(file);
     fileData.onloadend = this.handleFile;
+    }
   }
 
   handleLogout(){
@@ -367,7 +386,7 @@ class App extends Component {
                     />
                   </FormControl>
                   <br/>
-                  <input style={{display:'none'}} type="file" id="file" name="inputFile" accept='.txt' onChange={e=>{console.log("hello");this.handleLogin(e.target.files[0])}}/>
+                  <input style={{display:'none'}} type="file" id="file" name="inputFile" accept='.txt' onChange={e=>{this.handleLogin(e,e.target.files[0])}} ref = {(doc) => this.doc = doc}/>
                   <label htmlFor="file" style={{width:"100%"}}>
                     <Button variant="contained" color="primary" component="span" startIcon={<CloudUploadIcon />}  disabled={this.state.password === ""} style={{width:"100%",marginBottom:"2%"}}>
                       Upload
@@ -376,7 +395,7 @@ class App extends Component {
                   <br/>
                   <Button variant="contained" startIcon={<VpnKeyIcon />} color="primary" component="span"
                   onClick={(e)=>{this.setState({open:false,uploaded:true},()=>{window.location.reload()})}}
-                  disabled={!this.state.fileUploaded} style={{width:"100%"}}>Login</Button>
+                  disabled={!(this.state.fileUploaded && this.state.deciphered && this.state.correct)} style={{width:"100%",backgroundColor:"#02b205"}}>Login</Button>
                 </Paper>
               </Fade>
             </Modal>
@@ -409,6 +428,7 @@ class App extends Component {
           )
         }
         </Container>
+        <SnackBarNotification open={this.state.snackbarOpen} message={"Incorrect password"} toggle={(val) => this.setState({snackbarOpen: val})} />
       </div>
     );
   }
